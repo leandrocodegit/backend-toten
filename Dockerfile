@@ -17,10 +17,10 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copia o JAR do estágio de build para o estágio de runtime
-COPY --from=builder /app/target/totem.jar /app/totem.jar
+COPY --from=builder /app/target/totem-0.0.1-SNAPSHOT.jar /app/totem-0.0.1-SNAPSHOT.jar
 
 # Porta em que a aplicação irá rodar
 EXPOSE 8080
 
 # Comando para executar a aplicação
-CMD ["java", "-jar", "/app/totem.jar"]
+CMD ["java", "-jar", "/app/totem-0.0.1-SNAPSHOT.jar"]
