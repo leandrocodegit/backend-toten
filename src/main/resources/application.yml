@@ -5,7 +5,7 @@ server:
 data:
   mongodb:
     database: totem
-    uri: mongodb://vps55601.publiccloud.com.br:27017/totem?authSource=admin
+    uri: mongodb://localhost:27017/totem?authSource=admin
 
 # application.properties
 mqtt.broker.url: tcp://localhost:1883
