@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=builder /app/target/totem-0.0.1-SNAPSHOT.jar /app/totem-0.0.1-SNAPSHOT.jar
 
 # Porta em que a aplicação irá rodar
-EXPOSE 8080
+EXPOSE 8000
 
 # Comando para executar a aplicação
 CMD ["java", "-jar", "/app/totem-0.0.1-SNAPSHOT.jar"]
