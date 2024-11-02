@@ -1,0 +1,56 @@
+version: "3.8"
+
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  mongo_db:
+    image: mongo:5.0.2
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    ports:
+      - "${MONGODB_LOCAL_PORT}:${MONGODB_DOCKER_PORT}"
+    volumes:
+      - db:/data/db
+    networks:
+      - my_network
+
+  app:
+    depends_on:
+      - mongo_db
+      - keycloak  # Adiciona a dependência ao Keycloak
+    build: ./
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - 8090:8090
+    environment:
+      SPRING_APPLICATION_JSON: >
+        {
+          "spring.data.mongodb.uri": "mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongo_db:${MONGODB_DOCKER_PORT}/${MONGODB_DATABASE}?authSource=admin"
+        }
+      KEYCLOAK_URL: http://keycloak:8080  # Use o nome do serviço keycloak
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+    networks:
+      - my_network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1  # A imagem correta do Keycloak
+    environment:
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - "28080:8080"  # Acesso externo para o Keycloak
+    command: start-dev
+    networks:
+      - my_network
+
+volumes:
+  db:
