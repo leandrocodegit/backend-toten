@@ -132,6 +132,14 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.4</version>
+                <configuration>
+                    <mainClass>br.com.totem.TotemApplication</mainClass> <!-- Substitua pelo seu pacote e nome da classe -->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
