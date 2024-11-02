@@ -1,17 +1,26 @@
-# Usa a imagem base do JDK 17
-FROM openjdk:17-jdk-slim
+# Utiliza a imagem Maven para compilar o projeto
+FROM maven:3.8.6-openjdk-17 AS builder
 
-# Define o diretório de trabalho
+# Define o diretório de trabalho no container
 WORKDIR /app
 
-# Copia o arquivo JAR gerado para o contêiner
-COPY target/*.jar app.jar
+# Copia o código fonte para o container
+COPY . .
 
-# Define a variável de ambiente para especificar o perfil de produção
-ENV JAVA_OPTS=""
+# Executa o Maven para compilar o projeto
+RUN mvn clean package -DskipTests
 
-# Expõe a porta padrão do Spring Boot
+# Usa uma imagem mais leve para executar o JAR compilado
+FROM openjdk:17-jdk-slim
+
+# Define o diretório de trabalho para a aplicação
+WORKDIR /app
+
+# Copia o JAR do estágio de build para o estágio de runtime
+COPY --from=builder /app/target/totem.jar /app/totem.jar
+
+# Porta em que a aplicação irá rodar
 EXPOSE 8080
 
-# Comando para rodar a aplicação
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Comando para executar a aplicação
+CMD ["java", "-jar", "/app/totem.jar"]
