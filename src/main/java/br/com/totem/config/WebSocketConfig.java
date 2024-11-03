@@ -27,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http:vps55601.publiccloud.com.br", "http://localhost:4200"); // Ponto de conexão WebSocket
+        registry.addEndpoint("/ws").setAllowedOrigins("http://vps55601.publiccloud.com.br", "http://localhost:4200"); // Ponto de conexão WebSocket
     }
 
 }
