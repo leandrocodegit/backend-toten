@@ -44,6 +44,8 @@ public class DispositivoService {
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setNome(request.getNome());
+            dispositivo.setLatitude(request.getLatitude());
+            dispositivo.setLongitude(request.getLongitude());
             dispositivoRepository.save(dispositivo);
         }
     }
