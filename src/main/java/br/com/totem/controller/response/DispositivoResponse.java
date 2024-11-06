@@ -19,6 +19,8 @@ public class DispositivoResponse {
     private String nome;
     private String ip;
     private int memoria;
+    private String versao;
+    private boolean ignorarAgenda;
     private LocalDateTime ultimaAtualizacao;
     private boolean ativo;
     private String conexao;

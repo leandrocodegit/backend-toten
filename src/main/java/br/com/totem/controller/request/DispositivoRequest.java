@@ -17,6 +17,7 @@ public class DispositivoRequest {
 
     private String mac;
     private String nome;
+    private boolean ignorarAgenda;
     private String latitude;
     private String longitude;
 }
