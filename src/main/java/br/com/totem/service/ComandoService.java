@@ -82,7 +82,7 @@ public class ComandoService {
 
                     Agenda agenda = null;
 
-                    if(device.isIgnorarAgenda()){
+                    if(device != null && device.isIgnorarAgenda()){
                         agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
                     }
 
@@ -134,7 +134,7 @@ public class ComandoService {
                 if (device.isAtivo() && device.getConfiguracao() != null) {
                     device.getConfiguracao().setPrimaria("");
                     device.getConfiguracao().setSecundaria("");
-                    if(!device.isIgnorarAgenda()) {
+                    if(device == null || !device.isIgnorarAgenda()) {
                         mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
                                 new Gson().toJson(agenda.getConfiguracao()), true);
                     }
