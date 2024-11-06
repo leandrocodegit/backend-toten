@@ -53,7 +53,7 @@ public class DispositivoService {
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
 
-            System.out.println(mensagem.getId().substring(mensagem.getId().length() - 6, mensagem.getId().length() -1));
+            System.out.println(mensagem.getId().substring(mensagem.getId().length() - 5, mensagem.getId().length()));
             dispositivo.setUltimaAtualizacao(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime());
             dispositivo.setIp(mensagem.getIp());
             dispositivo.setMemoria(mensagem.getMemoria());
@@ -104,7 +104,7 @@ public class DispositivoService {
                             .ignorarAgenda(false)
                             .memoria(0)
                             .ativo(false)
-                            .nome(mensagem.getId().substring(mensagem.getId().length() - 6, mensagem.getId().length() -1))
+                            .nome(mensagem.getId().substring(mensagem.getId().length() - 5, mensagem.getId().length()))
                             .comando(Comando.ONLINE)
                             .build()
             );
