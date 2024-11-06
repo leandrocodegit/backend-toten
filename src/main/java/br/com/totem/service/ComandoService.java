@@ -80,7 +80,11 @@ public class ComandoService {
                     device.getConfiguracao().setSecundaria("");
 
 
-                    Agenda agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
+                    Agenda agenda = null;
+
+                    if(device.isIgnorarAgenda()){
+                        agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
+                    }
 
                     if(!forcaTeste && agenda != null && agenda.getConfiguracao() != null){
                         device.setConfiguracao(agenda.getConfiguracao());
@@ -89,20 +93,16 @@ public class ComandoService {
                     mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
                             new Gson().toJson(device.getConfiguracao()));
                     System.out.println(new Gson().toJson(device.getConfiguracao()));
-
-                    if (salvarLog) {
-                        logRepository.save(Log.builder()
-                                .data(LocalDateTime.now())
-                                .usuario("Leandro")
-                                .mensagem(macs.toString())
-                                .configuracao(device.getConfiguracao())
-                                .comando(Comando.ENVIAR)
-                                .descricao(Comando.ENVIAR.value())
-                                .build());
-                        salvarLog = false;
-                    }
                 }
             });
+            logRepository.save(Log.builder()
+                    .data(LocalDateTime.now())
+                    .usuario("Leandro")
+                    .mensagem(macs.toString())
+                    .configuracao(null)
+                    .comando(Comando.ENVIAR)
+                    .descricao(Comando.ENVIAR.value())
+                    .build());
             webSocketService.sendMessageDashboard(dashboardService.gerarDash());
         } else {
             logRepository.save(Log.builder()
@@ -131,27 +131,23 @@ public class ComandoService {
         if (!dispositivos.isEmpty()) {
             dispositivos.forEach(device -> {
 
-                boolean salvarLog = true;
-
                 if (device.isAtivo() && device.getConfiguracao() != null) {
                     device.getConfiguracao().setPrimaria("");
                     device.getConfiguracao().setSecundaria("");
-                    mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
-                            new Gson().toJson(agenda.getConfiguracao()), true);
-
-                    if (salvarLog) {
-                        logRepository.save(Log.builder()
-                                .data(LocalDateTime.now())
-                                .usuario(Comando.SISTEMA.value())
-                                .mensagem("Tarefa agenda executada")
-                                .configuracao(device.getConfiguracao())
-                                .comando(Comando.SISTEMA)
-                                .descricao("Tarefa agenda executada")
-                                .build());
-                        salvarLog = false;
+                    if(!device.isIgnorarAgenda()) {
+                        mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
+                                new Gson().toJson(agenda.getConfiguracao()), true);
                     }
                 }
             });
+            logRepository.save(Log.builder()
+                    .data(LocalDateTime.now())
+                    .usuario(Comando.SISTEMA.value())
+                    .mensagem("Tarefa agenda executada")
+                    .configuracao(agenda.getConfiguracao())
+                    .comando(Comando.SISTEMA)
+                    .descricao("Tarefa agenda executada")
+                    .build());
             webSocketService.sendMessageDashboard(dashboardService.gerarDash());
         }
     }

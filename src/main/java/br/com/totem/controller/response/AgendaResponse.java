@@ -20,7 +20,8 @@ public class AgendaResponse {
     private String nome;
     private boolean ativo;
     private String status;
-
+    private String versao;
+    private boolean ignorarAgenda;
     private TipoAgenda tipoAgenda;
     private LocalDate execucao;
     private LocalDate inicio;

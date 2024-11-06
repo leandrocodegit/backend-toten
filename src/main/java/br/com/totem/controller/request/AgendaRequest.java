@@ -22,6 +22,7 @@ public class AgendaRequest {
 
     private UUID id;
     private String nome;
+    private boolean ignorarAgenda;
     private boolean ativo;
     private LocalDate inicio;
     private LocalDate termino;

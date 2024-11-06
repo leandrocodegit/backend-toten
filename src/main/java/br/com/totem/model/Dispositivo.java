@@ -22,6 +22,8 @@ public class Dispositivo {
     private String nome;
     private String ip;
     private Integer memoria;
+    private String versao;
+    private boolean ignorarAgenda;
     private LocalDateTime ultimaAtualizacao;
     private boolean ativo;
     private Comando comando;

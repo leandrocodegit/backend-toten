@@ -53,10 +53,12 @@ public class DispositivoService {
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
 
+            System.out.println(mensagem.getId().substring(mensagem.getId().length() - 6, mensagem.getId().length() -1));
             dispositivo.setUltimaAtualizacao(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime());
             dispositivo.setIp(mensagem.getIp());
             dispositivo.setMemoria(mensagem.getMemoria());
             dispositivo.setComando(Comando.ONLINE);
+            dispositivo.setVersao(mensagem.getVersao());
             if (dispositivo.getConfiguracao() != null && mensagem.getComando().equals(Comando.CONFIGURACAO)) {
                 if (mensagem.getComando().equals(Comando.CONFIGURACAO)) {
                     logRepository.save(Log.builder()
@@ -98,9 +100,11 @@ public class DispositivoService {
                     Dispositivo.builder()
                             .ultimaAtualizacao(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime())
                             .mac(mensagem.getId())
+                            .versao("")
+                            .ignorarAgenda(false)
                             .memoria(0)
                             .ativo(false)
-                            .nome("ESP32")
+                            .nome(mensagem.getId().substring(mensagem.getId().length() - 6, mensagem.getId().length() -1))
                             .comando(Comando.ONLINE)
                             .build()
             );
