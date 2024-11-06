@@ -4,6 +4,9 @@ import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.model.Agenda;
 import br.com.totem.model.Dispositivo;
+import br.com.totem.model.Log;
+import br.com.totem.model.constantes.Comando;
+import br.com.totem.repository.LogRepository;
 import br.com.totem.service.AgendaDeviceService;
 import br.com.totem.service.ComandoService;
 import br.com.totem.service.DispositivoService;
@@ -13,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration
@@ -27,6 +31,8 @@ public class ScheduleConfig {
     private DispositivoService dispositivoService;
     @Autowired
     private WebSocketService webSocketService;
+    @Autowired
+    private LogRepository logRepository;
 
     @Scheduled(fixedRate = 5000)
     public void executarTarefaAgendada() {
@@ -47,5 +53,21 @@ public class ScheduleConfig {
     @Scheduled(fixedRate = 60000)
     public void executarTarefaDispositivos() {
         webSocketService.sendMessageDipositivos(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.CORDENADAS));
+    }
+
+    @Scheduled(fixedRate = 360000)
+    public void checkarDipositivosOffile() {
+        dispositivoService.dispositivosQueFicaramOffilne().forEach(device -> {
+            logRepository.save(Log.builder()
+                    .data(LocalDateTime.now())
+                    .usuario("Sistema")
+                    .mensagem(device.getMac())
+                    .configuracao(null)
+                    .comando(Comando.OFFLINE)
+                    .descricao(Comando.OFFLINE.value())
+                    .build());
+            dispositivoService.salvarDispositivoComoOffline(device);
+            System.out.println("Dispositivo offline " + device.getMac());
+        });
     }
 }

@@ -39,6 +39,15 @@ public class DispositivoService {
     @Autowired
     private AgendaDeviceService agendaDeviceService;
 
+
+    public void salvarDispositivoComoOffline(Dispositivo dispositivo) {
+        Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(dispositivo.getMac());
+        if (dispositivoOptional.isPresent()) {
+            Dispositivo dispositivoDB = dispositivoOptional.get();
+            dispositivoDB.setComando(Comando.OFFLINE);
+            dispositivoRepository.save(dispositivo);
+        }
+    }
     public void atualizarNomeDispositivo(DispositivoRequest request) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
         if (dispositivoOptional.isPresent()) {
@@ -222,4 +231,9 @@ public class DispositivoService {
         return dispositivos;
     }
 
+    public List<Dispositivo> dispositivosQueFicaramOffilne() {
+        LocalDateTime cincoMinutosAtras = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(6);
+        Date dataLimite = Date.from(cincoMinutosAtras.atZone(ZoneOffset.UTC).toInstant());
+        return dispositivoRepository.findAllAtivosComUltimaAtualizacaoAntesQueEstavaoOnline(dataLimite);
+    }
 }
