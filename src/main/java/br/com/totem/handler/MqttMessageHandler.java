@@ -32,7 +32,8 @@ public class MqttMessageHandler implements MessageHandler {
         if (topico.startsWith(Topico.DEVICE_SEND)) {
 
             try {
-                dispositivoService.atualizarDispositivo(payload, clientId.toString());
+                payload.setBrockerId(clientId.toString());
+                dispositivoService.atualizarDispositivo(payload);
             } catch (Exception erro) {
                 System.out.println("Erro ao capturar id");
             }
