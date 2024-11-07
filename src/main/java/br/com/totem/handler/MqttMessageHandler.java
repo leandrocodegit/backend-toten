@@ -17,8 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MqttMessageHandler implements MessageHandler {
 
-   @Autowired
-   private DispositivoService dispositivoService;
+    @Autowired
+    private DispositivoService dispositivoService;
     private final ConcurrentHashMap<String, String> clientMap = new ConcurrentHashMap<>();
 
     @Override
@@ -29,14 +29,13 @@ public class MqttMessageHandler implements MessageHandler {
 
         Mensagem payload = new Gson().fromJson(message.getPayload().toString(), Mensagem.class);
 
-        if (topico.startsWith(Topico.DEVICE_SEND)){
+        if (topico.startsWith(Topico.DEVICE_SEND)) {
 
             try {
-                payload.setId(clientId.toString());
-            }catch (Exception erro){
+                dispositivoService.atualizarDispositivo(payload, clientId.toString());
+            } catch (Exception erro) {
                 System.out.println("Erro ao capturar id");
             }
-            dispositivoService.atualizarDispositivo(payload);
         }
 
         System.out.println("Mensagem recebida do cliente " + clientId + ": " + payload);
