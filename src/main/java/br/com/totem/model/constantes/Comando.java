@@ -11,7 +11,8 @@ public enum Comando {
     OFFLINE("Dispositivo %S offline"),
     SINCRONIZAR("Sincronização enviada"),
     CONFIGURACAO("Solicitação de paramentros configuração"),
-    TESTE("Teste de cor %");
+    TESTE("Teste de cor"),
+    CONCLUIDO("Teste concluido");
 
     private String value;
 

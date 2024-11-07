@@ -34,6 +34,12 @@ public class ComandoController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/teste/{mac}")
+    public ResponseEntity<?> testar(@PathVariable String mac) {
+        comandoService.enviardComandoTeste(mac);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/sincronizar/{forcaTeste}")
     public ResponseEntity<?> sincronizar(@RequestBody List<String> macs, @PathVariable boolean forcaTeste) {
         comandoService.enviarComando(macs, forcaTeste, true);

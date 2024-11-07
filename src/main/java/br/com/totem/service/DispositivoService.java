@@ -48,6 +48,7 @@ public class DispositivoService {
             dispositivoRepository.save(dispositivo);
         }
     }
+
     public void atualizarNomeDispositivo(DispositivoRequest request) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
         if (dispositivoOptional.isPresent()) {
@@ -70,17 +71,15 @@ public class DispositivoService {
             dispositivo.setMemoria(mensagem.getMemoria());
             dispositivo.setComando(Comando.ONLINE);
             dispositivo.setVersao(mensagem.getVersao());
-            if (dispositivo.getConfiguracao() != null && mensagem.getComando().equals(Comando.CONFIGURACAO)) {
-                if (mensagem.getComando().equals(Comando.CONFIGURACAO)) {
-                    logRepository.save(Log.builder()
-                            .data(LocalDateTime.now())
-                            .usuario("Leandro")
-                            .mensagem(mensagem.getId())
-                            .configuracao(dispositivo.getConfiguracao())
-                            .comando(mensagem.getComando())
-                            .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
-                            .build());
-                }
+            if (dispositivo.getConfiguracao() != null && (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO))) {
+                logRepository.save(Log.builder()
+                        .data(LocalDateTime.now())
+                        .usuario("Leandro")
+                        .mensagem(mensagem.getId())
+                        .configuracao(dispositivo.getConfiguracao())
+                        .comando(mensagem.getComando())
+                        .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
+                        .build());
             }
             if (mensagem.getComando().equals(Comando.ACEITO) || mensagem.getComando().equals(Comando.ONLINE)) {
                 logRepository.save(Log.builder()
@@ -103,7 +102,7 @@ public class DispositivoService {
 //                        .build());
             }
             dispositivoRepository.save(dispositivo);
-            if ((mensagem.getComando().equals(Comando.CONFIGURACAO))) {
+            if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
                 comandoService.enviardComando(dispositivo);
             }
         } else {
@@ -142,6 +141,7 @@ public class DispositivoService {
     public Page<DispositivoResponse> pesquisarDispositivos(String pesquisa, Pageable pageable) {
         return dispositivoRepository.findByMacAndNomeContaining(pesquisa, pageable).map(dispositivoMapper::toResponse);
     }
+
     public Page<DispositivoResponse> listaTodosDispositivos(Pageable pageable) {
         return dispositivoRepository.findAll(pageable).map(dispositivoMapper::toResponse);
     }

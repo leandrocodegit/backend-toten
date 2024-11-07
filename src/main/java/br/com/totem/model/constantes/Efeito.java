@@ -8,5 +8,6 @@ public enum Efeito {
     COLORIDO,
     SINALIZADOR,
     GIRATORIO,
-    BATIDA
+    BATIDA,
+    TESTE
 }

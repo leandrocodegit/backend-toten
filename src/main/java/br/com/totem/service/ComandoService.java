@@ -10,6 +10,7 @@ import br.com.totem.model.Configuracao;
 import br.com.totem.model.Dispositivo;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.constantes.Efeito;
 import br.com.totem.model.constantes.Topico;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
@@ -43,6 +44,19 @@ public class ComandoService {
     @Autowired
     private AgendaDeviceService agendaDeviceService;
 
+
+    public void enviardComandoTeste(String mac){
+        Dispositivo dispositivo =  buscarPorMac(mac);
+
+        if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
+            dispositivo.getConfiguracao().setPrimaria("");
+            dispositivo.getConfiguracao().setSecundaria("");
+            dispositivo.getConfiguracao().setEfeito(Efeito.TESTE);
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),
+                    new Gson().toJson(dispositivo.getConfiguracao()));
+
+        }
+    }
     public void enviardComando(String mac){
       Dispositivo dispositivo =  buscarPorMac(mac);
 
