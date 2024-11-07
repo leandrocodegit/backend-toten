@@ -16,5 +16,6 @@ public class Mensagem {
     private Comando comando;
     private Efeito efeito;
     private int[] parametros;
+    private String brockerId;
 
 }

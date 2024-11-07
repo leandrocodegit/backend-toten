@@ -29,6 +29,7 @@ public class Dispositivo {
     private Comando comando;
     private String latitude;
     private String longitude;
+    private String brokerId;
     @DBRef
     private Configuracao configuracao;
     @DBRef

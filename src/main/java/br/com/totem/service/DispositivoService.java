@@ -71,6 +71,7 @@ public class DispositivoService {
             dispositivo.setMemoria(mensagem.getMemoria());
             dispositivo.setComando(Comando.ONLINE);
             dispositivo.setVersao(mensagem.getVersao());
+            dispositivo.setBrokerId(mensagem.getBrockerId());
             if (dispositivo.getConfiguracao() != null && (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO))) {
                 logRepository.save(Log.builder()
                         .data(LocalDateTime.now())

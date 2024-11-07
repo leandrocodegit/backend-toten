@@ -24,12 +24,13 @@ public class MqttMessageHandler implements MessageHandler {
     @Override
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public void handleMessage(Message<?> message) {
-        UUID clientId = (UUID) message.getHeaders().get("id");
+        String clientId = (String) message.getHeaders().get("id");
         String topico = (String) message.getHeaders().get("mqtt_receivedTopic");
 
         Mensagem payload = new Gson().fromJson(message.getPayload().toString(), Mensagem.class);
 
         if (topico.startsWith(Topico.DEVICE_SEND)){
+            payload.setBrockerId(clientId);
             dispositivoService.atualizarDispositivo(payload);
         }
 
