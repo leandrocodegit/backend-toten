@@ -24,7 +24,7 @@ public class MqttMessageHandler implements MessageHandler {
     @Override
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public void handleMessage(Message<?> message) {
-        String clientId = (String) message.getHeaders().get("id");
+        UUID clientId = (UUID) message.getHeaders().get("id");
         String topico = (String) message.getHeaders().get("mqtt_receivedTopic");
 
         Mensagem payload = new Gson().fromJson(message.getPayload().toString(), Mensagem.class);

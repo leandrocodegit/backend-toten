@@ -5,6 +5,8 @@ import br.com.totem.model.constantes.Comando;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class Mensagem {
@@ -16,6 +18,6 @@ public class Mensagem {
     private Comando comando;
     private Efeito efeito;
     private int[] parametros;
-    private String brockerId;
+    private UUID brockerId;
 
 }
