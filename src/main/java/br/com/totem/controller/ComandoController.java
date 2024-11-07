@@ -30,13 +30,13 @@ public class ComandoController {
 
     @GetMapping("/sincronizar/{forcaTeste}")
     public ResponseEntity<?> sincronizar(@PathVariable boolean forcaTeste) {
-        comandoService.enviarComando(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.ATIVO).stream().map(device -> device.getMac()).collect(Collectors.toList()), forcaTeste);
+        comandoService.enviarComando(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.ATIVO).stream().map(device -> device.getMac()).collect(Collectors.toList()), forcaTeste, true);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sincronizar/{forcaTeste}")
     public ResponseEntity<?> sincronizar(@RequestBody List<String> macs, @PathVariable boolean forcaTeste) {
-        comandoService.enviarComando(macs, forcaTeste);
+        comandoService.enviarComando(macs, forcaTeste, true);
         return ResponseEntity.ok().build();
     }
 }

@@ -66,11 +66,22 @@ public class ComandoService {
         }
     }
 
-    public void enviarComando(List<String> macs, boolean forcaTeste) {
+    public void enviarComando(List<String> macs, boolean forcaTeste, boolean sincronizar) {
 
         List<Dispositivo> dispositivos = todosDispositivosAtivos(macs, true);
 
         if (!dispositivos.isEmpty()) {
+
+            if(sincronizar) {
+                logRepository.save(Log.builder()
+                        .data(LocalDateTime.now())
+                        .usuario("Leandro")
+                        .mensagem(forcaTeste ? "Especifico" : "Todos")
+                        .configuracao(null)
+                        .comando(Comando.SINCRONIZAR)
+                        .descricao(Comando.SINCRONIZAR.value())
+                        .build());
+            }
             dispositivos.forEach(device -> {
 
                 boolean salvarLog = true;

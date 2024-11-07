@@ -71,7 +71,7 @@ public class DashboardService {
         Pageable pageable = PageRequest.of(0, 100);
 
         dashboardResponse.setAgendas(agendas.values().stream().toList());
-        dashboardResponse.setLogs(logRepository.findAllByOrderByDataDesc(pageable));
+        dashboardResponse.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE"),pageable).getContent());
         List<LogConexaoResponse> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboardResponse.setLogsConexao(l);
         return dashboardResponse;

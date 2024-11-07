@@ -3,6 +3,7 @@ package br.com.totem.repository;
 import br.com.totem.controller.response.LogConexaoResponse;
 import br.com.totem.model.Log;
 import br.com.totem.model.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -16,7 +17,7 @@ import java.util.UUID;
 public interface LogRepository extends MongoRepository<Log, Long> {
 
 
-    List<Log> findAllByOrderByDataDesc(Pageable pageable);
+    Page<Log> findAllByComandoInOrderByDataDesc(List<String> comandos, Pageable pageable);
     @Aggregation(pipeline = {
             "{ $match: { comando: { $in: [ 'ONLINE', 'OFFLINE' ] } } }",
             "{ $group: { " +

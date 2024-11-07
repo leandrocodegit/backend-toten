@@ -9,6 +9,7 @@ public enum Comando {
     NENHUM_DEVICE("Comando não enviado, dispositivo inválido"),
     ONLINE("Dispositivo %S online"),
     OFFLINE("Dispositivo %S offline"),
+    SINCRONIZAR("Sincronização enviada"),
     CONFIGURACAO("Solicitação de paramentros configuração"),
     TESTE("Teste de cor %");
 
