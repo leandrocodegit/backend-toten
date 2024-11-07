@@ -60,7 +60,7 @@ public class DispositivoService {
         }
     }
 
-    public void atualizarDispositivo(Mensagem mensagem) {
+    public void atualizarDispositivo(Mensagem mensagem, UUID brockerId) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(mensagem.getId());
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
@@ -71,7 +71,7 @@ public class DispositivoService {
             dispositivo.setMemoria(mensagem.getMemoria());
             dispositivo.setComando(Comando.ONLINE);
             dispositivo.setVersao(mensagem.getVersao());
-            dispositivo.setBrokerId(mensagem.getBrockerId());
+            dispositivo.setBrokerId(brockerId);
             if (dispositivo.getConfiguracao() != null && (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO))) {
                 logRepository.save(Log.builder()
                         .data(LocalDateTime.now())
