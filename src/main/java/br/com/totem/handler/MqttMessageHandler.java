@@ -30,7 +30,13 @@ public class MqttMessageHandler implements MessageHandler {
         Mensagem payload = new Gson().fromJson(message.getPayload().toString(), Mensagem.class);
 
         if (topico.startsWith(Topico.DEVICE_SEND)){
-            dispositivoService.atualizarDispositivo(payload, clientId);
+
+            try {
+                payload.setId(clientId.toString());
+            }catch (Exception erro){
+                System.out.println("Erro ao capturar id");
+            }
+            dispositivoService.atualizarDispositivo(payload);
         }
 
         System.out.println("Mensagem recebida do cliente " + clientId + ": " + payload);
