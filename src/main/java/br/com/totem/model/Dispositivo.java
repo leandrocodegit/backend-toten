@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public class Dispositivo {
     private Comando comando;
     private String latitude;
     private String longitude;
-    private String brokerId;
+    private UUID brokerId;
     @DBRef
     private Configuracao configuracao;
     @DBRef
