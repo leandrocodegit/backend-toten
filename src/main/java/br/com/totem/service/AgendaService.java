@@ -32,6 +32,8 @@ public class AgendaService {
     private DispositivoService dispositivoService;
     @Autowired
     private AgendaDeviceService agendaDeviceService;
+    @Autowired
+    private ComandoService comandoService;
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
             request.setId(UUID.randomUUID());
@@ -75,6 +77,11 @@ public class AgendaService {
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
+    }
+
+    public void removerAgenda(UUID id) {
+        comandoService.enviarComando(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.ATIVO).stream().map(device -> device.getMac()).collect(Collectors.toList()), false);
+        agendaRepository.deleteById(id);
     }
 
     public void atualizarDataExecucao(Agenda agenda) {

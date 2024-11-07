@@ -45,6 +45,12 @@ public class AgendaController {
         return ResponseEntity.ok(agendaDeviceService.listaTodosAgendasPorDispositivo(mac));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<List<AgendaResponse>> removerAgenda(@PathVariable UUID id) {
+        agendaService.removerAgenda(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/configuracao/{id}")
     public ResponseEntity<List<AgendaResponse>> listaTodasAgendaPorConfiguracao(@PathVariable UUID id) {
         return ResponseEntity.ok(agendaDeviceService.listaTodosAgendasPorConfiguracao(id));
