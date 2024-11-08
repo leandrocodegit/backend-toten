@@ -45,8 +45,8 @@ public class ComandoService {
     private AgendaDeviceService agendaDeviceService;
 
 
-    public void enviardComandoTeste(String mac){
-        Dispositivo dispositivo =  buscarPorMac(mac);
+    public void enviardComandoTeste(String mac) {
+        Dispositivo dispositivo = buscarPorMac(mac);
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
             dispositivo.getConfiguracao().setPrimaria("");
@@ -57,8 +57,9 @@ public class ComandoService {
 
         }
     }
-    public void enviardComando(String mac){
-      Dispositivo dispositivo =  buscarPorMac(mac);
+
+    public void enviardComando(String mac) {
+        Dispositivo dispositivo = buscarPorMac(mac);
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
             dispositivo.getConfiguracao().setPrimaria("");
@@ -69,7 +70,7 @@ public class ComandoService {
         }
     }
 
-    public void enviardComando(Dispositivo dispositivo){
+    public void enviardComando(Dispositivo dispositivo) {
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
             dispositivo.getConfiguracao().setPrimaria("");
@@ -86,7 +87,7 @@ public class ComandoService {
 
         if (!dispositivos.isEmpty()) {
 
-            if(sincronizar) {
+            if (sincronizar) {
                 logRepository.save(Log.builder()
                         .data(LocalDateTime.now())
                         .usuario("Leandro")
@@ -94,8 +95,11 @@ public class ComandoService {
                         .configuracao(null)
                         .comando(Comando.SINCRONIZAR)
                         .descricao(Comando.SINCRONIZAR.value())
+                        .mac(macs.toString())
                         .build());
             }
+
+
             dispositivos.forEach(device -> {
 
                 boolean salvarLog = true;
@@ -107,11 +111,11 @@ public class ComandoService {
 
                     Agenda agenda = null;
 
-                    if(Boolean.FALSE.equals(device.isIgnorarAgenda())){
+                    if (Boolean.FALSE.equals(device.isIgnorarAgenda())) {
                         agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
                     }
 
-                    if(!forcaTeste && agenda != null && agenda.getConfiguracao() != null){
+                    if (!forcaTeste && agenda != null && agenda.getConfiguracao() != null) {
                         device.setConfiguracao(agenda.getConfiguracao());
                     }
 
@@ -119,13 +123,26 @@ public class ComandoService {
                             new Gson().toJson(device.getConfiguracao()));
                     System.out.println(new Gson().toJson(device.getConfiguracao()));
                 }
+
+                if (forcaTeste) {
+                    logRepository.save(Log.builder()
+                            .data(LocalDateTime.now())
+                            .usuario("Leandro")
+                            .mensagem("Tesde configuração enviado")
+                            .configuracao(null)
+                            .comando(Comando.TESTE)
+                            .descricao(Comando.TESTE.value())
+                            .mac(device.getMac())
+                            .build());
+                }
             });
             logRepository.save(Log.builder()
                     .data(LocalDateTime.now())
                     .usuario("Leandro")
-                    .mensagem(macs.toString())
+                    .mensagem("Enviado para todos")
                     .configuracao(null)
                     .comando(Comando.ENVIAR)
+                    .mac(macs.toString())
                     .descricao(Comando.ENVIAR.value())
                     .build());
             webSocketService.sendMessageDashboard(dashboardService.gerarDash());
@@ -147,9 +164,9 @@ public class ComandoService {
 
         List<Dispositivo> dispositivos = Collections.EMPTY_LIST;
 
-        if(agenda.isTodos()){
+        if (agenda.isTodos()) {
             dispositivos = agenda.getDispositivos();
-        }else{
+        } else {
             dispositivos = agenda.getDispositivos().stream().filter(device -> device.isAtivo() && device.getConfiguracao() != null).collect(Collectors.toList());
         }
 
@@ -159,9 +176,9 @@ public class ComandoService {
                 if (device.isAtivo() && device.getConfiguracao() != null) {
                     device.getConfiguracao().setPrimaria("");
                     device.getConfiguracao().setSecundaria("");
-                    if(Boolean.FALSE.equals(device.isIgnorarAgenda())) {
+                    if (Boolean.FALSE.equals(device.isIgnorarAgenda())) {
                         mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
-                                new Gson().toJson(agenda.getConfiguracao()), true);
+                                new Gson().toJson(agenda.getConfiguracao()), false);
                     }
                 }
             });
@@ -172,6 +189,7 @@ public class ComandoService {
                     .configuracao(agenda.getConfiguracao())
                     .comando(Comando.SISTEMA)
                     .descricao("Tarefa agenda executada")
+                    .mac(agenda.getDispositivos().stream().map(mac -> mac.getMac()).collect(Collectors.toList()).toString())
                     .build());
             webSocketService.sendMessageDashboard(dashboardService.gerarDash());
         }

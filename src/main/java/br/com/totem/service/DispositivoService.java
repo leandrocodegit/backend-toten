@@ -80,6 +80,7 @@ public class DispositivoService {
                         .configuracao(dispositivo.getConfiguracao())
                         .comando(mensagem.getComando())
                         .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
+                        .mac(dispositivo.getMac())
                         .build());
             }
             if (mensagem.getComando().equals(Comando.ACEITO) || mensagem.getComando().equals(Comando.ONLINE)) {
@@ -90,6 +91,7 @@ public class DispositivoService {
                         .configuracao(dispositivo.getConfiguracao())
                         .comando(mensagem.getComando())
                         .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
+                        .mac(dispositivo.getMac())
                         .build());
                 webSocketService.sendMessageDashboard(dashboardService.gerarDash());
             } else if (mensagem.getComando().equals(Comando.ONLINE)) {

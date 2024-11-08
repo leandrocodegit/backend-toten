@@ -65,6 +65,7 @@ public class ScheduleConfig {
                     .configuracao(null)
                     .comando(Comando.OFFLINE)
                     .descricao(String.format(Comando.OFFLINE.value(), device.getMac()))
+                    .mac(device.getMac())
                     .build());
             dispositivoService.salvarDispositivoComoOffline(device);
             System.out.println("Dispositivo offline " + device.getMac());

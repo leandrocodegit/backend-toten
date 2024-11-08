@@ -19,6 +19,7 @@ public class Log {
     private Comando comando;
     private String usuario;
     private String mensagem;
+    private String mac;
     private Configuracao configuracao;
 
 }

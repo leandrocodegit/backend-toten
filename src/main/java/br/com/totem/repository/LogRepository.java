@@ -17,6 +17,12 @@ import java.util.UUID;
 public interface LogRepository extends MongoRepository<Log, Long> {
 
 
+    @Query("{" +
+            "   $or: [" +
+            "       { 'mac': { $regex: ?0, $options: 'i' } }" +
+            "   ]," +
+            "}")
+    Page<Log> findAllByMac(String mac, Pageable pageable);
     Page<Log> findAllByComandoInOrderByDataDesc(List<String> comandos, Pageable pageable);
     @Aggregation(pipeline = {
             "{ $match: { comando: { $in: [ 'ONLINE', 'OFFLINE' ] } } }",
