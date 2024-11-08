@@ -37,8 +37,7 @@ public class MqttIntegrationConfig {
     @Value("${mqtt.client.id}")
     private String clientId;
 
-    private String topicos[] = {Topico.DEVICE_SEND + "#",
-            Topico.DEVICE_RECEIVE + "#"};
+    private String topicos[] = {Topico.DEVICE_SEND + "#"};
     @Bean
     public Mqttv5PahoMessageDrivenChannelAdapter mqttInbound() {
         Mqttv5PahoMessageDrivenChannelAdapter adapter =

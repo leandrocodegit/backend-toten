@@ -11,6 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,6 +29,13 @@ public class MqttMessageHandler implements MessageHandler {
         UUID clientId = (UUID) message.getHeaders().get("id");
         String topico = (String) message.getHeaders().get("mqtt_receivedTopic");
 
+        byte[] bytess = (byte[]) message.getPayload();
+        Object payloads = null;
+        try {
+            payloads = objectMapper.readValue(bytess, Object.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         if (topico.startsWith(Topico.DEVICE_SEND)) {
 
