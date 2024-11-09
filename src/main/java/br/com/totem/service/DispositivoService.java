@@ -56,6 +56,8 @@ public class DispositivoService {
             dispositivo.setNome(request.getNome());
             dispositivo.setLatitude(request.getLatitude());
             dispositivo.setLongitude(request.getLongitude());
+            dispositivo.setEndereco(request.getEndereco());
+            dispositivo.setEnderecoCompleto(request.getEndereco().toString());
             dispositivoRepository.save(dispositivo);
         }
     }

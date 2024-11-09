@@ -1,6 +1,7 @@
 package br.com.totem.controller.request;
 
 import br.com.totem.model.Configuracao;
+import br.com.totem.model.Endereco;
 import br.com.totem.model.constantes.Comando;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,4 +21,5 @@ public class DispositivoRequest {
     private boolean ignorarAgenda;
     private String latitude;
     private String longitude;
+    private Endereco endereco;
 }

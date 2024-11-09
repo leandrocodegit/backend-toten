@@ -1,6 +1,7 @@
 package br.com.totem.controller.response;
 
 import br.com.totem.model.Configuracao;
+import br.com.totem.model.Endereco;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Efeito;
 import lombok.Getter;
@@ -28,6 +29,8 @@ public class DispositivoResponse {
     private String longitude;
     private Comando comando;
     private Configuracao configuracao;
+    private Endereco endereco;
+    private String enderecoComplento;
 
 
     public String getConexao() {

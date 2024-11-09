@@ -30,9 +30,12 @@ public class Dispositivo {
     private String latitude;
     private String longitude;
     private String brokerId;
+    private Endereco endereco;
+    private String enderecoCompleto;
     @DBRef
     private Configuracao configuracao;
     @DBRef
     private Agenda agenda;
+
 
 }

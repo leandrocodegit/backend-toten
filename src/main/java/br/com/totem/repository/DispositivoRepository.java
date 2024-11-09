@@ -42,7 +42,8 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Stri
     @Query("{" +
             "   $or: [" +
             "       { 'mac': ?0 }," +
-            "       { 'nome': { $regex: ?0, $options: 'i' } }" +  // Correspondência parcial no campo nome, case-insensitive
+            "       { 'nome': { $regex: ?0, $options: 'i' } }," +
+            "       { 'enderecoCompleto': { $regex: ?0, $options: 'i' } }" +
             "   ]," +
 //            "   'ativo': true" +
             "}")
