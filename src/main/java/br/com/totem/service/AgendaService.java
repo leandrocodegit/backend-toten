@@ -93,8 +93,8 @@ public class AgendaService {
         agendaRepository.save(agenda);
     }
 
-    public List<Agenda> agendasDoMesAtual(boolean ativo){
+    public List<AgendaResponse> agendasDoMesAtual(boolean ativo){
         Sort sort = Sort.by(Sort.Order.asc("inicio"));
-       return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(ativo, sort);
+       return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(ativo, sort).stream().map(agendaMapper::toResponse).toList();
     }
 }
