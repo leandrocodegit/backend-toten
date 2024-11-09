@@ -31,6 +31,7 @@ public class DispositivoResponse {
     private Configuracao configuracao;
     private Endereco endereco;
     private String enderecoComplento;
+    private String enderecoCompleto;
 
 
     public String getConexao() {
