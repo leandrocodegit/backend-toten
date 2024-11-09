@@ -29,14 +29,29 @@ public class AgendaResponse {
     private boolean todos;
 
     public String getStatus() {
-        if(status == null){
+        if (status == null) {
             return "Criada";
         }
-        if(!ativo)
+        if (!ativo)
             return "Parada";
-        if(ativo && status.isEmpty()){
+        if (ativo && status.isEmpty()) {
             return "Aguardando";
         }
         return status;
+    }
+
+    public void setStatus(String status) {
+        if (status == null) {
+            this.status = "Criada";
+
+            if (!ativo)
+                this.status = "Parada";
+            else {
+                this.status = "Aguardando";
+            }
+        } else {
+            this.status = status;
+        }
+
     }
 }
