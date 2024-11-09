@@ -1,19 +1,17 @@
 package br.com.totem.controller;
 
 import br.com.totem.controller.request.ConfiguracaoRequest;
-import br.com.totem.controller.request.UserCreateRequest;
+import br.com.totem.controller.request.validacoes.ConfiguracaoCreate;
 import br.com.totem.controller.response.ConfiguracaoResponse;
-import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.service.ConfiguracaoService;
-import br.com.totem.service.DispositivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,7 +29,7 @@ public class ConfiguracaoController {
     }
 
     @PostMapping("/{principal}")
-    public ResponseEntity<TokenResponse> salvar(@RequestBody ConfiguracaoRequest request, @PathVariable boolean principal) {
+    public ResponseEntity<TokenResponse> salvar(@RequestBody @Validated({ConfiguracaoCreate.class}) ConfiguracaoRequest request, @PathVariable boolean principal) {
         configuracaoService.salvarconfiguracao(request, principal);
         return ResponseEntity.ok().build();
     }

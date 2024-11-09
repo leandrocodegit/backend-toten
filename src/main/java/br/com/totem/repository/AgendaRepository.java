@@ -3,6 +3,7 @@ package br.com.totem.repository;
 import br.com.totem.model.Agenda;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.model.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -17,6 +18,7 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
 
     @Query("{ 'configuracao._id': ?0 }")
     List<Agenda> findAgendasByConfiguracaoId(UUID configuracaoId);
+
     @Query("{ 'dispositivos.mac': ?0 }")
     List<Agenda> findAgendasByDispositivoId(String mac);
 
@@ -45,6 +47,28 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
             "   'ativo': true" +
             "}")
     List<Agenda> findAllAgendasByDataDentroDoIntervalo(LocalDate data);
+
+    @Query("{" +
+            " $expr: {" +
+            "   $and: [" +
+            "       { $eq: [ { $month: '$inicio' }, 11 ] }," +
+            "   ]" +
+            " }," +
+            " 'ativo': true" +
+            "}")
+    List<Agenda> findAllDoMesAtualInOrderByInicioDesc(boolean ativo, Sort sort);
+    @Aggregation(pipeline = {
+                    "     {" +
+                    "       $project:" +
+                    "         {" +
+                    "           month: { $month: '$inicio' }" +
+                    "         }" +
+                    "     }," +
+            "{ $match: { month: 11, ativo: ?0 }} "
+    })
+    List<Integer> findAllDoMes(boolean ativo);
+
+    List<Agenda> findAllByAtivo(boolean ativo);
 
     @Query("{" +
             " $expr: {" +

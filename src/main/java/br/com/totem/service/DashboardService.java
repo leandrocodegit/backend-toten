@@ -2,7 +2,9 @@ package br.com.totem.service;
 
 import br.com.totem.controller.response.DashboardResponse;
 import br.com.totem.controller.response.LogConexaoResponse;
+import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.DispositivoMapper;
+import br.com.totem.model.Agenda;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.repository.AgendaRepository;
 import br.com.totem.repository.DispositivoRepository;
@@ -32,6 +34,8 @@ public class DashboardService {
     private DispositivoMapper dispositivoMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AgendaMapper agendaMapper;
 
 
     public DashboardResponse gerarDash() {
@@ -56,9 +60,8 @@ public class DashboardService {
         });
         dashboardResponse.setCores(cores.values().stream().toList());
 
-
         Map<String, DispositivoPorCor> agendas = new HashMap<>();
-        agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(device -> {
+        agendaRepository.findAllByAtivo(true).forEach(device -> {
             if (device.getConfiguracao() != null) {
                 if (agendas.containsKey(device.getConfiguracao().getPrimaria())) {
                     DispositivoPorCor cor = agendas.get(device.getConfiguracao().getPrimaria());

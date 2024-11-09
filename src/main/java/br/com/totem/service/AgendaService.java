@@ -10,6 +10,7 @@ import br.com.totem.model.Agenda;
 import br.com.totem.model.Dispositivo;
 import br.com.totem.repository.AgendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,6 +37,9 @@ public class AgendaService {
     private ComandoService comandoService;
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
+            if(request.getConfiguracao() == null || request.getConfiguracao().getId() == null){
+                throw new ExceptionResponse("Configuração de cor é obrigatorio");
+            }
             request.setId(UUID.randomUUID());
             agendaRepository.save(agendaMapper.toEntity(request));
         } else {
@@ -87,5 +91,10 @@ public class AgendaService {
     public void atualizarDataExecucao(Agenda agenda) {
         agenda.setExecucao(LocalDate.now());
         agendaRepository.save(agenda);
+    }
+
+    public List<Agenda> agendasDoMesAtual(boolean ativo){
+        Sort sort = Sort.by(Sort.Order.asc("inicio"));
+       return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(ativo, sort);
     }
 }
