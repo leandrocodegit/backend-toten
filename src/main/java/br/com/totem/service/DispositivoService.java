@@ -107,8 +107,12 @@ public class DispositivoService {
 //                        .build());
             }
             dispositivoRepository.save(dispositivo);
-            if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
-                comandoService.enviardComando(dispositivo);
+            if(dispositivo.getConfiguracao() != null) {
+                if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
+                    comandoService.enviardComando(dispositivo);
+                } else if (mensagem.getComando().equals(Comando.ONLINE) && !dispositivo.getConfiguracao().getEfeito().equals(mensagem.getEfeito())) {
+                    comandoService.enviardComando(dispositivo);
+                }
             }
         } else {
             dispositivoRepository.save(

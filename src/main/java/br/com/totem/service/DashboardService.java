@@ -71,9 +71,24 @@ public class DashboardService {
                 }
             }
         });
+
+        Map<String, DispositivoPorCor> agendasExecucao = new HashMap<>();
+        agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(device -> {
+            if (device.getConfiguracao() != null) {
+                if (agendasExecucao.containsKey(device.getConfiguracao().getPrimaria())) {
+                    DispositivoPorCor cor = agendasExecucao.get(device.getConfiguracao().getPrimaria());
+                    cor.setQuantidade(cor.getQuantidade() + 1);
+                } else {
+                    agendasExecucao.put(device.getConfiguracao().getPrimaria(), new DispositivoPorCor(device.getConfiguracao().getPrimaria(), 1));
+                }
+            }
+        });
+
+
         Pageable pageable = PageRequest.of(0, 100);
 
         dashboardResponse.setAgendas(agendas.values().stream().toList());
+        dashboardResponse.setAgendasExecucao(agendasExecucao.values().stream().toList());
         dashboardResponse.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE"),pageable).getContent());
         List<LogConexaoResponse> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboardResponse.setLogsConexao(l);

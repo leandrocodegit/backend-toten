@@ -15,6 +15,7 @@ public class DashboardResponse {
     private long usuariosInativos;
     private List<DispositivoResponse> dispositivos;
     private List<DispositivoPorCor> agendas;
+    private List<DispositivoPorCor> agendasExecucao;
     private List<DispositivoPorCor> cores;
     private List<Log> logs;
     private List<LogConexaoResponse> logsConexao;
