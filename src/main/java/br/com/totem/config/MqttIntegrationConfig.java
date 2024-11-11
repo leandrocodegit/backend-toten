@@ -43,7 +43,7 @@ public class MqttIntegrationConfig {
         Mqttv5PahoMessageDrivenChannelAdapter adapter =
                 new Mqttv5PahoMessageDrivenChannelAdapter(connectionOptions(), clientId, topicos);
         adapter.setMessageConverter(new MessageSmart());
-        adapter.setQos(1);
+        adapter.setQos(0);
         adapter.setCompletionTimeout(5000);
         adapter.setOutputChannel(mqttInputChannel());
 

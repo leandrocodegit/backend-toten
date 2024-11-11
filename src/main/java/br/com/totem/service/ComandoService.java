@@ -49,11 +49,8 @@ public class ComandoService {
         Dispositivo dispositivo = buscarPorMac(mac);
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
-            dispositivo.getConfiguracao().setPrimaria("");
-            dispositivo.getConfiguracao().setSecundaria("");
             dispositivo.getConfiguracao().setEfeito(Efeito.TESTE);
-            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),
-                    new Gson().toJson(dispositivo.getConfiguracao()));
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),dispositivo.getConfiguracao());
 
         }
     }
@@ -62,10 +59,7 @@ public class ComandoService {
         Dispositivo dispositivo = buscarPorMac(mac);
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
-            dispositivo.getConfiguracao().setPrimaria("");
-            dispositivo.getConfiguracao().setSecundaria("");
-            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),
-                    new Gson().toJson(dispositivo.getConfiguracao()));
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(), dispositivo.getConfiguracao());
 
         }
     }
@@ -73,10 +67,7 @@ public class ComandoService {
     public void enviardComando(Dispositivo dispositivo) {
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
-            dispositivo.getConfiguracao().setPrimaria("");
-            dispositivo.getConfiguracao().setSecundaria("");
-            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),
-                    new Gson().toJson(dispositivo.getConfiguracao()));
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),dispositivo.getConfiguracao());
 
         }
     }
@@ -119,8 +110,7 @@ public class ComandoService {
                         device.setConfiguracao(agenda.getConfiguracao());
                     }
 
-                    mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
-                            new Gson().toJson(device.getConfiguracao()));
+                    mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),device.getConfiguracao());
                     System.out.println(new Gson().toJson(device.getConfiguracao()));
                 }
 
@@ -174,8 +164,6 @@ public class ComandoService {
             dispositivos.forEach(device -> {
 
                 if (device.isAtivo() && device.getConfiguracao() != null) {
-                    device.getConfiguracao().setPrimaria("");
-                    device.getConfiguracao().setSecundaria("");
                     if (Boolean.FALSE.equals(device.isIgnorarAgenda())) {
                         mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
                                 new Gson().toJson(agenda.getConfiguracao()), false);

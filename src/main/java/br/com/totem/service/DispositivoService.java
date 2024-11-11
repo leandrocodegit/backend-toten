@@ -107,12 +107,16 @@ public class DispositivoService {
 //                        .build());
             }
             dispositivoRepository.save(dispositivo);
-            if(dispositivo.getConfiguracao() != null) {
                 if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
+                    dispositivo.setConfiguracao(getConfiguracao(dispositivo));
                     comandoService.enviardComando(dispositivo);
-                } else if (mensagem.getComando().equals(Comando.ONLINE) && mensagem.getEfeito() != null && !dispositivo.getConfiguracao().getEfeito().equals(mensagem.getEfeito())) {
-                    comandoService.enviardComando(dispositivo);
-                }
+                } else if (mensagem.getComando().equals(Comando.ONLINE) && mensagem.getEfeito() != null) {
+                   Configuracao configuracao = getConfiguracao(dispositivo);
+                    if(configuracao != null  && !configuracao.getEfeito().equals(mensagem.getEfeito())) {
+                        System.out.println("Reparação de efeito");
+                        dispositivo.setConfiguracao(configuracao);
+                        comandoService.enviardComando(dispositivo);
+                    }
             }
         } else {
             dispositivoRepository.save(
@@ -128,6 +132,18 @@ public class DispositivoService {
                             .build()
             );
         }
+    }
+
+    private Configuracao getConfiguracao(Dispositivo dispositivo) {
+        Agenda agenda = null;
+
+        if (Boolean.FALSE.equals(dispositivo.isIgnorarAgenda())) {
+            agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(dispositivo.getMac());
+        }
+        if (agenda != null && agenda.getConfiguracao() != null) {
+            return agenda.getConfiguracao();
+        }
+        return dispositivo.getConfiguracao();
     }
 
     private Instant creationDate() {

@@ -38,8 +38,9 @@ public class ScheduleConfig {
     public void executarTarefaAgendada() {
         List<Agenda> agendas = agendaDeviceService.listaTodosAgendasPrevistaHoje();
 
-        System.out.println("# " + agendas.size());
+
         if(!agendas.isEmpty()){
+            System.out.println("# " + agendas.size());
             agendas.forEach(agenda -> {
                 System.out.println(agenda.getDispositivos().toString());
                 comandoService.enviarComando(agenda);

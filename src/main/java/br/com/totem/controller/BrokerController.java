@@ -39,8 +39,7 @@ public class BrokerController {
 
         request.getConfiguracao().setResponder(false);
         if(request.getDevice() != null && !request.getDevice().isEmpty())
-        mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + request.getDevice(),
-                new Gson().toJson(request.getConfiguracao()));
+        mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + request.getDevice(),request.getConfiguracao());
         return "Recebido: " + request;
     }
 

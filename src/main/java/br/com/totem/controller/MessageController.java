@@ -27,18 +27,7 @@ public class MessageController {
     }
 
 
-    @GetMapping()
-    public ResponseEntity<TokenResponse> login() {
-        messagingTemplate.convertAndSend("/topic", "message");
-        mqttService.sendRetainedMessage("test/comandos", "{\n" +
-                "  \"comando\": \"CONTADOR\",\n" +
-                "  \"cor\": [7,0,223,255,255,0,20],\n" +
-                "  \"intensidade\": 255,\n" +
-                "  \"leds\" : 14,\n" +
-                "  \"velocidade\": 600\n" +
-                "}");
-        return ResponseEntity.ok().build();
-    }
+
 
 
 
