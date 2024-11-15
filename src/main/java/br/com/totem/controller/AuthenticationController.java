@@ -2,11 +2,14 @@ package br.com.totem.controller;
 
 import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.AuthenticationRequest;
+import br.com.totem.controller.request.UserCreateRequest;
+import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +45,13 @@ public class AuthenticationController {
 
     @PostMapping("/status")
     public ResponseEntity<String> status(@RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/password")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    public ResponseEntity<String> alteraSenha(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequest userUpdateRequest) {
+        authService.alterarSenha(userUpdateRequest, token);
         return ResponseEntity.ok().build();
     }
 

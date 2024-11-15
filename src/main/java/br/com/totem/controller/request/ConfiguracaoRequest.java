@@ -35,5 +35,7 @@ public class ConfiguracaoRequest {
     private int velocidade;
     private boolean responder;
     private String mac;
+    private long time;
+    private boolean rapida;
 
 }

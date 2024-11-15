@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,23 +25,27 @@ public class ComandoController {
     @Autowired DispositivoService dispositivoService;
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<TokenResponse> criar(@RequestBody ParametroRequest request) {
          return ResponseEntity.ok().build();
     }
 
     @GetMapping("/sincronizar/{forcaTeste}")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<?> sincronizar(@PathVariable boolean forcaTeste) {
         comandoService.enviarComando(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.ATIVO).stream().map(device -> device.getMac()).collect(Collectors.toList()), forcaTeste, true);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/teste/{mac}")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<?> testar(@PathVariable String mac) {
         comandoService.enviardComandoTeste(mac);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sincronizar/{forcaTeste}")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<?> sincronizar(@RequestBody List<String> macs, @PathVariable boolean forcaTeste) {
         comandoService.enviarComando(macs, forcaTeste, true);
         return ResponseEntity.ok().build();

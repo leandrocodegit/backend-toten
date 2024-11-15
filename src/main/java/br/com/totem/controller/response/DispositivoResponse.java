@@ -2,8 +2,10 @@ package br.com.totem.controller.response;
 
 import br.com.totem.model.Configuracao;
 import br.com.totem.model.Endereco;
+import br.com.totem.model.Temporizador;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Efeito;
+import br.com.totem.utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +34,8 @@ public class DispositivoResponse {
     private Endereco endereco;
     private String enderecoComplento;
     private String enderecoCompleto;
+    private boolean isTimer;
+    private Temporizador temporizador;
 
 
     public String getConexao() {
@@ -39,5 +43,9 @@ public class DispositivoResponse {
         if (differenceInMinutes >= 5)
            return "Offline";
         return "Online";
+    }
+
+    public boolean isTimer() {
+        return TimeUtil.isTime(this);
     }
 }

@@ -29,29 +29,17 @@ public class AgendaResponse {
     private boolean todos;
 
     public String getStatus() {
-        if (status == null) {
-            return "Criada";
-        }
-        if (!ativo)
+        if (execucao != null && LocalDate.now().compareTo(execucao) >= 0 && Boolean.TRUE.equals(ativo))
+            return "Executada";
+
+        if (Boolean.FALSE.equals(ativo))
             return "Parada";
-        if (ativo && status.isEmpty()) {
+
+        if (Boolean.TRUE.equals(ativo)) {
+            if (termino != null && termino.compareTo(LocalDate.now()) < 0)
+                return "Expirada";
             return "Aguardando";
         }
         return status;
-    }
-
-    public void setStatus(String status) {
-        if (status == null) {
-            this.status = "Criada";
-
-            if (!ativo)
-                this.status = "Parada";
-            else {
-                this.status = "Aguardando";
-            }
-        } else {
-            this.status = status;
-        }
-
     }
 }

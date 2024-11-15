@@ -12,8 +12,10 @@ import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Efeito;
 import br.com.totem.model.constantes.Topico;
+import br.com.totem.repository.ConfiguracaoRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import br.com.totem.utils.TimeUtil;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +47,8 @@ public class ComandoService {
     private DashboardService dashboardService;
     @Autowired
     private AgendaDeviceService agendaDeviceService;
+    @Autowired
+    private ConfiguracaoRepository configuracaoRepository;
 
 
     public void enviardComandoTeste(String mac) {
@@ -64,7 +70,11 @@ public class ComandoService {
         }
     }
 
-    public void enviardComando(Dispositivo dispositivo) {
+    public void enviardComando(Dispositivo dispositivo, boolean forceConsulta) {
+
+        if(forceConsulta){
+            dispositivo.setConfiguracao(buscarPorMac(dispositivo.getMac()).getConfiguracao());
+        }
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
             mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),dispositivo.getConfiguracao());
@@ -99,15 +109,8 @@ public class ComandoService {
                     device.getConfiguracao().setPrimaria("");
                     device.getConfiguracao().setSecundaria("");
 
-
-                    Agenda agenda = null;
-
-                    if (Boolean.FALSE.equals(device.isIgnorarAgenda())) {
-                        agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
-                    }
-
-                    if (!forcaTeste && agenda != null && agenda.getConfiguracao() != null) {
-                        device.setConfiguracao(agenda.getConfiguracao());
+                    if (!forcaTeste) {
+                        device.setConfiguracao(getConfiguracao(device));
                     }
 
                     mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),device.getConfiguracao());
@@ -150,6 +153,24 @@ public class ComandoService {
         webSocketService.sendMessageDipositivos(buscarDispositivosAtivosComAgendaPesquisada().stream().map(dispositivoMapper::toResponse).collect(Collectors.toList()));
     }
 
+    private Configuracao getConfiguracao(Dispositivo dispositivo) {
+        Agenda agenda = null;
+
+        if(TimeUtil.isTime(dispositivo)){
+            Optional<Configuracao> configuracaoOptional = buscaConfiguracao(dispositivo.getTemporizador().getIdConfiguracao());
+            if(configuracaoOptional.isPresent()){
+                return configuracaoOptional.get();
+            }
+        }
+        if (Boolean.FALSE.equals(dispositivo.isIgnorarAgenda())) {
+            agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(dispositivo.getMac());
+        }
+        if (agenda != null && agenda.getConfiguracao() != null) {
+            return agenda.getConfiguracao();
+        }
+        return dispositivo.getConfiguracao();
+    }
+
     public void enviarComando(Agenda agenda) {
 
         List<Dispositivo> dispositivos = Collections.EMPTY_LIST;
@@ -164,7 +185,7 @@ public class ComandoService {
             dispositivos.forEach(device -> {
 
                 if (device.isAtivo() && device.getConfiguracao() != null) {
-                    if (Boolean.FALSE.equals(device.isIgnorarAgenda())) {
+                    if (Boolean.FALSE.equals(device.isIgnorarAgenda()) && !TimeUtil.isTime(device)) {
                         mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
                                 new Gson().toJson(agenda.getConfiguracao()), false);
                     }
@@ -187,6 +208,10 @@ public class ComandoService {
         Dispositivo dispositivo = buscarPorMac(mac);
         dispositivo.setComando(Comando.ENVIADO);
 
+    }
+
+    public Optional<Configuracao> buscaConfiguracao(UUID id){
+        return configuracaoRepository.findById(id);
     }
 
     private Dispositivo buscarPorMac(String mac) {

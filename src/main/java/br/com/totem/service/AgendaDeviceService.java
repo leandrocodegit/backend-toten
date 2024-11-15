@@ -41,7 +41,8 @@ public class AgendaDeviceService {
     }
 
     public List<Agenda> listaTodosAgendasPrevistaHoje() {
-        return agendaRepository.findAgendasByDataDentroDoIntervalo(LocalDate.now());
+        LocalDate data = LocalDateTime.now().plusHours(3).toLocalDate();
+        return agendaRepository.findAgendasByDataDentroDoIntervalo(data);
     }
     public Agenda buscarAgendaDipositivoPrevistaHoje(String mac) {
         List<Agenda> agendaList = agendaRepository.findFirstByDataAndDispositivo(LocalDate.now(), LocalDate.now(), mac, UUID.randomUUID());

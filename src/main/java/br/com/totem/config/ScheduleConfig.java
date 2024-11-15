@@ -11,12 +11,14 @@ import br.com.totem.service.AgendaDeviceService;
 import br.com.totem.service.ComandoService;
 import br.com.totem.service.DispositivoService;
 import br.com.totem.service.WebSocketService;
+import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -70,6 +72,30 @@ public class ScheduleConfig {
                     .build());
             dispositivoService.salvarDispositivoComoOffline(device);
             System.out.println("Dispositivo offline " + device.getMac());
+        });
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void checkTimers() {
+
+        TimeUtil.timers.values().forEach(device -> {
+            if(!TimeUtil.isTime(device)) {
+                logRepository.save(Log.builder()
+                        .data(LocalDateTime.now())
+                        .usuario("Sistema")
+                        .mensagem(String.format(Comando.TIMER_CRIADO.value(), device.getMac()))
+                        .configuracao(null)
+                        .comando(Comando.TIMER_CONCLUIDO)
+                        .descricao(String.format(Comando.TIMER_CONCLUIDO.value(), device.getMac()))
+                        .mac(device.getMac())
+                        .build());
+                TimeUtil.timers.remove(device.getMac());
+                comandoService.enviardComando(device, true);
+                System.out.println("Timer finalizado " + device.getMac());
+            }
+
+
+
         });
     }
 }

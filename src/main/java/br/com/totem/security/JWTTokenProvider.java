@@ -1,6 +1,7 @@
 package br.com.totem.security;
 
 import br.com.totem.Exception.ExceptionAuthorization;
+import br.com.totem.model.User;
 import br.com.totem.model.constantes.TipoToken;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -10,13 +11,18 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JWTTokenProvider {
@@ -25,13 +31,19 @@ public class JWTTokenProvider {
 
     private static final String ISSUER = "pizzurg-api"; // Emissor do token
 
-    public String generateToken(String user, TipoToken tipoToken) {
+    public String generateToken(UserDetails user, TipoToken tipoToken) {
         try {
+
+            List<String> roles = user.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
             return JWT.create()
                     .withIssuer(ISSUER)
                     .withIssuedAt(creationDate())
                     .withExpiresAt(expirationDate(getTime(tipoToken)))
-                    .withSubject(user)
+                    .withSubject(user.getUsername())
+                    .withClaim("roles", roles)
                     .sign(getAlgorithm(tipoToken));
         } catch (JWTCreationException exception) {
             throw new JWTCreationException("Erro ao gerar token.", exception);

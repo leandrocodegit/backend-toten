@@ -56,7 +56,7 @@ public class AgendaService {
             agenda.setInicio(request.getInicio());
             agenda.setTermino(request.getTermino());
             agenda.setTodos(request.isTodos());
-            agenda.setExecucao(LocalDate.now().minusDays(3));
+            agenda.setExecucao(null);
             if(request.isTodos()){
                 agenda.setDispositivos(dispositivoService.listaTodosEntidadeDispositivosPorFiltro(Filtro.ATIVO));
             }else{
@@ -95,6 +95,6 @@ public class AgendaService {
 
     public List<AgendaResponse> agendasDoMesAtual(boolean ativo){
         Sort sort = Sort.by(Sort.Order.asc("inicio"));
-       return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(ativo, sort).stream().map(agendaMapper::toResponse).toList();
+       return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(LocalDate.now().getMonthValue(),ativo, sort).stream().map(agendaMapper::toResponse).toList();
     }
 }

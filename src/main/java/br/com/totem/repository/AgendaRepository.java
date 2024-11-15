@@ -51,12 +51,12 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
     @Query("{" +
             " $expr: {" +
             "   $and: [" +
-            "       { $eq: [ { $month: '$inicio' }, 11 ] }," +
+            "       { $eq: [ { $month: '$inicio' }, ?0 ] }," +
             "   ]" +
             " }," +
-            " 'ativo': true" +
+            " 'ativo': ?1" +
             "}")
-    List<Agenda> findAllDoMesAtualInOrderByInicioDesc(boolean ativo, Sort sort);
+    List<Agenda> findAllDoMesAtualInOrderByInicioDesc(int mes, boolean ativo, Sort sort);
     @Aggregation(pipeline = {
                     "     {" +
                     "       $project:" +

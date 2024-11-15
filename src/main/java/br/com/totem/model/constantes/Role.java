@@ -3,5 +3,7 @@ package br.com.totem.model.constantes;
 public enum Role {
 
     ADMIN,
-    USER
+    USER,
+    OPERADOR,
+    AVANCADO
 }

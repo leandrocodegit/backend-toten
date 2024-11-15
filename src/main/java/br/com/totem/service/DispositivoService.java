@@ -10,6 +10,7 @@ import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -109,13 +110,13 @@ public class DispositivoService {
             dispositivoRepository.save(dispositivo);
                 if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
                     dispositivo.setConfiguracao(getConfiguracao(dispositivo));
-                    comandoService.enviardComando(dispositivo);
+                    comandoService.enviardComando(dispositivo, false);
                 } else if (mensagem.getComando().equals(Comando.ONLINE) && mensagem.getEfeito() != null) {
                    Configuracao configuracao = getConfiguracao(dispositivo);
                     if(configuracao != null  && !configuracao.getEfeito().equals(mensagem.getEfeito())) {
                         System.out.println("Reparação de efeito");
                         dispositivo.setConfiguracao(configuracao);
-                        comandoService.enviardComando(dispositivo);
+                        comandoService.enviardComando(dispositivo, false);
                     }
             }
         } else {
@@ -137,6 +138,12 @@ public class DispositivoService {
     private Configuracao getConfiguracao(Dispositivo dispositivo) {
         Agenda agenda = null;
 
+        if(TimeUtil.isTime(dispositivo)){
+            Optional<Configuracao> configuracaoOptional = configuracaoService.buscaConfiguracao(dispositivo.getTemporizador().getIdConfiguracao());
+            if(configuracaoOptional.isPresent()){
+                return configuracaoOptional.get();
+            }
+        }
         if (Boolean.FALSE.equals(dispositivo.isIgnorarAgenda())) {
             agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(dispositivo.getMac());
         }

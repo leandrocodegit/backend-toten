@@ -5,6 +5,8 @@ import br.com.totem.Exception.ExceptionAuthorization;
 import br.com.totem.Exception.ExceptionResponse;
 import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserCreateRequest;
+import br.com.totem.controller.request.UserUpdateRequest;
+import br.com.totem.model.MessageError;
 import br.com.totem.model.User;
 import br.com.totem.model.constantes.Role;
 import br.com.totem.model.constantes.TipoToken;
@@ -14,13 +16,16 @@ import br.com.totem.security.SecurityConfig;
 import br.com.totem.security.UserDetailsImpl;
 import br.com.totem.controller.request.AuthenticationRequest;
 import br.com.totem.controller.response.TokenResponse;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,34 +50,126 @@ public class AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         return new TokenResponse(
-                jwtTokenProvider.generateToken(userDetails.getUser().getEmail(), TipoToken.ACCESS),
-                jwtTokenProvider.generateToken(userDetails.getUser().getEmail(), TipoToken.REFRESH),
-                jwtTokenProvider.generateToken(userDetails.getUser().getEmail(), TipoToken.SOCKET), "bearer", 0);    }
+                jwtTokenProvider.generateToken(userDetails, TipoToken.ACCESS),
+                jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH),
+                jwtTokenProvider.generateToken(userDetails, TipoToken.SOCKET), "bearer", 0);
+    }
 
     public TokenResponse refreshtoken(String refreshToken) {
 
-        if(!jwtTokenProvider.validateRefreshToken(refreshToken)){
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             throw new ExceptionAuthorization("Token inválido ou expirado.");
         }
-        return new TokenResponse(
-                jwtTokenProvider.generateToken("admin", TipoToken.ACCESS),
-                jwtTokenProvider.generateToken("admin", TipoToken.REFRESH),
-                jwtTokenProvider.generateToken("admin", TipoToken.SOCKET), "bearer", 0);
+        try {
+            String subject = jwtTokenProvider.getSubjectFromToken(refreshToken, TipoToken.REFRESH);
+            User user = userRepository.findByEmail(subject).get();
+            UserDetailsImpl userDetails = new UserDetailsImpl(user);
+            return new TokenResponse(
+                    jwtTokenProvider.generateToken(userDetails, TipoToken.ACCESS),
+                    jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH),
+                    jwtTokenProvider.generateToken(userDetails, TipoToken.SOCKET), "bearer", 0);
+
+        } catch (Exception err) {
+
+        }
+        return null;
+
     }
 
     public void criarUsuario(UserCreateRequest request) {
-        if(!userRepository.findByEmail(request.getEmail()).isPresent()){
+        if (!userRepository.findByEmail(request.getEmail()).isPresent()) {
             User user = User.builder()
                     .id(UUID.randomUUID())
                     .nome(request.getNome())
                     .email(request.getEmail())
-                    .password(securityConfiguration.passwordEncoder().encode(request.getEmail()))
+                    .password(securityConfiguration.passwordEncoder().encode(request.getPassword()))
                     .roles(request.getRoles())
                     .status(true)
                     .build();
             userRepository.save(user);
-        }else{
+        } else {
             throw new ExceptionResponse("Usuário já existe");
+        }
+    }
+
+    public void alterarSenha(UserUpdateRequest request, String token) {
+
+        String subject = jwtTokenProvider.getSubjectFromToken(token, TipoToken.REFRESH);
+        Optional<User> userOptional = userRepository.findByEmail(subject);
+
+        if (userOptional.isPresent()) {
+            validaPermissaoTrocaSenha(userOptional.get(), token, TipoToken.REFRESH);
+            User user = userOptional.get();
+            user.setPassword(securityConfiguration.passwordEncoder().encode(request.getPassword()));
+            userRepository.save(user);
+        } else {
+            throw new ExceptionResponse("Operação não permitida");
+        }
+    }
+
+    public void validaPermissaoTrocaSenha(User user, String token, TipoToken tipoToken) {
+
+        String subject = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
+        Optional<User> userOptional = userRepository.findByEmail(subject);
+        if (!userOptional.isPresent() || !subject.equals(user.getEmail()) && userOptional.get().getRoles().stream().noneMatch(role -> role.equals(Role.ADMIN))) {
+            throw new ExceptionResponse("Operação não permitida");
+        }
+    }
+
+    public static List<String> getPasswordValidationMessages(String password) {
+        List<String> messages = new ArrayList<>();
+
+        if (password.length() < 8) {
+            messages.add("A senha deve ter pelo menos 8 caracteres.");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            messages.add("A senha deve conter pelo menos uma letra minúscula.");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            messages.add("A senha deve conter pelo menos uma letra maiúscula.");
+        }
+        if (!password.matches(".*\\d.*")) {
+            messages.add("A senha deve conter pelo menos um dígito.");
+        }
+        if (!password.matches(".*[@$!%*?&].*")) {
+            messages.add("A senha deve conter pelo menos um caractere especial (@, $, !, %, *, ?, &).");
+        }
+
+        return messages;
+    }
+    public static void isStrongPassword(String password, String confirmPassword) {
+
+        List<MessageError> messages = new ArrayList<>();
+
+        if (password == null || password.isEmpty()) {
+            messages.add(new MessageError("info", "Senha não poder ser vazia"));
+        }
+
+        if (confirmPassword == null || confirmPassword.isEmpty()) {
+            messages.add(new MessageError("info", "Confirme a senha"));
+        }
+
+        if (!password.equals(confirmPassword)) {
+            messages.add(new MessageError("error", "As senhas são diferentes"));
+        }
+        if (password.length() < 8) {
+            messages.add(new MessageError("warn", "A senha deve ter pelo menos 8 caracteres."));
+        }
+        if (!password.matches(".*[a-z].*")) {
+            messages.add(new MessageError("warn", "A senha deve conter pelo menos uma letra minúscula"));
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            messages.add(new MessageError("warn", "A senha deve conter pelo menos uma letra maiúscula"));
+        }
+        if (!password.matches(".*\\d.*")) {
+            messages.add(new MessageError("warn", "A senha deve conter pelo menos um dígito"));
+        }
+        if (!password.matches(".*[@$!%*?&].*")) {
+            messages.add(new MessageError("warn", "detail: A senha deve conter pelo menos um caractere especial (@, $, !, %, *, ?, &)"));
+        }
+
+        if (!messages.isEmpty()) {
+            throw new ExceptionResponse(new Gson().toJson(messages));
         }
     }
 }

@@ -27,6 +27,8 @@ public class ConfiguracaoResponse {
     private int intensidade;
     private int[] correcao;
     private int velocidade;
+    private long time;
+    private boolean rapida;
 
 
 }

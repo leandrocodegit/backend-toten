@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -29,23 +30,9 @@ public class Configuracao {
     private int intensidade;
     private int[] correcao;
     private int velocidade;
+    private long time;
+    private boolean rapida;
     @Transient
     private boolean responder;
 
-//    public static Configuracao configuracaoPadrao(){
-//        return Configuracao.builder()
-//                .id(UUID.randomUUID())
-//                .nome("Sem nome")
-//                .efeito(Efeito.COLORIDO)
-//                .cor(new int[]{0,0,255,255,0,0})
-//                .primaria("red")
-//                .secundaria("blue")
-//                .leds(14)
-//                .faixa(2)
-//                .intensidade(255)
-//                .correcao(new int[]{255,255,255})
-//                .velocidade(100)
-//                .responder(true)
-//                .build();
-//    }
 }

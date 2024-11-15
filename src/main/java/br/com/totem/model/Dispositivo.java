@@ -32,6 +32,7 @@ public class Dispositivo {
     private String brokerId;
     private Endereco endereco;
     private String enderecoCompleto;
+    private Temporizador temporizador;
     @DBRef
     private Configuracao configuracao;
     @DBRef

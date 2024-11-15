@@ -12,7 +12,9 @@ public enum Comando {
     SINCRONIZAR("Sincronização enviada"),
     CONFIGURACAO("Solicitação de paramentros configuração"),
     TESTE("Teste de cor"),
-    CONCLUIDO("Teste concluido");
+    CONCLUIDO("Teste concluido"),
+    TIMER_CONCLUIDO("Timer finalizado para %S"),
+    TIMER_CRIADO("Timer criado para %S");
 
     private String value;
 
