@@ -78,6 +78,10 @@ public class ScheduleConfig {
     @Scheduled(fixedRate = 1000)
     public void checkTimers() {
 
+        List<String> devicesRemove = new ArrayList<>();
+        boolean executando = false;
+
+
         TimeUtil.timers.values().forEach(device -> {
             if(!TimeUtil.isTime(device)) {
                 logRepository.save(Log.builder()
@@ -89,13 +93,17 @@ public class ScheduleConfig {
                         .descricao(String.format(Comando.TIMER_CONCLUIDO.value(), device.getMac()))
                         .mac(device.getMac())
                         .build());
-                TimeUtil.timers.remove(device.getMac());
+                devicesRemove.add(device.getMac());
                 comandoService.enviardComando(device, true);
                 System.out.println("Timer finalizado " + device.getMac());
             }
-
-
-
         });
+
+        if(!devicesRemove.isEmpty()){
+            devicesRemove.forEach(dev -> {
+                TimeUtil.timers.remove(dev);
+            });
+            devicesRemove.clear();
+        }
     }
 }
