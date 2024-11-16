@@ -16,8 +16,8 @@ import java.util.UUID;
 
 public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
 
-    @Query("{ 'configuracao._id': ?0 }")
-    List<Agenda> findAgendasByConfiguracaoId(UUID configuracaoId);
+    @Query("{ 'cor._id': ?0 }")
+    List<Agenda> findAgendasByCorId(UUID configuracaoId);
 
     @Query("{ 'dispositivos.mac': ?0 }")
     List<Agenda> findAgendasByDispositivoId(String mac);

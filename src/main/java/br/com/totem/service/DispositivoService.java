@@ -1,15 +1,14 @@
 package br.com.totem.service;
 
-import br.com.totem.controller.request.ConfiguracaoRequest;
 import br.com.totem.controller.request.DispositivoRequest;
 import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.DispositivoResponse;
-import br.com.totem.controller.response.UserResponse;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import br.com.totem.utils.ConfiguracaoUtil;
 import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,7 +33,7 @@ public class DispositivoService {
     @Autowired
     private DashboardService dashboardService;
     @Autowired
-    private ConfiguracaoService configuracaoService;
+    private CorService configuracaoService;
     @Autowired
     private ComandoService comandoService;
     @Autowired
@@ -63,24 +62,48 @@ public class DispositivoService {
         }
     }
 
+    public void atualizarConfiguracaoDispositivo(DispositivoRequest request) {
+        Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
+        if (dispositivoOptional.isPresent()) {
+            Dispositivo dispositivo = dispositivoOptional.get();
+            dispositivo.setConfiguracao(
+                    Configuracao.builder()
+                            .intensidade(request.getConfiguracao().getIntensidade())
+                            .leds(request.getConfiguracao().getLeds())
+                            .faixa(request.getConfiguracao().getFaixa())
+                            .build()
+            );
+            dispositivoRepository.save(dispositivo);
+            comandoService.enviardComando(dispositivo, false);
+        }
+    }
+
     public void atualizarDispositivo(Mensagem mensagem) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(mensagem.getId());
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
 
-            System.out.println(mensagem.getId().substring(mensagem.getId().length() - 5, mensagem.getId().length()));
             dispositivo.setUltimaAtualizacao(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime());
             dispositivo.setIp(mensagem.getIp());
             dispositivo.setMemoria(mensagem.getMemoria());
             dispositivo.setComando(Comando.ONLINE);
             dispositivo.setVersao(mensagem.getVersao());
             dispositivo.setBrokerId(mensagem.getBrockerId());
+
+            if (dispositivo.getConfiguracao() == null) {
+                dispositivo.setConfiguracao(Configuracao.builder()
+                        .leds(1)
+                        .intensidade(255)
+                        .faixa(2)
+                        .build()
+                );
+            }
             if (dispositivo.getConfiguracao() != null && (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO))) {
                 logRepository.save(Log.builder()
                         .data(LocalDateTime.now())
-                        .usuario("Leandro")
+                        .usuario("Enviado pelo dipositivo")
                         .mensagem(mensagem.getId())
-                        .configuracao(dispositivo.getConfiguracao())
+                        .cor(dispositivo.getCor())
                         .comando(mensagem.getComando())
                         .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
                         .mac(dispositivo.getMac())
@@ -89,35 +112,29 @@ public class DispositivoService {
             if (mensagem.getComando().equals(Comando.ACEITO) || mensagem.getComando().equals(Comando.ONLINE)) {
                 logRepository.save(Log.builder()
                         .data(LocalDateTime.now())
-                        .usuario("Leandro")
+                        .usuario("Enviado pelo dispositivo")
                         .mensagem(mensagem.getId())
-                        .configuracao(dispositivo.getConfiguracao())
+                        .cor(dispositivo.getCor())
                         .comando(mensagem.getComando())
                         .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
                         .mac(dispositivo.getMac())
                         .build());
                 webSocketService.sendMessageDashboard(dashboardService.gerarDash());
-            } else if (mensagem.getComando().equals(Comando.ONLINE)) {
-//                logRepository.save(Log.builder()
-//                        .data(LocalDateTime.now())
-//                        .usuario("Leandro")
-//                        .mensagem(mensagem.getId())
-//                        .configuracao(dispositivo.getConfiguracao())
-//                        .comando(mensagem.getComando())
-//                        .descricao(mensagem.getComando().value())
-//                        .build());
             }
+
             dispositivoRepository.save(dispositivo);
+            Cor cor = getCor(dispositivo);
+            if (cor != null) {
                 if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
-                    dispositivo.setConfiguracao(getConfiguracao(dispositivo));
+                    dispositivo.setCor(cor);
                     comandoService.enviardComando(dispositivo, false);
                 } else if (mensagem.getComando().equals(Comando.ONLINE) && mensagem.getEfeito() != null) {
-                   Configuracao configuracao = getConfiguracao(dispositivo);
-                    if(configuracao != null  && !configuracao.getEfeito().equals(mensagem.getEfeito())) {
+                    if (!cor.getEfeito().equals(mensagem.getEfeito())) {
                         System.out.println("Reparação de efeito");
-                        dispositivo.setConfiguracao(configuracao);
+                        dispositivo.setCor(cor);
                         comandoService.enviardComando(dispositivo, false);
                     }
+                }
             }
         } else {
             dispositivoRepository.save(
@@ -135,27 +152,28 @@ public class DispositivoService {
         }
     }
 
-    private Configuracao getConfiguracao(Dispositivo dispositivo) {
+    private Cor getCor(Dispositivo dispositivo) {
         Agenda agenda = null;
 
-        if(TimeUtil.isTime(dispositivo)){
-            Optional<Configuracao> configuracaoOptional = configuracaoService.buscaConfiguracao(dispositivo.getTemporizador().getIdConfiguracao());
-            if(configuracaoOptional.isPresent()){
-                return configuracaoOptional.get();
+        if (TimeUtil.isTime(dispositivo)) {
+            Optional<Cor> corOptional = configuracaoService.buscaCor(dispositivo.getTemporizador().getIdCor());
+            if (corOptional.isPresent()) {
+                return corOptional.get();
             }
         }
         if (Boolean.FALSE.equals(dispositivo.isIgnorarAgenda())) {
             agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(dispositivo.getMac());
         }
-        if (agenda != null && agenda.getConfiguracao() != null) {
-            return agenda.getConfiguracao();
+        if (agenda != null && agenda.getCor() != null) {
+            return agenda.getCor();
         }
-        return dispositivo.getConfiguracao();
+        return dispositivo.getCor();
     }
 
     private Instant creationDate() {
         return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant();
     }
+
 
     public void ativarDispositivos(String mac) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(mac);
@@ -255,8 +273,8 @@ public class DispositivoService {
         if (!dispositivos.isEmpty()) {
             dispositivos.forEach(device -> {
                 Agenda agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
-                if (agenda != null && agenda.getConfiguracao() != null) {
-                    device.setConfiguracao(agenda.getConfiguracao());
+                if (agenda != null && agenda.getCor() != null) {
+                    device.setCor(agenda.getCor());
                 }
             });
         }

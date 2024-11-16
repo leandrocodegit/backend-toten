@@ -24,7 +24,7 @@ public class AgendaResponse {
     private LocalDate execucao;
     private LocalDate inicio;
     private LocalDate termino;
-    private ConfiguracaoResumeResponse configuracao;
+    private CorResponse cor;
     private List<DispositivoResumeResponse> dispositivos;
     private boolean todos;
 

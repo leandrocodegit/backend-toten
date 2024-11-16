@@ -1,20 +1,18 @@
 package br.com.totem.service;
 
 import br.com.totem.Exception.ExceptionResponse;
-import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.request.ParametroRequest;
+import br.com.totem.controller.response.ComandoRequest;
 import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.mapper.DispositivoMapper;
-import br.com.totem.model.Agenda;
-import br.com.totem.model.Configuracao;
-import br.com.totem.model.Dispositivo;
-import br.com.totem.model.Log;
+import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Efeito;
 import br.com.totem.model.constantes.Topico;
-import br.com.totem.repository.ConfiguracaoRepository;
+import br.com.totem.repository.CorRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import br.com.totem.utils.ConfiguracaoUtil;
 import br.com.totem.utils.TimeUtil;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,16 +46,14 @@ public class ComandoService {
     @Autowired
     private AgendaDeviceService agendaDeviceService;
     @Autowired
-    private ConfiguracaoRepository configuracaoRepository;
+    private CorRepository corRepository;
 
 
     public void enviardComandoTeste(String mac) {
         Dispositivo dispositivo = buscarPorMac(mac);
 
-        if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
-            dispositivo.getConfiguracao().setEfeito(Efeito.TESTE);
-            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),dispositivo.getConfiguracao());
-
+        if (dispositivo != null && dispositivo.getConfiguracao() != null) {
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(), ConfiguracaoUtil.gerarComandoTeste(dispositivo.getConfiguracao()));
         }
     }
 
@@ -65,22 +61,22 @@ public class ComandoService {
         Dispositivo dispositivo = buscarPorMac(mac);
 
         if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
-            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(), dispositivo.getConfiguracao());
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(), ConfiguracaoUtil.gerarComando(dispositivo));
 
         }
     }
 
     public void enviardComando(Dispositivo dispositivo, boolean forceConsulta) {
 
-        if(forceConsulta){
-            dispositivo.setConfiguracao(buscarPorMac(dispositivo.getMac()).getConfiguracao());
+        if (forceConsulta) {
+            dispositivo.setCor(buscarPorMac(dispositivo.getMac()).getCor());
         }
 
-        if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null) {
-            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(),dispositivo.getConfiguracao());
-
+        if (dispositivo.isAtivo() && dispositivo.getConfiguracao() != null && dispositivo.getCor() != null) {
+            mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + dispositivo.getMac(), ConfiguracaoUtil.gerarComando(dispositivo));
         }
     }
+
 
     public void enviarComando(List<String> macs, boolean forcaTeste, boolean sincronizar) {
 
@@ -93,7 +89,7 @@ public class ComandoService {
                         .data(LocalDateTime.now())
                         .usuario("Leandro")
                         .mensagem(forcaTeste ? "Especifico" : "Todos")
-                        .configuracao(null)
+                        .cor(null)
                         .comando(Comando.SINCRONIZAR)
                         .descricao(Comando.SINCRONIZAR.value())
                         .mac(macs.toString())
@@ -106,14 +102,10 @@ public class ComandoService {
                 boolean salvarLog = true;
 
                 if (device.isAtivo() && device.getConfiguracao() != null) {
-                    device.getConfiguracao().setPrimaria("");
-                    device.getConfiguracao().setSecundaria("");
-
                     if (!forcaTeste) {
-                        device.setConfiguracao(getConfiguracao(device));
+                        device.setCor(getCor(device));
                     }
-
-                    mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),device.getConfiguracao());
+                    mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(), ConfiguracaoUtil.gerarComando(device));
                     System.out.println(new Gson().toJson(device.getConfiguracao()));
                 }
 
@@ -122,7 +114,7 @@ public class ComandoService {
                             .data(LocalDateTime.now())
                             .usuario("Leandro")
                             .mensagem("Tesde configuração enviado")
-                            .configuracao(null)
+                            .cor(null)
                             .comando(Comando.TESTE)
                             .descricao(Comando.TESTE.value())
                             .mac(device.getMac())
@@ -133,7 +125,7 @@ public class ComandoService {
                     .data(LocalDateTime.now())
                     .usuario("Leandro")
                     .mensagem("Enviado para todos")
-                    .configuracao(null)
+                    .cor(null)
                     .comando(Comando.ENVIAR)
                     .mac(macs.toString())
                     .descricao(Comando.ENVIAR.value())
@@ -143,7 +135,7 @@ public class ComandoService {
             logRepository.save(Log.builder()
                     .data(LocalDateTime.now())
                     .usuario("Leandro")
-                    .configuracao(null)
+                    .cor(null)
                     .mensagem(macs.toString())
                     .comando(Comando.NENHUM_DEVICE)
                     .descricao(Comando.NENHUM_DEVICE.value())
@@ -153,22 +145,22 @@ public class ComandoService {
         webSocketService.sendMessageDipositivos(buscarDispositivosAtivosComAgendaPesquisada().stream().map(dispositivoMapper::toResponse).collect(Collectors.toList()));
     }
 
-    private Configuracao getConfiguracao(Dispositivo dispositivo) {
+    private Cor getCor(Dispositivo dispositivo) {
         Agenda agenda = null;
 
-        if(TimeUtil.isTime(dispositivo)){
-            Optional<Configuracao> configuracaoOptional = buscaConfiguracao(dispositivo.getTemporizador().getIdConfiguracao());
-            if(configuracaoOptional.isPresent()){
-                return configuracaoOptional.get();
+        if (TimeUtil.isTime(dispositivo)) {
+            Optional<Cor> corOptional = buscaCor(dispositivo.getTemporizador().getIdCor());
+            if (corOptional.isPresent()) {
+                return corOptional.get();
             }
         }
         if (Boolean.FALSE.equals(dispositivo.isIgnorarAgenda())) {
             agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(dispositivo.getMac());
         }
-        if (agenda != null && agenda.getConfiguracao() != null) {
-            return agenda.getConfiguracao();
+        if (agenda != null && agenda.getCor() != null) {
+            return agenda.getCor();
         }
-        return dispositivo.getConfiguracao();
+        return dispositivo.getCor();
     }
 
     public void enviarComando(Agenda agenda) {
@@ -186,8 +178,9 @@ public class ComandoService {
 
                 if (device.isAtivo() && device.getConfiguracao() != null) {
                     if (Boolean.FALSE.equals(device.isIgnorarAgenda()) && !TimeUtil.isTime(device)) {
+                        //    ConfiguraçãoUtil.parametrizarConfiguracao(agenda.getConfiguracao(), device.getConfiguracao());
                         mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + device.getMac(),
-                                new Gson().toJson(agenda.getConfiguracao()), false);
+                                new Gson().toJson(device.getConfiguracao()), false);
                     }
                 }
             });
@@ -195,7 +188,7 @@ public class ComandoService {
                     .data(LocalDateTime.now())
                     .usuario(Comando.SISTEMA.value())
                     .mensagem("Tarefa agenda executada")
-                    .configuracao(agenda.getConfiguracao())
+                    .cor(agenda.getCor())
                     .comando(Comando.SISTEMA)
                     .descricao("Tarefa agenda executada")
                     .mac(agenda.getDispositivos().stream().map(mac -> mac.getMac()).collect(Collectors.toList()).toString())
@@ -210,8 +203,8 @@ public class ComandoService {
 
     }
 
-    public Optional<Configuracao> buscaConfiguracao(UUID id){
-        return configuracaoRepository.findById(id);
+    public Optional<Cor> buscaCor(UUID id) {
+        return corRepository.findById(id);
     }
 
     private Dispositivo buscarPorMac(String mac) {
@@ -240,8 +233,8 @@ public class ComandoService {
         if (!dispositivos.isEmpty()) {
             dispositivos.forEach(device -> {
                 Agenda agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(device.getMac());
-                if (agenda != null && agenda.getConfiguracao() != null) {
-                    device.setConfiguracao(agenda.getConfiguracao());
+                if (agenda != null && agenda.getCor() != null) {
+                    device.setCor(agenda.getCor());
                 }
             });
         }

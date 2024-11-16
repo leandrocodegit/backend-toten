@@ -22,4 +22,5 @@ public class DispositivoRequest {
     private String latitude;
     private String longitude;
     private Endereco endereco;
+    private ConfiguracaoRequest configuracao;
 }

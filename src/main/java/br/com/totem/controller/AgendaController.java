@@ -1,20 +1,16 @@
 package br.com.totem.controller;
 
 import br.com.totem.controller.request.AgendaRequest;
-import br.com.totem.controller.request.ConfiguracaoRequest;
-import br.com.totem.controller.request.validacoes.ConfiguracaoUpdate;
 import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.service.AgendaDeviceService;
 import br.com.totem.service.AgendaService;
-import br.com.totem.service.ConfiguracaoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,7 +57,7 @@ public class AgendaController {
 
     @GetMapping("/configuracao/{id}")
     public ResponseEntity<List<AgendaResponse>> listaTodasAgendaPorConfiguracao(@PathVariable UUID id) {
-        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendasPorConfiguracao(id));
+        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendasPorCor(id));
     }
 
     @PatchMapping("/{removerConflitos}")

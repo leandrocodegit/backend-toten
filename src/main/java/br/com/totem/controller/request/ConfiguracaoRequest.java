@@ -18,24 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ConfiguracaoRequest {
 
-    @NotNull(groups = {ConfiguracaoUpdate.class})
-    private UUID id;
-    @NotNull(groups = {ConfiguracaoCreate.class})
-    @NotBlank(groups = {ConfiguracaoCreate.class})
-    private String nome;
-    @NotNull(groups = {ConfiguracaoCreate.class})
-    private Efeito efeito;
-    private int[] cor;
-    private String primaria;
-    private String secundaria;
     private int leds;
-    private int faixa;
     private int intensidade;
-    private int[] correcao;
-    private int velocidade;
-    private boolean responder;
-    private String mac;
-    private long time;
-    private boolean rapida;
+    private int faixa;
 
 }

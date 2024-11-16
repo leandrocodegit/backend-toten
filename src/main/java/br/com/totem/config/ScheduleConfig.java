@@ -65,7 +65,7 @@ public class ScheduleConfig {
                     .data(LocalDateTime.now())
                     .usuario("Sistema")
                     .mensagem(device.getMac())
-                    .configuracao(null)
+                    .cor(null)
                     .comando(Comando.OFFLINE)
                     .descricao(String.format(Comando.OFFLINE.value(), device.getMac()))
                     .mac(device.getMac())
@@ -79,8 +79,6 @@ public class ScheduleConfig {
     public void checkTimers() {
 
         List<String> devicesRemove = new ArrayList<>();
-        boolean executando = false;
-
 
         TimeUtil.timers.values().forEach(device -> {
             if(!TimeUtil.isTime(device)) {
@@ -88,7 +86,7 @@ public class ScheduleConfig {
                         .data(LocalDateTime.now())
                         .usuario("Sistema")
                         .mensagem(String.format(Comando.TIMER_CRIADO.value(), device.getMac()))
-                        .configuracao(null)
+                        .cor(null)
                         .comando(Comando.TIMER_CONCLUIDO)
                         .descricao(String.format(Comando.TIMER_CONCLUIDO.value(), device.getMac()))
                         .mac(device.getMac())

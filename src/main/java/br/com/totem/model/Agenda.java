@@ -28,7 +28,7 @@ public class Agenda {
     private LocalDate inicio;
     private LocalDate termino;
     @DBRef
-    private Configuracao configuracao;
+    private Cor cor;
     @DBRef
     private List<Dispositivo> dispositivos;
     private boolean todos;

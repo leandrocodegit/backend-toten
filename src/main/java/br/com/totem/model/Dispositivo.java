@@ -33,8 +33,9 @@ public class Dispositivo {
     private Endereco endereco;
     private String enderecoCompleto;
     private Temporizador temporizador;
-    @DBRef
     private Configuracao configuracao;
+    @DBRef
+    private Cor cor;
     @DBRef
     private Agenda agenda;
 

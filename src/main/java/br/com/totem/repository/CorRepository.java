@@ -1,12 +1,13 @@
 package br.com.totem.repository;
 
 import br.com.totem.model.Configuracao;
+import br.com.totem.model.Cor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface ConfiguracaoRepository extends MongoRepository<Configuracao, UUID> {
+public interface CorRepository extends MongoRepository<Cor, UUID> {
 
-    List<Configuracao> findByRapida(boolean rapida);
+    List<Cor> findByRapida(boolean rapida);
 }

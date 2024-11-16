@@ -12,6 +12,6 @@ import java.util.UUID;
 @Builder
 public class Temporizador {
 
-    private UUID idConfiguracao;
+    private UUID idCor;
     private LocalDateTime time;
 }

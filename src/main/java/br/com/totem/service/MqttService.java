@@ -1,5 +1,6 @@
 package br.com.totem.service;
 
+import br.com.totem.controller.response.ComandoRequest;
 import br.com.totem.model.Configuracao;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,9 @@ public class MqttService {
         mqttOutbound.handleMessage(mqttMessage);
     }
 
-    public void sendRetainedMessage(String topic, Configuracao configuracao) {
+    public void sendRetainedMessage(String topic, ComandoRequest comandoRequest) {
 
-       String message = new Gson().toJson(configuracao);
+       String message = new Gson().toJson(comandoRequest);
         message = message.replaceAll("#", "");
         Message<String> mqttMessage = MessageBuilder.withPayload(message)
                 .setHeader(MqttHeaders.TOPIC, topic)

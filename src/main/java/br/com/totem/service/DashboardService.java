@@ -49,12 +49,12 @@ public class DashboardService {
         Map<String, DispositivoPorCor> cores = new HashMap<>();
 
         dashboardResponse.getDispositivos().forEach(device -> {
-            if (device.getConfiguracao() != null) {
-                if (cores.containsKey(device.getConfiguracao().getPrimaria())) {
-                    DispositivoPorCor cor = cores.get(device.getConfiguracao().getPrimaria());
+            if (device.getCor() != null) {
+                if (cores.containsKey(device.getCor().getPrimaria())) {
+                    DispositivoPorCor cor = cores.get(device.getCor().getPrimaria());
                     cor.setQuantidade(cor.getQuantidade() + 1);
                 } else {
-                    cores.put(device.getConfiguracao().getPrimaria(), new DispositivoPorCor(device.getConfiguracao().getPrimaria(), 1));
+                    cores.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
                 }
             }
         });
@@ -62,24 +62,24 @@ public class DashboardService {
 
         Map<String, DispositivoPorCor> agendas = new HashMap<>();
         agendaRepository.findAllByAtivo(true).forEach(device -> {
-            if (device.getConfiguracao() != null) {
-                if (agendas.containsKey(device.getConfiguracao().getPrimaria())) {
-                    DispositivoPorCor cor = agendas.get(device.getConfiguracao().getPrimaria());
+            if (device.getCor() != null) {
+                if (agendas.containsKey(device.getCor().getPrimaria())) {
+                    DispositivoPorCor cor = agendas.get(device.getCor().getPrimaria());
                     cor.setQuantidade(cor.getQuantidade() + 1);
                 } else {
-                    agendas.put(device.getConfiguracao().getPrimaria(), new DispositivoPorCor(device.getConfiguracao().getPrimaria(), 1));
+                    agendas.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
                 }
             }
         });
 
         Map<String, DispositivoPorCor> agendasExecucao = new HashMap<>();
         agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(device -> {
-            if (device.getConfiguracao() != null) {
-                if (agendasExecucao.containsKey(device.getConfiguracao().getPrimaria())) {
-                    DispositivoPorCor cor = agendasExecucao.get(device.getConfiguracao().getPrimaria());
+            if (device.getCor() != null) {
+                if (agendasExecucao.containsKey(device.getCor().getPrimaria())) {
+                    DispositivoPorCor cor = agendasExecucao.get(device.getCor().getPrimaria());
                     cor.setQuantidade(cor.getQuantidade() + 1);
                 } else {
-                    agendasExecucao.put(device.getConfiguracao().getPrimaria(), new DispositivoPorCor(device.getConfiguracao().getPrimaria(), 1));
+                    agendasExecucao.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
                 }
             }
         });

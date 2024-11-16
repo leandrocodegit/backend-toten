@@ -10,7 +10,7 @@ import lombok.Setter;
 @Builder
 public class ConfiguracaoSendRequest {
 
-    private Configuracao configuracao;
+    private CorRequest cor;
     private String device;
 
 }

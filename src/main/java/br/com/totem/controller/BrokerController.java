@@ -37,9 +37,9 @@ public class BrokerController {
         // Aqui você pode processar a mensagem recebida
         System.out.println("Mensagem recebida: " + request);
 
-        request.getConfiguracao().setResponder(false);
-        if(request.getDevice() != null && !request.getDevice().isEmpty())
-        mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + request.getDevice(),request.getConfiguracao());
+        request.getCor().setResponder(false);
+        //if(request.getDevice() != null && !request.getDevice().isEmpty())
+        //mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + request.getDevice(),request.getCor());
         return "Recebido: " + request;
     }
 

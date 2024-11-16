@@ -35,7 +35,7 @@ public class AgendaRequest {
     @NotNull(message = "Data termino não pode ser vazio")
     private LocalDate termino;
     @NotNull
-    private ConfiguracaoRequest configuracao;
+    private CorRequest cor;
     private List<Dispositivo> dispositivos;
     private boolean todos;
 }

@@ -1,11 +1,7 @@
 package br.com.totem.service;
 
-import br.com.totem.Exception.ExceptionResponse;
-import br.com.totem.controller.request.AgendaRequest;
-import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
-import br.com.totem.mapper.ConfiguracaoMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.repository.AgendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,8 +31,8 @@ public class AgendaDeviceService {
         return agendaRepository.findAgendasByDispositivoId(mac).stream().map(agendaMapper::toResponse).collect(Collectors.toList());
     }
 
-    public List<AgendaResponse> listaTodosAgendasPorConfiguracao(UUID ID) {
-        return agendaRepository.findAgendasByConfiguracaoId(ID).stream().map(agendaMapper::toResponse).collect(Collectors.toList());
+    public List<AgendaResponse> listaTodosAgendasPorCor(UUID ID) {
+        return agendaRepository.findAgendasByCorId(ID).stream().map(agendaMapper::toResponse).collect(Collectors.toList());
     }
 
     public List<Agenda> listaTodosAgendasPrevistaHoje() {

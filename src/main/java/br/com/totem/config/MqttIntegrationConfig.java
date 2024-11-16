@@ -40,6 +40,7 @@ public class MqttIntegrationConfig {
     private String topicos[] = {Topico.DEVICE_SEND + "#"};
     @Bean
     public Mqttv5PahoMessageDrivenChannelAdapter mqttInbound() {
+
         Mqttv5PahoMessageDrivenChannelAdapter adapter =
                 new Mqttv5PahoMessageDrivenChannelAdapter(connectionOptions(), clientId, topicos);
         adapter.setMessageConverter(new MessageSmart());

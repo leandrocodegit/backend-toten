@@ -1,10 +1,8 @@
 package br.com.totem.controller.request;
 
-import br.com.totem.model.constantes.Comando;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 
@@ -12,7 +10,7 @@ import java.util.UUID;
 @Setter
 public class TemporizadorRequest {
 
-    private UUID idConfiguracao;
+    private UUID idCor;
     private String mac;
     private boolean cancelar;
 

@@ -34,44 +34,48 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (isPublicEndpoint(request)) {
+        try {
+            if (isPublicEndpoint(request)) {
 
-            TipoToken tipoToken = TipoToken.ACCESS;
+                TipoToken tipoToken = TipoToken.ACCESS;
 
-            String token = recoveryToken(request);
-            String requestURI = request.getRequestURI();
-            String httpMethod = request.getMethod();
+                String token = recoveryToken(request);
+                String requestURI = request.getRequestURI();
+                String httpMethod = request.getMethod();
 
-           if(httpMethod.equals("GET") && requestURI.equals("/ws")) {
-               Map<String, String[]> queryParams = request.getParameterMap();
-               for (Map.Entry<String, String[]> entry : queryParams.entrySet()) {
-                   String[] paramValues = entry.getValue();
-                   if (!String.join(", ", paramValues).isEmpty()){
-                       token = String.join(", ", paramValues);
-                       tipoToken = TipoToken.SOCKET;
-                       break;
-                   }
-               }
-           }
+                if (httpMethod.equals("GET") && requestURI.equals("/ws")) {
+                    Map<String, String[]> queryParams = request.getParameterMap();
+                    for (Map.Entry<String, String[]> entry : queryParams.entrySet()) {
+                        String[] paramValues = entry.getValue();
+                        if (!String.join(", ", paramValues).isEmpty()) {
+                            token = String.join(", ", paramValues);
+                            tipoToken = TipoToken.SOCKET;
+                            break;
+                        }
+                    }
+                }
 
-               if (token != null) {
-                   String subject = jwtTokenProvider.getSubjectFromToken(token, tipoToken);
-                   User user = userRepository.findByEmail(subject).get();
+                if (token != null) {
+                    String subject = jwtTokenProvider.getSubjectFromToken(token, tipoToken);
+                    User user = userRepository.findByEmail(subject).get();
 
 //                   user.setEmail("admin");
 //                   user.setPassword("$2a$10$Ra/VAlbHDFTC0r6wJ6k76uZsIdBvbthCpZHUEdtlvCYJMps/Ntygy");
 //                   user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
-                   UserDetailsImpl userDetails = new UserDetailsImpl(user);
+                    UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-                   Authentication authentication =
-                           new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
+                    Authentication authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
 
-                   SecurityContextHolder.getContext().setAuthentication(authentication);
-               } else {
-                   throw new ExceptionAuthorization("O token está ausente.");
-               }
-           }
-        filterChain.doFilter(request, response); // Continua o processamento da requisição
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    throw new ExceptionAuthorization("O token está ausente.");
+                }
+            }
+            filterChain.doFilter(request, response);
+        } catch (Exception err) {
+            throw new ExceptionAuthorization("O token inválido");
+        }
     }
 
     private String recoveryToken(HttpServletRequest request) {
@@ -86,8 +90,8 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPublicEndpoint(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         return !Arrays.stream(SecurityConfig.ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).anyMatch(path -> {
-           return requestURI.equals(path) ||
-                   requestURI.matches(path + "/.*");
+            return requestURI.equals(path) ||
+                    requestURI.matches(path + "/.*");
         });
     }
 

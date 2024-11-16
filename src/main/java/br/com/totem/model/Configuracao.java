@@ -14,25 +14,10 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "configuracoes")
 public class Configuracao {
 
-
-    @Id
-    private UUID id;
-    private String nome;
-    private Efeito efeito;
-    private int[] cor;
-    private String primaria;
-    private String secundaria;
     private int leds;
-    private int faixa;
     private int intensidade;
-    private int[] correcao;
-    private int velocidade;
-    private long time;
-    private boolean rapida;
-    @Transient
-    private boolean responder;
+    private int faixa;
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
 public interface DispositivoRepository extends MongoRepository<Dispositivo, String> {
 
     @Aggregation(pipeline = {
-            "{ $lookup: { from: 'configuracao', localField: 'configuracao.primaria', foreignField: '_id', as: 'configuracaoDetalhada' } }",
+            "{ $lookup: { from: 'cor', localField: 'cor.primaria', foreignField: '_id', as: 'configuracaoDetalhada' } }",
             "{ $unwind: '$configuracaoDetalhada' }",
             "{ $group: { _id: '$configuracaoDetalhada.primaria', quantidade: { $sum: 1 } } }",
             "{ $project: { item: '$_id', quantidade: 1, _id: 0 } }"
@@ -23,15 +23,17 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Stri
     List<DispositivoPorCor> agruparPorConfiguracaoPrimaria();
 
     List<Dispositivo> findAllByMacInAndAtivo(List<String> macs, boolean ativo);
-    @Query("{ 'configuracao': { $ne: null }, 'ativo': ?0 }")
+    @Query("{ 'ativo': ?0, 'configuracao': { $ne: null } }")
     List<Dispositivo> findAllByAtivo(boolean ativo);
-    @Query("{ 'configuracao': { $ne: null }, 'ativo': ?0 }")
+    @Query("{ 'ativo': ?0, 'configuracao': { $ne: null } }")
     Page<Dispositivo> findAllByAtivo(boolean ativo, Pageable pageable);
-    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 } }")
+    @Query("{ 'ativo': ?0 }")
+    Page<Dispositivo> findAllByInativo(boolean ativo, Pageable pageable);
+    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 }, 'configuracao': { $ne: null } }")
     List<Dispositivo> findAllAtivosComUltimaAtualizacaoAntes(Date dataLimite);
-    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 } }")
+    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 }, 'configuracao': { $ne: null } }")
     Page<Dispositivo> findAllAtivosComUltimaAtualizacaoAntes(Date dataLimite, Pageable pageable);
-    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 }, 'comando' : 'ONLINE' }")
+    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 }, 'comando' : 'ONLINE', 'configuracao': { $ne: null } }")
     List<Dispositivo> findAllAtivosComUltimaAtualizacaoAntesQueEstavaoOnline(Date dataLimite);
 
     @Query("{ 'configuracao': null }")

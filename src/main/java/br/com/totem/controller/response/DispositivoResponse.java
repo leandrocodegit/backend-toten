@@ -1,6 +1,7 @@
 package br.com.totem.controller.response;
 
 import br.com.totem.model.Configuracao;
+import br.com.totem.model.Cor;
 import br.com.totem.model.Endereco;
 import br.com.totem.model.Temporizador;
 import br.com.totem.model.constantes.Comando;
@@ -31,6 +32,7 @@ public class DispositivoResponse {
     private String longitude;
     private Comando comando;
     private Configuracao configuracao;
+    private CorResponse cor;
     private Endereco endereco;
     private String enderecoComplento;
     private String enderecoCompleto;

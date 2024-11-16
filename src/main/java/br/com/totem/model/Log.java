@@ -20,6 +20,6 @@ public class Log {
     private String usuario;
     private String mensagem;
     private String mac;
-    private Configuracao configuracao;
+    private Cor cor;
 
 }

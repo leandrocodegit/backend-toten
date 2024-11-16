@@ -43,6 +43,13 @@ public class DispositivoController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/configuracao")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<TokenResponse> atualizarConfiguracao(@RequestBody DispositivoRequest request) {
+        dispositivoService.atualizarConfiguracaoDispositivo(request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/lista")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<?> lista(Pageable pageable) {

@@ -5,16 +5,14 @@ import br.com.totem.controller.request.AgendaRequest;
 import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
-import br.com.totem.mapper.ConfiguracaoMapper;
+import br.com.totem.mapper.CorMapper;
 import br.com.totem.model.Agenda;
-import br.com.totem.model.Dispositivo;
 import br.com.totem.repository.AgendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,7 +26,7 @@ public class AgendaService {
     @Autowired
     private AgendaMapper agendaMapper;
     @Autowired
-    private ConfiguracaoMapper configuracaoMapper;
+    private CorMapper configuracaoMapper;
     @Autowired
     private DispositivoService dispositivoService;
     @Autowired
@@ -37,7 +35,7 @@ public class AgendaService {
     private ComandoService comandoService;
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
-            if(request.getConfiguracao() == null || request.getConfiguracao().getId() == null){
+            if(request.getCor() == null || request.getCor().getId() == null){
                 throw new ExceptionResponse("Configuração de cor é obrigatorio");
             }
             request.setId(UUID.randomUUID());
@@ -75,8 +73,8 @@ public class AgendaService {
                     }
                 });
             }
-            if (request.getConfiguracao() != null && request.getConfiguracao().getId() != null)
-                agenda.setConfiguracao(configuracaoMapper.toEntity(request.getConfiguracao()));
+            if (request.getCor() != null && request.getCor().getId() != null)
+                agenda.setCor(configuracaoMapper.toEntity(request.getCor()));
             agendaRepository.save(agenda);
         } else {
             throw new ExceptionResponse("Agenda não existe");
