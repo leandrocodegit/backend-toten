@@ -7,6 +7,8 @@ import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.model.Configuracao;
 import br.com.totem.model.Dispositivo;
+import br.com.totem.model.Log;
+import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,6 @@ public class DispositivoService {
     private final DispositivoRepository dispositivoRepository;
     private final DispositivoMapper dispositivoMapper;
     private final LogRepository logRepository;
-    private final WebSocketService webSocketService;
     private final ComandoService comandoService;
     private final AgendaDeviceService agendaDeviceService;
 
@@ -43,6 +44,14 @@ public class DispositivoService {
             dispositivo.setEndereco(request.getEndereco());
             dispositivo.setEnderecoCompleto(request.getEndereco().toString());
             dispositivoRepository.save(dispositivo);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(request.getMac())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(dispositivo.getConfiguracao().toString())
+                    .mensagem( "Dispositivo foi atualizado")
+                    .build());
         }
     }
 
@@ -59,6 +68,14 @@ public class DispositivoService {
             );
             dispositivoRepository.save(dispositivo);
             comandoService.sincronizar(dispositivo.getMac());
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(request.getMac())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(dispositivo.getConfiguracao().toString())
+                    .mensagem( "Dispositivo foi alterado a configuracao")
+                    .build());
         }
     }
 
@@ -68,6 +85,12 @@ public class DispositivoService {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setAtivo(!dispositivo.isAtivo());
             dispositivoRepository.save(dispositivo);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(mac)
+                    .data(LocalDateTime.now())
+                    .mensagem( "Dispositivo foi " +  (dispositivo.isAtivo() ? "ativado" : "desativado"))
+                    .build());
         }
     }
 

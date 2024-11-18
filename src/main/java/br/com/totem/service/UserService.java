@@ -5,8 +5,11 @@ import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.UserResponse;
 import br.com.totem.mapper.UserMapper;
+import br.com.totem.model.Log;
 import br.com.totem.model.User;
+import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.repository.LogRepository;
 import br.com.totem.repository.UserRepository;
 import br.com.totem.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,20 +29,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final SecurityConfig securityConfiguration;
     private final AuthService authService;
+    private final LogRepository logRepository;
 
     public UserResponse buscarPorEmail(String email){
         return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow());
-    }
-    public void criarUsuario(UserCreateRequest userRequest){
-
-        if(!userRepository.findByEmail(userRequest.getEmail()).isPresent()){
-            User user = userMapper.toEntity(userRequest);
-            user.setId(UUID.randomUUID());
-            user.setStatus(true);
-            userRepository.save(user);
-        }else{
-            throw new ExceptionResponse("Usuario já existe");
-        }
     }
 
     public void atualizarUsuario(UserUpdateRequest userRequest, String token){
@@ -53,6 +47,14 @@ public class UserService {
             user.setPassword(securityConfiguration.passwordEncoder().encode(userRequest.getPassword()));
             user.setStatus(true);
             userRepository.save(user);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(user.getEmail())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(user.toString())
+                    .mensagem( "Usuário " + user.getEmail() + " foi atualizado")
+                    .build());
         }else{
             throw new ExceptionResponse("Operação não permitida");
         }
@@ -67,6 +69,14 @@ public class UserService {
 
     public void removerUsuario(UUID id){
         userRepository.deleteById(id);
+        logRepository.save(Log.builder()
+                .cor(null)
+                .mac(id.toString())
+                .data(LocalDateTime.now())
+                .comando(Comando.CONFIGURACAO)
+                .descricao("")
+                .mensagem( "Usuário " + id.toString() + " foi removido")
+                .build());
     }
 
     public void mudarStatusUsuario(UUID id){
@@ -75,6 +85,14 @@ public class UserService {
             User user = userOptional.get();
             user.setStatus(!user.getStatus());
             userRepository.save(user);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(user.getEmail())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(user.toString())
+                    .mensagem( "Usuário " + user.getEmail() + " foi " + (user.getStatus() ? "ativado" : "desativado"))
+                    .build());
         }else{
             throw new ExceptionResponse("Usuario já existe");
         }

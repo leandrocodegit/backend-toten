@@ -6,10 +6,13 @@ import br.com.totem.Exception.ExceptionResponse;
 import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
+import br.com.totem.model.Log;
 import br.com.totem.model.MessageError;
 import br.com.totem.model.User;
+import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Role;
 import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.repository.LogRepository;
 import br.com.totem.repository.UserRepository;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.security.SecurityConfig;
@@ -24,6 +27,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +41,7 @@ public class AuthService {
     private final JWTTokenProvider jwtTokenProvider;
     private final SecurityConfig securityConfiguration;
     private final UserRepository userRepository;
+    private final LogRepository logRepository;
 
     public TokenResponse authenticateUser(AuthUserRequest loginUserDto) {
 
@@ -82,6 +87,14 @@ public class AuthService {
                     .status(true)
                     .build();
             userRepository.save(user);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(user.getEmail())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(user.toString())
+                    .mensagem( "Novo usuário adicionado")
+                    .build());
         } else {
             throw new ExceptionResponse("Usuário já existe");
         }
@@ -97,6 +110,14 @@ public class AuthService {
             User user = userOptional.get();
             user.setPassword(securityConfiguration.passwordEncoder().encode(request.getPassword()));
             userRepository.save(user);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(user.getId().toString())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(user.toString())
+                    .mensagem( "Usuário alterou " + user.getEmail() + " a senha")
+                    .build());
         } else {
             throw new ExceptionResponse("Operação não permitida");
         }

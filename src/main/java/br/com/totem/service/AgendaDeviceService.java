@@ -51,8 +51,4 @@ public class AgendaDeviceService {
         return !agendaRepository.findFirstByDataAndDispositivo(agenda.getInicio(), agenda.getTermino(), mac, agenda.getId()).isEmpty();
     }
 
-    public void atualizarDataExecucao(Agenda agenda) {
-        agenda.setExecucao(LocalDate.now());
-        agendaRepository.save(agenda);
-    }
 }

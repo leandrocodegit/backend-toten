@@ -7,12 +7,16 @@ import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.CorMapper;
 import br.com.totem.model.Agenda;
+import br.com.totem.model.Log;
+import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.AgendaRepository;
+import br.com.totem.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +31,7 @@ public class AgendaService {
     private final DispositivoService dispositivoService;
     private final AgendaDeviceService agendaDeviceService;
     private final ComandoService comandoService;
+    private final LogRepository logRepository;
 
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
@@ -35,6 +40,14 @@ public class AgendaService {
             }
             request.setId(UUID.randomUUID());
             agendaRepository.save(agendaMapper.toEntity(request));
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(request.getId().toString())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(request.toString())
+                    .mensagem( "Nova agenda criada")
+                    .build());
         } else {
             throw new ExceptionResponse("Agenda já existe");
         }
@@ -71,6 +84,14 @@ public class AgendaService {
             if (request.getCor() != null && request.getCor().getId() != null)
                 agenda.setCor(configuracaoMapper.toEntity(request.getCor()));
             agendaRepository.save(agenda);
+            logRepository.save(Log.builder()
+                    .cor(null)
+                    .mac(agenda.getId().toString())
+                    .data(LocalDateTime.now())
+                    .comando(Comando.CONFIGURACAO)
+                    .descricao(agenda.toString())
+                    .mensagem( "Agenda foi atualizada")
+                    .build());
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
@@ -79,11 +100,6 @@ public class AgendaService {
     public void removerAgenda(UUID id) {
         comandoService.sincronizarTodos();
         agendaRepository.deleteById(id);
-    }
-
-    public void atualizarDataExecucao(Agenda agenda) {
-        agenda.setExecucao(LocalDate.now());
-        agendaRepository.save(agenda);
     }
 
     public List<AgendaResponse> agendasDoMesAtual(boolean ativo){
