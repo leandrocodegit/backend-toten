@@ -1,13 +1,10 @@
 package br.com.totem.controller.response;
 
-import br.com.totem.model.Configuracao;
-import br.com.totem.model.Dispositivo;
 import br.com.totem.model.constantes.TipoAgenda;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

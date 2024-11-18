@@ -1,7 +1,6 @@
 package br.com.totem.controller;
 
 import br.com.totem.controller.request.ConfiguracaoSendRequest;
-import br.com.totem.model.constantes.Topico;
 import br.com.totem.service.ComandoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;

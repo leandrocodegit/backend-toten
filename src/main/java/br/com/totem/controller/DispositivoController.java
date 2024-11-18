@@ -2,12 +2,9 @@ package br.com.totem.controller;
 
 import br.com.totem.controller.request.DispositivoRequest;
 import br.com.totem.controller.request.Filtro;
-import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.controller.response.TokenResponse;
-import br.com.totem.controller.response.UserResponse;
 import br.com.totem.service.DispositivoService;
-import br.com.totem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

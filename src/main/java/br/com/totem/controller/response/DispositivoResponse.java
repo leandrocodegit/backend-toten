@@ -4,14 +4,12 @@ import br.com.totem.model.Configuracao;
 import br.com.totem.model.Endereco;
 import br.com.totem.model.Temporizador;
 import br.com.totem.model.constantes.Comando;
-import br.com.totem.model.constantes.Efeito;
 import br.com.totem.utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

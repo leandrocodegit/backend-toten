@@ -1,8 +1,6 @@
 package br.com.totem.controller;
 
 import br.com.totem.controller.request.AuthUserRequest;
-import br.com.totem.controller.request.AuthenticationRequest;
-import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.security.JWTTokenProvider;
@@ -12,11 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")

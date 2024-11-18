@@ -2,7 +2,6 @@ package br.com.totem.security;
 
 import br.com.totem.Exception.ExceptionAuthorization;
 import br.com.totem.model.User;
-import br.com.totem.model.constantes.Role;
 import br.com.totem.model.constantes.TipoToken;
 import br.com.totem.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -13,17 +12,14 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class UserAuthenticationFilter extends OncePerRequestFilter {

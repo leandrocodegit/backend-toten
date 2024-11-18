@@ -4,7 +4,6 @@ import br.com.totem.controller.response.DashboardResponse;
 import br.com.totem.controller.response.LogConexaoResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.DispositivoMapper;
-import br.com.totem.model.Agenda;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.repository.AgendaRepository;
 import br.com.totem.repository.DispositivoRepository;

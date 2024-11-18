@@ -4,18 +4,21 @@ import br.com.totem.controller.request.DispositivoRequest;
 import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.mapper.DispositivoMapper;
-import br.com.totem.model.*;
+import br.com.totem.model.Agenda;
+import br.com.totem.model.Dispositivo;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
-import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
