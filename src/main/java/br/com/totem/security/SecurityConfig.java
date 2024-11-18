@@ -1,5 +1,6 @@
 package br.com.totem.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,8 +8,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,13 +21,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true
+)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private UserAuthenticationFilter userAuthenticationFilter;
 
-    public static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
+    private final UserAuthenticationFilter userAuthenticationFilter;
+
+    protected static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/auth/login",
             "/auth/refresh",
             "/mensagem",
@@ -33,35 +41,18 @@ public class SecurityConfig {
 
     };
 
-    public static final String [] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED = {
-            "ws",
-            "/auth/status"
-    };
-
-    public static final String [] ENDPOINTS_CUSTOMER = {
-            "ws",
-            "/user/**"
-    };
-
-    public static final String [] ENDPOINTS_ADMIN = {
-            "ws",
-            "/user/**"
-    };
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .csrf().disable()
-                .cors()  // Ativa o CORS
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {})
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/ws").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

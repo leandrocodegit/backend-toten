@@ -1,7 +1,6 @@
 package br.com.totem.config;
 
 import br.com.totem.controller.request.Filtro;
-import br.com.totem.model.Agenda;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.LogRepository;
@@ -9,15 +8,12 @@ import br.com.totem.service.AgendaDeviceService;
 import br.com.totem.service.ComandoService;
 import br.com.totem.service.DispositivoService;
 import br.com.totem.service.WebSocketService;
-import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 @EnableScheduling

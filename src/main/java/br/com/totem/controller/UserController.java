@@ -5,6 +5,7 @@ import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.service.AuthService;
 import br.com.totem.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AuthService authService;
-
+    private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/{email}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")

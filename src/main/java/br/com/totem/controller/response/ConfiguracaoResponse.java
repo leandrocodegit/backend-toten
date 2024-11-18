@@ -12,7 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ConfiguracaoResponse {
 
-
     private UUID id;
     private String nome;
     private Efeito efeito;
@@ -26,6 +25,4 @@ public class ConfiguracaoResponse {
     private int velocidade;
     private long time;
     private boolean rapida;
-
-
 }

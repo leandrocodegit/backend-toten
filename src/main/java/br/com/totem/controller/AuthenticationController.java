@@ -5,6 +5,7 @@ import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,14 +15,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private JWTTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
+    private final JWTTokenProvider jwtTokenProvider;
 
 
     @PostMapping("/login")

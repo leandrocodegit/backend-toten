@@ -9,6 +9,7 @@ import br.com.totem.model.User;
 import br.com.totem.model.constantes.TipoToken;
 import br.com.totem.repository.UserRepository;
 import br.com.totem.security.SecurityConfig;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,17 +19,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private SecurityConfig securityConfiguration;
-
-    @Autowired
-    private AuthService authService;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final SecurityConfig securityConfiguration;
+    private final AuthService authService;
 
     public UserResponse buscarPorEmail(String email){
         return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow());

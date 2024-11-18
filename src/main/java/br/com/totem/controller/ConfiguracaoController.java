@@ -5,6 +5,7 @@ import br.com.totem.controller.request.validacoes.ConfiguracaoCreate;
 import br.com.totem.controller.response.ConfiguracaoResponse;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.service.ConfiguracaoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +19,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/configuracao")
+@RequiredArgsConstructor
 public class ConfiguracaoController {
 
-    @Autowired
-    private ConfiguracaoService configuracaoService;
-
+    private final ConfiguracaoService configuracaoService;
 
     @PostMapping("/duplicar")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")

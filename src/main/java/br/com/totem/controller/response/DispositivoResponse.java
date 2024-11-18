@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Setter
 public class DispositivoResponse {
 
-
     private String mac;
     private String nome;
     private String ip;
@@ -34,7 +33,6 @@ public class DispositivoResponse {
     private String enderecoCompleto;
     private boolean isTimer;
     private Temporizador temporizador;
-
 
     public String getConexao() {
         long differenceInMinutes = Duration.between(ultimaAtualizacao, LocalDateTime.now()).toMinutes();

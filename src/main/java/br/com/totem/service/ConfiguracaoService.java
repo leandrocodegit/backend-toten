@@ -9,6 +9,7 @@ import br.com.totem.model.Dispositivo;
 import br.com.totem.repository.ConfiguracaoRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,19 +20,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ConfiguracaoService {
 
-    @Autowired
-    private ConfiguracaoRepository configuracaoRepository;
-    @Autowired
-    private DispositivoRepository dispositivoRepository;
-    @Autowired
-    private ConfiguracaoMapper configuracaoMapper;
-    @Autowired
-    private ComandoService comandoService;
-    @Autowired
-    private LogRepository logRepository;
-
+    private final ConfiguracaoRepository configuracaoRepository;
+    private final DispositivoRepository dispositivoRepository;
+    private final ConfiguracaoMapper configuracaoMapper;
+    private final ComandoService comandoService;
 
     public Page<ConfiguracaoResponse> listaTodasConfiguracoes(Pageable pageable) {
         return configuracaoRepository.findAll(pageable).map(configuracaoMapper::toResponse);

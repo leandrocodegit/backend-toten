@@ -8,6 +8,7 @@ import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.ConfiguracaoMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.repository.AgendaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,20 +19,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AgendaService {
 
-    @Autowired
-    private AgendaRepository agendaRepository;
-    @Autowired
-    private AgendaMapper agendaMapper;
-    @Autowired
-    private ConfiguracaoMapper configuracaoMapper;
-    @Autowired
-    private DispositivoService dispositivoService;
-    @Autowired
-    private AgendaDeviceService agendaDeviceService;
-    @Autowired
-    private ComandoService comandoService;
+    private final AgendaRepository agendaRepository;
+    private final AgendaMapper agendaMapper;
+    private final ConfiguracaoMapper configuracaoMapper;
+    private final DispositivoService dispositivoService;
+    private final AgendaDeviceService agendaDeviceService;
+    private final ComandoService comandoService;
+
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
             if(request.getConfiguracao() == null || request.getConfiguracao().getId() == null){

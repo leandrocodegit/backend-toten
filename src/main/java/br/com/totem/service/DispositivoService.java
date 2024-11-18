@@ -9,7 +9,7 @@ import br.com.totem.model.Dispositivo;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,25 +22,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DispositivoService {
 
-    @Autowired
-    private DispositivoRepository dispositivoRepository;
-    @Autowired
-    private DispositivoMapper dispositivoMapper;
-    @Autowired
-    private LogRepository logRepository;
-    @Autowired
-    private WebSocketService webSocketService;
-    @Autowired
-    private DashboardService dashboardService;
-    @Autowired
-    private ConfiguracaoService configuracaoService;
-    @Autowired
-    private ComandoService comandoService;
-    @Autowired
-    private AgendaDeviceService agendaDeviceService;
-
+    private final DispositivoRepository dispositivoRepository;
+    private final DispositivoMapper dispositivoMapper;
+    private final LogRepository logRepository;
+    private final WebSocketService webSocketService;
+    private final DashboardService dashboardService;
+    private final ConfiguracaoService configuracaoService;
+    private final ComandoService comandoService;
+    private final AgendaDeviceService agendaDeviceService;
 
     public void salvarDispositivoComoOffline(Dispositivo dispositivo) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(dispositivo.getMac());
@@ -62,10 +54,6 @@ public class DispositivoService {
             dispositivo.setEnderecoCompleto(request.getEndereco().toString());
             dispositivoRepository.save(dispositivo);
         }
-    }
-
-   private Instant creationDate() {
-        return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant();
     }
 
     public void ativarDispositivos(String mac) {

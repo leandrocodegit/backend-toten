@@ -12,7 +12,6 @@ import java.util.UUID;
 @Builder
 public class ConfiguracaoResumeResponse {
 
-
     private UUID id;
     private Efeito efeito;
     private int[] cor;
@@ -23,5 +22,4 @@ public class ConfiguracaoResumeResponse {
     private int intensidade;
     private int[] correcao;
     private int velocidade;
-
 }

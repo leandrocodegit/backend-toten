@@ -7,8 +7,6 @@ import lombok.Setter;
 @Setter
 public class DispositivoResumeResponse {
 
-
     private String mac;
     private String nome;
-
 }

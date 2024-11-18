@@ -4,6 +4,7 @@ import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.repository.AgendaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +17,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AgendaDeviceService {
 
-    @Autowired
-    private AgendaRepository agendaRepository;
-    @Autowired
-    private AgendaMapper agendaMapper;
+
+    private final AgendaRepository agendaRepository;
+    private final AgendaMapper agendaMapper;
 
     public Page<AgendaResponse> listaTodosAgendas(Pageable pageable) {
         return agendaRepository.findAll(pageable).map(agendaMapper::toResponse);
