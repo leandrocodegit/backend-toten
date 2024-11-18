@@ -1,20 +1,16 @@
 package br.com.totem.controller;
 
-import br.com.totem.controller.request.validacoes.ConfiguracaoCreate;
 import br.com.totem.controller.request.CorRequest;
 import br.com.totem.controller.request.TemporizadorRequest;
 import br.com.totem.controller.response.CorResponse;
 import br.com.totem.controller.response.TokenResponse;
-
-import jakarta.validation.Valid;
 import br.com.totem.service.CorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/cor")
 @RequiredArgsConstructor
-public class ConfiguracaoController {
+public class CorController {
 
     private final CorService corService;
 
@@ -41,20 +37,12 @@ public class ConfiguracaoController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/temporizar")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
-    public ResponseEntity<?> salvar(@RequestBody TemporizadorRequest request) {
-        corService.salvarCorTemporizada(request);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
     public ResponseEntity<TokenResponse> remover(@PathVariable UUID id) {
         corService.removerConfiguracao(id);
         return ResponseEntity.ok().build();
     }
-
 
     @GetMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")

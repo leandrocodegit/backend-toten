@@ -69,7 +69,6 @@ public class AuthService {
 
         }
         return null;
-
     }
 
     public void criarUsuario(UserCreateRequest request) {

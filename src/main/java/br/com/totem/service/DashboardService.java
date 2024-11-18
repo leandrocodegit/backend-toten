@@ -2,7 +2,6 @@ package br.com.totem.service;
 
 import br.com.totem.controller.response.DashboardResponse;
 import br.com.totem.controller.response.LogConexaoResponse;
-import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.repository.AgendaRepository;
@@ -10,7 +9,6 @@ import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import br.com.totem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

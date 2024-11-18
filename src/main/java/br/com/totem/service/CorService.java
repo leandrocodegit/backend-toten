@@ -2,22 +2,18 @@ package br.com.totem.service;
 
 import br.com.totem.Exception.ExceptionResponse;
 import br.com.totem.controller.request.CorRequest;
-import br.com.totem.controller.request.TemporizadorRequest;
 import br.com.totem.controller.response.CorResponse;
 import br.com.totem.mapper.CorMapper;
-import br.com.totem.model.*;
-import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.Cor;
+import br.com.totem.model.Dispositivo;
 import br.com.totem.repository.CorRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
-import br.com.totem.utils.TimeUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -68,7 +64,7 @@ public class CorService {
         corRepository.save(cor);
         Dispositivo dispositivo = salvarCorDisposisito(cor, request.getMac());
         if (dispositivo != null) {
-            comandoService.enviardComando(dispositivo, false);
+            comandoService.sincronizar(dispositivo.getMac());
         }
     }
 

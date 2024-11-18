@@ -6,7 +6,6 @@ import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,11 +1,9 @@
 package br.com.totem.controller.response;
 
 import br.com.totem.model.Configuracao;
-import br.com.totem.model.Cor;
 import br.com.totem.model.Endereco;
 import br.com.totem.model.Temporizador;
 import br.com.totem.model.constantes.Comando;
-import br.com.totem.utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,9 +39,5 @@ public class DispositivoResponse {
         if (differenceInMinutes >= 5)
            return "Offline";
         return "Online";
-    }
-
-    public boolean isTimer() {
-        return TimeUtil.isTime(this);
     }
 }
