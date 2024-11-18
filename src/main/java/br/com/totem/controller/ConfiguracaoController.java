@@ -1,7 +1,6 @@
 package br.com.totem.controller;
 
 import br.com.totem.controller.request.ConfiguracaoRequest;
-import br.com.totem.controller.request.TemporizadorRequest;
 import br.com.totem.controller.request.validacoes.ConfiguracaoCreate;
 import br.com.totem.controller.response.ConfiguracaoResponse;
 import br.com.totem.controller.response.TokenResponse;

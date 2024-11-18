@@ -2,29 +2,20 @@ package br.com.totem.service;
 
 import br.com.totem.Exception.ExceptionResponse;
 import br.com.totem.controller.request.ConfiguracaoRequest;
-import br.com.totem.controller.request.TemporizadorRequest;
-import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.response.ConfiguracaoResponse;
-import br.com.totem.controller.response.UserResponse;
 import br.com.totem.mapper.ConfiguracaoMapper;
-import br.com.totem.mapper.UserMapper;
 import br.com.totem.model.*;
-import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.ConfiguracaoRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
-import br.com.totem.repository.UserRepository;
-import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ConfiguracaoService {
