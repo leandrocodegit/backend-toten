@@ -12,10 +12,6 @@ public class TotemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TotemApplication.class, args);
-
-
-
-		System.out.println("Mensagem retida enviada para o broker MQTT.");
 	}
 
 }
