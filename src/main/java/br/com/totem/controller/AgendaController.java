@@ -7,6 +7,7 @@ import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.service.AgendaDeviceService;
 import br.com.totem.service.AgendaService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,14 +20,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/agenda")
+@RequiredArgsConstructor
 public class AgendaController {
 
-    @Autowired
-    private AgendaService agendaService;
-    @Autowired
-    private AgendaDeviceService agendaDeviceService;
-    @Autowired
-    private AgendaMapper agendaMapper;
+    private final AgendaService agendaService;
+    private final AgendaDeviceService agendaDeviceService;
+    private final AgendaMapper agendaMapper;
 
 
     @GetMapping

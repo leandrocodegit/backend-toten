@@ -3,29 +3,24 @@ package br.com.totem.controller;
 import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenResponse;
-import br.com.totem.controller.response.UserResponse;
 import br.com.totem.service.AuthService;
-import br.com.totem.service.MqttService;
 import br.com.totem.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AuthService authService;
-
+    private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/{email}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")

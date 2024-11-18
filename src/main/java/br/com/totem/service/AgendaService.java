@@ -8,6 +8,7 @@ import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.CorMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.repository.AgendaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,23 +17,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AgendaService {
 
-    @Autowired
-    private AgendaRepository agendaRepository;
-    @Autowired
-    private AgendaMapper agendaMapper;
-    @Autowired
-    private CorMapper configuracaoMapper;
-    @Autowired
-    private DispositivoService dispositivoService;
-    @Autowired
-    private AgendaDeviceService agendaDeviceService;
-    @Autowired
-    private ComandoService comandoService;
+    private final AgendaRepository agendaRepository;
+    private final AgendaMapper agendaMapper;
+    private final CorMapper configuracaoMapper;
+    private final DispositivoService dispositivoService;
+    private final AgendaDeviceService agendaDeviceService;
+    private final ComandoService comandoService;
+
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
             if(request.getCor() == null || request.getCor().getId() == null){
@@ -82,7 +78,7 @@ public class AgendaService {
     }
 
     public void removerAgenda(UUID id) {
-        comandoService.enviarComando(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.ATIVO).stream().map(device -> device.getMac()).collect(Collectors.toList()), false, false);
+        comandoService.sincronizarTodos();
         agendaRepository.deleteById(id);
     }
 

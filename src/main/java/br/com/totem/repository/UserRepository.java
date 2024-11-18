@@ -1,6 +1,5 @@
 package br.com.totem.repository;
 
-import br.com.totem.model.Dispositivo;
 import br.com.totem.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

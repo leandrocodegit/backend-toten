@@ -2,12 +2,10 @@ package br.com.totem.controller;
 
 import br.com.totem.controller.request.DispositivoRequest;
 import br.com.totem.controller.request.Filtro;
-import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.controller.response.TokenResponse;
-import br.com.totem.controller.response.UserResponse;
 import br.com.totem.service.DispositivoService;
-import br.com.totem.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/dispositivo")
+@RequiredArgsConstructor
 public class DispositivoController {
 
-    @Autowired
-    private DispositivoService dispositivoService;
-
+    private final DispositivoService dispositivoService;
 
     @GetMapping("/{mac}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")

@@ -17,6 +17,7 @@ import br.com.totem.security.UserDetailsImpl;
 import br.com.totem.controller.request.AuthenticationRequest;
 import br.com.totem.controller.response.TokenResponse;
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,18 +30,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JWTTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private SecurityConfig securityConfiguration;
-    @Autowired
-    private UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JWTTokenProvider jwtTokenProvider;
+    private final SecurityConfig securityConfiguration;
+    private final UserRepository userRepository;
 
     public TokenResponse authenticateUser(AuthUserRequest loginUserDto) {
 

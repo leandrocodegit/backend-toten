@@ -4,12 +4,12 @@ import br.com.totem.controller.response.DashboardResponse;
 import br.com.totem.controller.response.LogConexaoResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.DispositivoMapper;
-import br.com.totem.model.Agenda;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.repository.AgendaRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import br.com.totem.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,21 +22,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
 
-    @Autowired
-    private DispositivoRepository dispositivoRepository;
-    @Autowired
-    private LogRepository logRepository;
-    @Autowired
-    private AgendaRepository agendaRepository;
-    @Autowired
-    private DispositivoMapper dispositivoMapper;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AgendaMapper agendaMapper;
-
+    private final DispositivoRepository dispositivoRepository;
+    private final LogRepository logRepository;
+    private final AgendaRepository agendaRepository;
+    private final DispositivoMapper dispositivoMapper;
+    private final UserRepository userRepository;
 
     public DashboardResponse gerarDash() {
 

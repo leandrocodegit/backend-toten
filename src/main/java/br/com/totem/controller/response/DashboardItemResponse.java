@@ -15,5 +15,4 @@ public class DashboardItemResponse {
 
     private List<String> label;
     private List<Integer>quantidade;
-
 }

@@ -1,16 +1,20 @@
 package br.com.totem.controller;
 
+import br.com.totem.controller.request.validacoes.ConfiguracaoCreate;
 import br.com.totem.controller.request.CorRequest;
 import br.com.totem.controller.request.TemporizadorRequest;
 import br.com.totem.controller.response.CorResponse;
 import br.com.totem.controller.response.TokenResponse;
-import br.com.totem.service.CorService;
+
 import jakarta.validation.Valid;
+import br.com.totem.service.CorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +22,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/cor")
-public class CorController {
+@RequiredArgsConstructor
+public class ConfiguracaoController {
 
-    @Autowired
-    private CorService corService;
-
+    private final CorService corService;
 
     @PostMapping("/duplicar")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")

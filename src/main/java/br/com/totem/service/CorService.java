@@ -11,6 +11,7 @@ import br.com.totem.repository.CorRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import br.com.totem.utils.TimeUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,18 +23,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CorService {
 
-    @Autowired
-    private CorRepository corRepository;
-    @Autowired
-    private DispositivoRepository dispositivoRepository;
-    @Autowired
-    private CorMapper corMapper;
-    @Autowired
-    private ComandoService comandoService;
-    @Autowired
-    private LogRepository logRepository;
+    private final CorRepository corRepository;
+    private final DispositivoRepository dispositivoRepository;
+    private final CorMapper corMapper;
+    private final ComandoService comandoService;
+    private final LogRepository logRepository;
 
 
     public Page<CorResponse> listaTodasCores(Pageable pageable) {
@@ -59,48 +56,6 @@ public class CorService {
         corRepository.save(cor);
         if (principal) {
             salvarCorDisposisito(cor, request.getMac());
-        }
-    }
-
-    public void salvarCorTemporizada(TemporizadorRequest request) {
-
-        Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
-
-        if(request.isCancelar() && dispositivoOptional.isPresent()){
-            Dispositivo dispositivo = dispositivoOptional.get();
-            dispositivo.setTemporizador(Temporizador.builder()
-                    .idCor(request.getIdCor())
-                    .time(LocalDateTime.now().plusMinutes(-1))
-                    .build());
-
-            dispositivoRepository.save(dispositivo);
-            comandoService.enviardComando(dispositivo, true);
-        }
-        else{
-        Optional<Cor> corOptional = corRepository.findById(request.getIdCor());
-        if (dispositivoOptional.isPresent() && corOptional.isPresent()) {
-            Dispositivo dispositivo = dispositivoOptional.get();
-
-            dispositivo.setTemporizador(Temporizador.builder()
-                    .idCor(request.getIdCor())
-                    .time(LocalDateTime.now().plusMinutes(corOptional.get().getTime()))
-                    .build());
-
-            dispositivoRepository.save(dispositivo);
-            dispositivo.setCor(corOptional.get());
-            comandoService.enviardComando(dispositivo, false);
-            TimeUtil.timers.put(dispositivo.getMac(), dispositivo);
-
-            logRepository.save(Log.builder()
-                    .data(LocalDateTime.now())
-                    .usuario("Leandro")
-                    .mensagem(String.format(Comando.TIMER_CRIADO.value(), dispositivo.getMac()))
-                    .cor(null)
-                    .comando(Comando.TIMER_CRIADO)
-                    .descricao(String.format(Comando.TIMER_CRIADO.value(), dispositivo.getMac()))
-                    .mac(dispositivo.getMac())
-                    .build());
-        }
         }
     }
 

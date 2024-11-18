@@ -1,17 +1,13 @@
 package br.com.totem.repository;
 
 import br.com.totem.model.Agenda;
-import br.com.totem.model.DispositivoPorCor;
-import br.com.totem.model.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface AgendaRepository extends MongoRepository<Agenda, UUID> {

@@ -1,10 +1,9 @@
 package br.com.totem.controller.response;
 
 import br.com.totem.model.constantes.Efeito;
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -12,7 +11,6 @@ import java.util.UUID;
 @Setter
 @Builder
 public class ConfiguracaoResumeResponse {
-
 
     private UUID id;
     private Efeito efeito;
@@ -24,5 +22,4 @@ public class ConfiguracaoResumeResponse {
     private int intensidade;
     private int[] correcao;
     private int velocidade;
-
 }

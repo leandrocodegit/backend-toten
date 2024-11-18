@@ -11,6 +11,7 @@ import br.com.totem.repository.LogRepository;
 import br.com.totem.utils.ConfiguracaoUtil;
 import br.com.totem.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,25 +21,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DispositivoService {
 
-    @Autowired
-    private DispositivoRepository dispositivoRepository;
-    @Autowired
-    private DispositivoMapper dispositivoMapper;
-    @Autowired
-    private LogRepository logRepository;
-    @Autowired
-    private WebSocketService webSocketService;
-    @Autowired
-    private DashboardService dashboardService;
-    @Autowired
-    private CorService configuracaoService;
-    @Autowired
-    private ComandoService comandoService;
-    @Autowired
-    private AgendaDeviceService agendaDeviceService;
-
+    private final DispositivoRepository dispositivoRepository;
+    private final DispositivoMapper dispositivoMapper;
+    private final LogRepository logRepository;
+    private final WebSocketService webSocketService;
+    private final ComandoService comandoService;
+    private final AgendaDeviceService agendaDeviceService;
 
     public void salvarDispositivoComoOffline(Dispositivo dispositivo) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(dispositivo.getMac());

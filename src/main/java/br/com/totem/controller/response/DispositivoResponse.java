@@ -5,19 +5,16 @@ import br.com.totem.model.Cor;
 import br.com.totem.model.Endereco;
 import br.com.totem.model.Temporizador;
 import br.com.totem.model.constantes.Comando;
-import br.com.totem.model.constantes.Efeito;
 import br.com.totem.utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 public class DispositivoResponse {
-
 
     private String mac;
     private String nome;
@@ -38,7 +35,6 @@ public class DispositivoResponse {
     private String enderecoCompleto;
     private boolean isTimer;
     private Temporizador temporizador;
-
 
     public String getConexao() {
         long differenceInMinutes = Duration.between(ultimaAtualizacao, LocalDateTime.now()).toMinutes();
