@@ -29,8 +29,6 @@ public class DispositivoService {
     private final DispositivoMapper dispositivoMapper;
     private final LogRepository logRepository;
     private final WebSocketService webSocketService;
-    private final DashboardService dashboardService;
-    private final ConfiguracaoService configuracaoService;
     private final ComandoService comandoService;
     private final AgendaDeviceService agendaDeviceService;
 
@@ -62,6 +60,9 @@ public class DispositivoService {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setAtivo(!dispositivo.isAtivo());
             dispositivoRepository.save(dispositivo);
+            if(dispositivo.isAtivo()){
+
+            }
         }
     }
 
