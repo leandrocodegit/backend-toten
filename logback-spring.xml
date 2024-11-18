@@ -1,0 +1,13 @@
+<configuration>
+    <appender name="MONGO" class="com.savoirtech.logging.slf4j.mongo.MongoDbAppender">
+        <mongoUri>mongodb://localhost:27017/logs</mongoUri>
+        <collectionName>application_logs</collectionName>
+        <properties>
+            <property name="user" value="%X{user}" /> <!-- Nome do usuário -->
+        </properties>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="MONGO" />
+    </root>
+</configuration>

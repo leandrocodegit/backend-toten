@@ -2,8 +2,7 @@ package br.com.totem.controller;
 
 import br.com.totem.controller.request.ConfiguracaoSendRequest;
 import br.com.totem.model.constantes.Topico;
-import br.com.totem.service.MqttService;
-import com.google.gson.Gson;
+import br.com.totem.service.ComandoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Controller;
 public class BrokerController {
 
     @Autowired
-    private MqttService mqttService;
+    private ComandoService comandoService;
     private final SimpMessagingTemplate messagingTemplate;
 
     public BrokerController(SimpMessagingTemplate messagingTemplate) {
@@ -38,8 +37,8 @@ public class BrokerController {
         System.out.println("Mensagem recebida: " + request);
 
         request.getConfiguracao().setResponder(false);
-        if(request.getDevice() != null && !request.getDevice().isEmpty())
-        mqttService.sendRetainedMessage(Topico.DEVICE_RECEIVE + request.getDevice(),request.getConfiguracao());
+      //  if(request.getDevice() != null && !request.getDevice().isEmpty())
+        //comandoService.sendRetainedMessage(Topico.DEVICE_RECEIVE + request.getDevice(),request.getConfiguracao());
         return "Recebido: " + request;
     }
 

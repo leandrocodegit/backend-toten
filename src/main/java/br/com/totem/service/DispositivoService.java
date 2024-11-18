@@ -1,10 +1,8 @@
 package br.com.totem.service;
 
-import br.com.totem.controller.request.ConfiguracaoRequest;
 import br.com.totem.controller.request.DispositivoRequest;
 import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.DispositivoResponse;
-import br.com.totem.controller.response.UserResponse;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
@@ -63,97 +61,7 @@ public class DispositivoService {
         }
     }
 
-    public void atualizarDispositivo(Mensagem mensagem) {
-        Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(mensagem.getId());
-        if (dispositivoOptional.isPresent()) {
-            Dispositivo dispositivo = dispositivoOptional.get();
-
-            System.out.println(mensagem.getId().substring(mensagem.getId().length() - 5, mensagem.getId().length()));
-            dispositivo.setUltimaAtualizacao(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime());
-            dispositivo.setIp(mensagem.getIp());
-            dispositivo.setMemoria(mensagem.getMemoria());
-            dispositivo.setComando(Comando.ONLINE);
-            dispositivo.setVersao(mensagem.getVersao());
-            dispositivo.setBrokerId(mensagem.getBrockerId());
-            if (dispositivo.getConfiguracao() != null && (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO))) {
-                logRepository.save(Log.builder()
-                        .data(LocalDateTime.now())
-                        .usuario("Leandro")
-                        .mensagem(mensagem.getId())
-                        .configuracao(dispositivo.getConfiguracao())
-                        .comando(mensagem.getComando())
-                        .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
-                        .mac(dispositivo.getMac())
-                        .build());
-            }
-            if (mensagem.getComando().equals(Comando.ACEITO) || mensagem.getComando().equals(Comando.ONLINE)) {
-                logRepository.save(Log.builder()
-                        .data(LocalDateTime.now())
-                        .usuario("Leandro")
-                        .mensagem(mensagem.getId())
-                        .configuracao(dispositivo.getConfiguracao())
-                        .comando(mensagem.getComando())
-                        .descricao(mensagem.getComando().equals(Comando.ONLINE) ? String.format(mensagem.getComando().value(), mensagem.getId()) : mensagem.getComando().value())
-                        .mac(dispositivo.getMac())
-                        .build());
-                webSocketService.sendMessageDashboard(dashboardService.gerarDash());
-            } else if (mensagem.getComando().equals(Comando.ONLINE)) {
-//                logRepository.save(Log.builder()
-//                        .data(LocalDateTime.now())
-//                        .usuario("Leandro")
-//                        .mensagem(mensagem.getId())
-//                        .configuracao(dispositivo.getConfiguracao())
-//                        .comando(mensagem.getComando())
-//                        .descricao(mensagem.getComando().value())
-//                        .build());
-            }
-            dispositivoRepository.save(dispositivo);
-                if (mensagem.getComando().equals(Comando.CONFIGURACAO) || mensagem.getComando().equals(Comando.CONCLUIDO)) {
-                    dispositivo.setConfiguracao(getConfiguracao(dispositivo));
-                    comandoService.enviardComando(dispositivo, false);
-                } else if (mensagem.getComando().equals(Comando.ONLINE) && mensagem.getEfeito() != null) {
-                   Configuracao configuracao = getConfiguracao(dispositivo);
-                    if(configuracao != null  && !configuracao.getEfeito().equals(mensagem.getEfeito())) {
-                        System.out.println("Reparação de efeito");
-                        dispositivo.setConfiguracao(configuracao);
-                        comandoService.enviardComando(dispositivo, false);
-                    }
-            }
-        } else {
-            dispositivoRepository.save(
-                    Dispositivo.builder()
-                            .ultimaAtualizacao(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime())
-                            .mac(mensagem.getId())
-                            .versao("")
-                            .ignorarAgenda(false)
-                            .memoria(0)
-                            .ativo(false)
-                            .nome(mensagem.getId().substring(mensagem.getId().length() - 5, mensagem.getId().length()))
-                            .comando(Comando.ONLINE)
-                            .build()
-            );
-        }
-    }
-
-    private Configuracao getConfiguracao(Dispositivo dispositivo) {
-        Agenda agenda = null;
-
-        if(TimeUtil.isTime(dispositivo)){
-            Optional<Configuracao> configuracaoOptional = configuracaoService.buscaConfiguracao(dispositivo.getTemporizador().getIdConfiguracao());
-            if(configuracaoOptional.isPresent()){
-                return configuracaoOptional.get();
-            }
-        }
-        if (Boolean.FALSE.equals(dispositivo.isIgnorarAgenda())) {
-            agenda = agendaDeviceService.buscarAgendaDipositivoPrevistaHoje(dispositivo.getMac());
-        }
-        if (agenda != null && agenda.getConfiguracao() != null) {
-            return agenda.getConfiguracao();
-        }
-        return dispositivo.getConfiguracao();
-    }
-
-    private Instant creationDate() {
+   private Instant creationDate() {
         return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant();
     }
 

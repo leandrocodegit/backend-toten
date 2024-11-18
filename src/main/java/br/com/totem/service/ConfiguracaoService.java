@@ -67,58 +67,17 @@ public class ConfiguracaoService {
         }
     }
 
-    public void salvarconfiguracaoTemporizada(TemporizadorRequest request) {
-
-        Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
-
-        if(request.isCancelar() && dispositivoOptional.isPresent()){
-            Dispositivo dispositivo = dispositivoOptional.get();
-            dispositivo.setTemporizador(Temporizador.builder()
-                    .idConfiguracao(request.getIdConfiguracao())
-                    .time(LocalDateTime.now().plusMinutes(-1))
-                    .build());
-
-            dispositivoRepository.save(dispositivo);
-            comandoService.enviardComando(dispositivo, false);
-        }
-        else{
-        Optional<Configuracao> configuracaoOptional = configuracaoRepository.findById(request.getIdConfiguracao());
-        if (dispositivoOptional.isPresent() && configuracaoOptional.isPresent()) {
-            Dispositivo dispositivo = dispositivoOptional.get();
-
-            dispositivo.setTemporizador(Temporizador.builder()
-                    .idConfiguracao(request.getIdConfiguracao())
-                    .time(LocalDateTime.now().plusMinutes(configuracaoOptional.get().getTime()))
-                    .build());
-
-            dispositivoRepository.save(dispositivo);
-            dispositivo.setConfiguracao(configuracaoOptional.get());
-            comandoService.enviardComando(dispositivo, false);
-            TimeUtil.timers.put(dispositivo.getMac(), dispositivo);
-
-            logRepository.save(Log.builder()
-                    .data(LocalDateTime.now())
-                    .usuario("Leandro")
-                    .mensagem(String.format(Comando.TIMER_CRIADO.value(), dispositivo.getMac()))
-                    .configuracao(null)
-                    .comando(Comando.TIMER_CRIADO)
-                    .descricao(String.format(Comando.TIMER_CRIADO.value(), dispositivo.getMac()))
-                    .mac(dispositivo.getMac())
-                    .build());
-        }
-        }
-    }
-
     public Optional<Configuracao> buscaConfiguracao(UUID id){
         return configuracaoRepository.findById(id);
     }
+
     public void duplicarconfiguracao(ConfiguracaoRequest request) {
         Configuracao configuracao = configuracaoMapper.toEntity(request);
         configuracao.setId(UUID.randomUUID());
         configuracaoRepository.save(configuracao);
         Dispositivo dispositivo = salvarConfiguracaoDisposisito(configuracao, request.getMac());
         if (dispositivo != null) {
-            comandoService.enviardComando(dispositivo, false);
+            comandoService.sincronizar(dispositivo.getMac());
         }
     }
 

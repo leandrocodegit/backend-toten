@@ -1,9 +1,7 @@
 package br.com.totem.config;
 
 import br.com.totem.controller.request.Filtro;
-import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.model.Agenda;
-import br.com.totem.model.Dispositivo;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.LogRepository;
@@ -36,22 +34,6 @@ public class ScheduleConfig {
     @Autowired
     private LogRepository logRepository;
 
-    @Scheduled(fixedRate = 5000)
-    public void executarTarefaAgendada() {
-        List<Agenda> agendas = agendaDeviceService.listaTodosAgendasPrevistaHoje();
-
-
-        if(!agendas.isEmpty()){
-            System.out.println("# " + agendas.size());
-            agendas.forEach(agenda -> {
-                System.out.println(agenda.getDispositivos().toString());
-                comandoService.enviarComando(agenda);
-                agendaDeviceService.atualizarDataExecucao(agenda);
-            });
-            System.out.println("Tarefa executada a cada 5 segundos: " + System.currentTimeMillis());
-            webSocketService.sendMessageDipositivos(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.CORDENADAS));
-        }
-    }
 
     @Scheduled(fixedRate = 60000)
     public void executarTarefaDispositivos() {
@@ -75,35 +57,4 @@ public class ScheduleConfig {
         });
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void checkTimers() {
-
-        List<String> devicesRemove = new ArrayList<>();
-        boolean executando = false;
-
-
-        TimeUtil.timers.values().forEach(device -> {
-            if(!TimeUtil.isTime(device)) {
-                logRepository.save(Log.builder()
-                        .data(LocalDateTime.now())
-                        .usuario("Sistema")
-                        .mensagem(String.format(Comando.TIMER_CRIADO.value(), device.getMac()))
-                        .configuracao(null)
-                        .comando(Comando.TIMER_CONCLUIDO)
-                        .descricao(String.format(Comando.TIMER_CONCLUIDO.value(), device.getMac()))
-                        .mac(device.getMac())
-                        .build());
-                devicesRemove.add(device.getMac());
-                comandoService.enviardComando(device, true);
-                System.out.println("Timer finalizado " + device.getMac());
-            }
-        });
-
-        if(!devicesRemove.isEmpty()){
-            devicesRemove.forEach(dev -> {
-                TimeUtil.timers.remove(dev);
-            });
-            devicesRemove.clear();
-        }
-    }
 }

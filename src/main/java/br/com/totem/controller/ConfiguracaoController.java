@@ -39,13 +39,6 @@ public class ConfiguracaoController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/temporizar")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
-    public ResponseEntity<TokenResponse> salvar(@RequestBody TemporizadorRequest request) {
-        configuracaoService.salvarconfiguracaoTemporizada(request);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
     public ResponseEntity<TokenResponse> remover(@PathVariable UUID id) {

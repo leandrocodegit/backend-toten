@@ -84,7 +84,7 @@ public class AgendaService {
     }
 
     public void removerAgenda(UUID id) {
-        comandoService.enviarComando(dispositivoService.listaTodosDispositivosPorFiltro(Filtro.ATIVO).stream().map(device -> device.getMac()).collect(Collectors.toList()), false, false);
+        comandoService.sincronizarTodos();
         agendaRepository.deleteById(id);
     }
 

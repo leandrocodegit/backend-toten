@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,12 +54,16 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                        break;
                    }
                }
+           }else{
+               MDC.put("requestId", UUID.randomUUID().toString());
+               MDC.put("clientIp", request.getRemoteAddr());
+
            }
 
                if (token != null) {
                    String subject = jwtTokenProvider.getSubjectFromToken(token, tipoToken);
                    User user = userRepository.findByEmail(subject).get();
-
+                   MDC.put("user", user.getNome());
 //                   user.setEmail("admin");
 //                   user.setPassword("$2a$10$Ra/VAlbHDFTC0r6wJ6k76uZsIdBvbthCpZHUEdtlvCYJMps/Ntygy");
 //                   user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
