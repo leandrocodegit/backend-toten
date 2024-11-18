@@ -10,7 +10,6 @@ import br.com.totem.model.constantes.TipoToken;
 import br.com.totem.repository.UserRepository;
 import br.com.totem.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
