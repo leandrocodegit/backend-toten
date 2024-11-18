@@ -33,8 +33,7 @@ public class JWTTokenProvider {
         try {
 
             List<String> roles = user.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+                    .map(GrantedAuthority::getAuthority).toList();
 
             return JWT.create()
                     .withIssuer(ISSUER)

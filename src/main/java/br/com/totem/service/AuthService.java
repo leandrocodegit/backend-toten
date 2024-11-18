@@ -111,27 +111,6 @@ public class AuthService {
         }
     }
 
-    public static List<String> getPasswordValidationMessages(String password) {
-        List<String> messages = new ArrayList<>();
-
-        if (password.length() < 8) {
-            messages.add("A senha deve ter pelo menos 8 caracteres.");
-        }
-        if (!password.matches(".*[a-z].*")) {
-            messages.add("A senha deve conter pelo menos uma letra minúscula.");
-        }
-        if (!password.matches(".*[A-Z].*")) {
-            messages.add("A senha deve conter pelo menos uma letra maiúscula.");
-        }
-        if (!password.matches(".*\\d.*")) {
-            messages.add("A senha deve conter pelo menos um dígito.");
-        }
-        if (!password.matches(".*[@$!%*?&].*")) {
-            messages.add("A senha deve conter pelo menos um caractere especial (@, $, !, %, *, ?, &).");
-        }
-
-        return messages;
-    }
     public static void isStrongPassword(String password, String confirmPassword) {
 
         List<MessageError> messages = new ArrayList<>();

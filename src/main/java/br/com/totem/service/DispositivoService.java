@@ -7,7 +7,6 @@ import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.model.Configuracao;
 import br.com.totem.model.Dispositivo;
-import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,15 +32,6 @@ public class DispositivoService {
     private final WebSocketService webSocketService;
     private final ComandoService comandoService;
     private final AgendaDeviceService agendaDeviceService;
-
-    public void salvarDispositivoComoOffline(Dispositivo dispositivo) {
-        Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(dispositivo.getMac());
-        if (dispositivoOptional.isPresent()) {
-            Dispositivo dispositivoDB = dispositivoOptional.get();
-            dispositivoDB.setComando(Comando.OFFLINE);
-            dispositivoRepository.save(dispositivo);
-        }
-    }
 
     public void atualizarNomeDispositivo(DispositivoRequest request) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());

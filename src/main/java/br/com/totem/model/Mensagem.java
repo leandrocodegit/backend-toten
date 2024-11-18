@@ -1,11 +1,9 @@
 package br.com.totem.model;
 
-import br.com.totem.model.constantes.Efeito;
 import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.constantes.Efeito;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Getter
 @Setter
