@@ -31,11 +31,12 @@ public class SecurityConfig {
     private final UserAuthenticationFilter userAuthenticationFilter;
 
     protected static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
-            "/auth/login",
-            "/auth/refresh",
-            "/mensagem",
-            "/topic/messages",
-            "/send",
+            "/totem/auth/login",
+            "/totem/auth/refresh",
+            "/totem/mensagem",
+            "/totem/topic/messages",
+            "/totem/send",
+            "/totem/dashboard/gerar"
 
     };
 

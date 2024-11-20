@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Component
 public class JWTTokenProvider {
 
-    private static final String SECRET_KEY = "4Z^XrroxR@dWxqf$mTTKwW$!@#qGr4P";
+    private static final String SECRET_KEY = "PWSraVLSZfsAbPDxWiAkcZvIjUOajrtmHx1Rk059l2I=";
 
     private static final String ISSUER = "pizzurg-api"; // Emissor do token
 

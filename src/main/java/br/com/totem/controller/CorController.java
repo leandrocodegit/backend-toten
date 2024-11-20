@@ -45,7 +45,7 @@ public class CorController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
+   // @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
     public ResponseEntity<Page<CorResponse>> listaCores(Pageable pageable) {
         return ResponseEntity.ok(corService.listaTodasCores(pageable));
     }

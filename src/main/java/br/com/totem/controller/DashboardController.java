@@ -1,6 +1,7 @@
 package br.com.totem.controller;
 
 import br.com.totem.controller.response.DashboardResponse;
+import br.com.totem.model.Dashboard;
 import br.com.totem.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,13 @@ public  class DashboardController {
 
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
-    public ResponseEntity<DashboardResponse> gerarDash() {
-         return ResponseEntity.ok(dashboardService.gerarDash());
+    public ResponseEntity<Dashboard> buscar() {
+         return ResponseEntity.ok(dashboardService.buscarDashboard());
+    }
+
+    @GetMapping("/gerar")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    public ResponseEntity<Dashboard> gerarDash() {
+        return ResponseEntity.ok(dashboardService.gerarDash());
     }
 }

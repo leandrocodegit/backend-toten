@@ -37,16 +37,8 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                 String requestURI = request.getRequestURI();
                 String httpMethod = request.getMethod();
 
-                if (httpMethod.equals("GET") && requestURI.equals("/ws")) {
-                    Map<String, String[]> queryParams = request.getParameterMap();
-                    for (Map.Entry<String, String[]> entry : queryParams.entrySet()) {
-                        String[] paramValues = entry.getValue();
-                        if (!String.join(", ", paramValues).isEmpty()) {
-                            token = String.join(", ", paramValues);
-                            tipoToken = TipoToken.SOCKET;
-                            break;
-                        }
-                    }
+                if (httpMethod.equals("GET") && requestURI.equals("/totem/auth/ws")) {
+                    tipoToken = TipoToken.SOCKET;
                 }
 
                 if (token != null) {

@@ -28,6 +28,16 @@ public class AuthenticationController {
         return ResponseEntity.ok(tokenResponse);
     }
 
+    @GetMapping("/valid")
+    public  ResponseEntity<TokenResponse> validaAccess() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/ws")
+    public  ResponseEntity<TokenResponse> validWs() {
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/refresh")
     public  ResponseEntity<TokenResponse> refresh(@RequestParam("token") String refreshToken) {
         TokenResponse tokenResponse = authService.refreshtoken(refreshToken);

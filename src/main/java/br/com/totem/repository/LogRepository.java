@@ -1,7 +1,7 @@
 package br.com.totem.repository;
 
-import br.com.totem.controller.response.LogConexaoResponse;
 import br.com.totem.model.Log;
+import br.com.totem.model.LogConexao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -35,5 +35,5 @@ public interface LogRepository extends MongoRepository<Log, Long> {
             "{ $sort: { hour: 1 } }" +
             "{ $limit: 100 }"
     })
-    List<LogConexaoResponse> findLogsGroupedByCommandAndHour();
+    List<LogConexao> findLogsGroupedByCommandAndHour();
 }

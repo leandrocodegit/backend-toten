@@ -3,20 +3,21 @@ package br.com.totem.service;
 import br.com.totem.controller.response.DashboardResponse;
 import br.com.totem.controller.response.LogConexaoResponse;
 import br.com.totem.mapper.DispositivoMapper;
+import br.com.totem.model.Dashboard;
 import br.com.totem.model.DispositivoPorCor;
-import br.com.totem.repository.AgendaRepository;
-import br.com.totem.repository.DispositivoRepository;
-import br.com.totem.repository.LogRepository;
-import br.com.totem.repository.UserRepository;
+import br.com.totem.model.LogConexao;
+import br.com.totem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,18 +29,26 @@ public class DashboardService {
     private final AgendaRepository agendaRepository;
     private final DispositivoMapper dispositivoMapper;
     private final UserRepository userRepository;
+    private final DashBoardrepository dashBoardrepository;
+    private final UUID id = UUID.fromString("dba60104-517a-4190-9d1d-77cf1e6d1442");
 
-    public DashboardResponse gerarDash() {
+    public Dashboard buscarDashboard(){
+      return dashBoardrepository.findById(id).orElse(gerarDash());
+    }
 
-        DashboardResponse dashboardResponse = new DashboardResponse();
-        dashboardResponse.setUsuariosAtivos(userRepository.countByStatus(true));
-        dashboardResponse.setUsuariosInativos(userRepository.countByStatus(false));
+    public Dashboard gerarDash() {
 
-        dashboardResponse.setDispositivos(dispositivoRepository.findAll().stream().map(dispositivoMapper::toResponse).collect(Collectors.toList()));
+        Dashboard dashboard = new Dashboard();
+        dashboard.setId(id);
+        dashboard.setAtualizacao(LocalDateTime.now());
+        dashboard.setUsuariosAtivos(userRepository.countByStatus(true));
+        dashboard.setUsuariosInativos(userRepository.countByStatus(false));
+
+        dashboard.setDispositivos(dispositivoRepository.findAll().stream().map(dispositivoMapper::toResume).toList());
 
         Map<String, DispositivoPorCor> cores = new HashMap<>();
 
-        dashboardResponse.getDispositivos().forEach(device -> {
+        dashboard.getDispositivos().forEach(device -> {
             if (device.getCor() != null) {
                 if (cores.containsKey(device.getCor().getPrimaria())) {
                     DispositivoPorCor cor = cores.get(device.getCor().getPrimaria());
@@ -49,7 +58,7 @@ public class DashboardService {
                 }
             }
         });
-        dashboardResponse.setCores(cores.values().stream().toList());
+        dashboard.setCores(cores.values().stream().toList());
 
         Map<String, DispositivoPorCor> agendas = new HashMap<>();
         agendaRepository.findAllByAtivo(true).forEach(device -> {
@@ -78,12 +87,14 @@ public class DashboardService {
 
         Pageable pageable = PageRequest.of(0, 100);
 
-        dashboardResponse.setAgendas(agendas.values().stream().toList());
-        dashboardResponse.setAgendasExecucao(agendasExecucao.values().stream().toList());
-        dashboardResponse.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE"),pageable).getContent());
-        List<LogConexaoResponse> l = logRepository.findLogsGroupedByCommandAndHour();
-        dashboardResponse.setLogsConexao(l);
-        return dashboardResponse;
+        dashboard.setAgendas(agendas.values().stream().toList());
+        dashboard.setAgendasExecucao(agendasExecucao.values().stream().toList());
+        dashboard.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE"),pageable).getContent());
+        List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
+        dashboard.setLogsConexao(l);
+
+        dashBoardrepository.save(dashboard);
+        return dashboard;
     }
 
 }
