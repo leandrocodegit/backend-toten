@@ -12,11 +12,11 @@ services:
     container_name: totem-container
     networks:
       totem-network:
-        ipv4_address: 192.168.10.1
+        ipv4_address: 192.168.20.1
 
 networks:
   totem-network:
     ipam:
       driver: default
       config:
-        - subnet: "192.168.10.0/30"
+        - subnet: "192.168.20.0/30"
