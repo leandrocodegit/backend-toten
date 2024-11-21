@@ -11,12 +11,10 @@ services:
       - JAVA_OPTS=-Dspring.profiles.active=prod
     container_name: totem-container
     networks:
-      totem-network:
-        ipv4_address: 192.168.20.2
+      - totem-network
+    network_mode: host
+
 
 networks:
   totem-network:
-    ipam:
-      driver: default
-      config:
-        - subnet: "192.168.20.0/24"
+      driver: bridge
