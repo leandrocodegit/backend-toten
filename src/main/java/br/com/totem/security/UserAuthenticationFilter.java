@@ -42,7 +42,9 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 if (token != null) {
+                    System.out.println("############################ " + token);
                     String subject = jwtTokenProvider.getSubjectFromToken(token, tipoToken);
+                    System.out.println("############################ " + subject);
                     User user = userRepository.findByEmail(subject).get();
 
 //                   user.setEmail("admin");
