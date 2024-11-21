@@ -12,7 +12,7 @@ services:
     container_name: totem-container
     networks:
       app-network:
-        ipv4_address: 192.168.10.1
+        ipv4_address: 192.168.10.2
 
 networks:
   app-network:
