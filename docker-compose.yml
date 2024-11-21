@@ -16,6 +16,7 @@ services:
 
 networks:
   totem-network:
+  name: totem-network
     ipam:
       driver: default
       config:
