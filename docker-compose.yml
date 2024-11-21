@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.8'
 
 services:
   app:
@@ -16,7 +16,7 @@ services:
 
 networks:
   totem-network:
-  name: totem-network
+    name: totem-network
     ipam:
       driver: default
       config:
