@@ -29,10 +29,8 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            TipoToken tipoToken = TipoToken.ACCESS;
             if (isPublicEndpoint(request)) {
-
-                TipoToken tipoToken = TipoToken.ACCESS;
-
                 String token = recoveryToken(request);
                 String requestURI = request.getRequestURI();
                 String httpMethod = request.getMethod();
@@ -56,13 +54,15 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                     Authentication authentication =
                             new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if(!tipoToken.equals(TipoToken.SOCKET))
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     System.out.println("Erro");
                     throw new ExceptionAuthorization("O token está ausente.");
                 }
             }
-            filterChain.doFilter(request, response);
+            if(!tipoToken.equals(TipoToken.SOCKET))
+                filterChain.doFilter(request, response);
         } catch (Exception err) {
             err.printStackTrace();
             throw new ExceptionAuthorization("O token inválido");
