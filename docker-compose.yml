@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8000:8081"
     environment:
       - JAVA_OPTS=-Dspring.profiles.active=prod
     container_name: totem-container
