@@ -34,6 +34,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                 String token = recoveryToken(request);
                 String requestURI = request.getRequestURI();
                 String httpMethod = request.getMethod();
+                System.out.println(requestURI);
 
                 if (httpMethod.equals("GET") && requestURI.equals("/totem/auth/ws")) {
                     tipoToken = TipoToken.SOCKET;

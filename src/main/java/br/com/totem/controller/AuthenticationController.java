@@ -29,14 +29,14 @@ public class AuthenticationController {
     }
 
     @GetMapping("/valid")
-    public  ResponseEntity<Boolean> validaAccess() {
+    public  Boolean validaAccess() {
         System.out.println("token validado");
-        return ResponseEntity.ok(Boolean.TRUE);
+        return Boolean.TRUE;
     }
     @GetMapping("/ws")
-    public  ResponseEntity<Boolean> validWs() {
+    public Boolean validWs() {
         System.out.println("token validado");
-        return ResponseEntity.ok(Boolean.TRUE);
+        return Boolean.TRUE;
     }
 
     @GetMapping("/refresh")
