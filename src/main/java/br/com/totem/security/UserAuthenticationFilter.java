@@ -54,15 +54,17 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                     Authentication authentication =
                             new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
 
-                    if(!tipoToken.equals(TipoToken.SOCKET))
+                    //if(!tipoToken.equals(TipoToken.SOCKET))
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                    System.out.println("Context");
                 } else {
                     System.out.println("Erro");
                     throw new ExceptionAuthorization("O token está ausente.");
                 }
             }
-            if(!tipoToken.equals(TipoToken.SOCKET))
+          //  if(!tipoToken.equals(TipoToken.SOCKET))
                 filterChain.doFilter(request, response);
+            System.out.println("chain");
         } catch (Exception err) {
             err.printStackTrace();
             throw new ExceptionAuthorization("O token inválido");
