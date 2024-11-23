@@ -33,6 +33,9 @@ public class SecurityConfig {
     protected static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/totem/auth/login",
             "/totem/auth/refresh",
+            "/totem/auth/ws",
+            "/totem/auth/valid",
+            "/totem/dashboard/gerar",
             "/totem/mensagem",
             "/totem/topic/messages",
             "/totem/send",
