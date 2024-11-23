@@ -3,8 +3,7 @@ package br.com.totem.model.constantes;
 public enum TipoToken {
 
     ACCESS("access_token"),
-    REFRESH("refresh_token"),
-    SOCKET("socket_token");
+    REFRESH("refresh_token");
 
     private String value;
 

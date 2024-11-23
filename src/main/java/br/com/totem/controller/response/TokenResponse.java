@@ -13,7 +13,6 @@ public class TokenResponse {
 
     private String access_token;
     private String refresh_token;
-    private String socket_token;
     private String type;
     private long expiresIn;
 }

@@ -29,43 +29,24 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            TipoToken tipoToken = TipoToken.ACCESS;
             if (isPublicEndpoint(request)) {
                 String token = recoveryToken(request);
-                String requestURI = request.getRequestURI();
-                String httpMethod = request.getMethod();
-                System.out.println(requestURI);
-
-                if (httpMethod.equals("GET") && requestURI.equals("/totem/auth/ws")) {
-                    tipoToken = TipoToken.SOCKET;
-                }
 
                 if (token != null) {
-                    System.out.println("############################ " + token);
-                    String subject = jwtTokenProvider.getSubjectFromToken(token, tipoToken);
-                    System.out.println("############################ " + subject);
+                    String subject = jwtTokenProvider.getSubjectFromToken(token, TipoToken.ACCESS);
                     User user = userRepository.findByEmail(subject).get();
-
-//                   user.setEmail("admin");
-//                   user.setPassword("$2a$10$Ra/VAlbHDFTC0r6wJ6k76uZsIdBvbthCpZHUEdtlvCYJMps/Ntygy");
-//                   user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
                     UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-                    System.out.println("############################ detalis" + userDetails.getUser().getRoles());
                     Authentication authentication =
                             new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
 
-                    //if(!tipoToken.equals(TipoToken.SOCKET))
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("Context");
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     System.out.println("Erro");
                     throw new ExceptionAuthorization("O token está ausente.");
                 }
             }
-          //  if(!tipoToken.equals(TipoToken.SOCKET))
-                filterChain.doFilter(request, response);
-            System.out.println("chain");
+            filterChain.doFilter(request, response);
         } catch (Exception err) {
             err.printStackTrace();
             throw new ExceptionAuthorization("O token inválido");

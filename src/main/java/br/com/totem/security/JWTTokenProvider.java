@@ -69,9 +69,6 @@ public class JWTTokenProvider {
             case REFRESH -> {
                 return Algorithm.HMAC512(SECRET_KEY);
             }
-            case SOCKET -> {
-                return Algorithm.HMAC384(SECRET_KEY);
-            }
         }
         return null;
     }
@@ -105,6 +102,7 @@ public class JWTTokenProvider {
 
     public boolean validateRefreshToken(String token) {
         try {
+            token = token.replace("Bearer ", "");
             Algorithm algorithm = Algorithm.HMAC512(SECRET_KEY);
             JWTVerifier verifier = JWT.require(algorithm).build();
             DecodedJWT jwt = verifier.verify(token);

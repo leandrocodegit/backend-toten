@@ -52,8 +52,7 @@ public class AuthService {
 
         return new TokenResponse(
                 jwtTokenProvider.generateToken(userDetails, TipoToken.ACCESS),
-                jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH),
-                jwtTokenProvider.generateToken(userDetails, TipoToken.SOCKET), "bearer", 0);
+                jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH), "bearer", 0);
     }
 
     public TokenResponse refreshtoken(String refreshToken) {
@@ -67,8 +66,7 @@ public class AuthService {
             UserDetailsImpl userDetails = new UserDetailsImpl(user);
             return new TokenResponse(
                     jwtTokenProvider.generateToken(userDetails, TipoToken.ACCESS),
-                    jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH),
-                    jwtTokenProvider.generateToken(userDetails, TipoToken.SOCKET), "bearer", 0);
+                    jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH), "bearer", 0);
 
         } catch (Exception err) {
 
