@@ -33,8 +33,6 @@ public class SecurityConfig {
     protected static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/totem/auth/login",
             "/totem/auth/refresh",
-            "/totem/auth/ws",
-            "/totem/auth/valid",
             "/totem/dashboard/gerar",
             "/totem/mensagem",
             "/totem/topic/messages",
@@ -52,8 +50,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ws").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/totem/auth/login").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
