@@ -6,9 +6,7 @@ import br.com.totem.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/dashboard")
@@ -23,8 +21,12 @@ public  class DashboardController {
          return ResponseEntity.ok(dashboardService.buscarDashboard());
     }
 
+    @CrossOrigin(
+            origins = "http://broker-container",
+            methods = {RequestMethod.GET},
+            allowCredentials = "true"
+    )
     @GetMapping("/gerar")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<Dashboard> gerarDash() {
         return ResponseEntity.ok(dashboardService.gerarDash());
     }
