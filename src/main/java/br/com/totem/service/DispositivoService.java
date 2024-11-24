@@ -64,6 +64,7 @@ public class DispositivoService {
                             .intensidade(request.getConfiguracao().getIntensidade())
                             .leds(request.getConfiguracao().getLeds())
                             .faixa(request.getConfiguracao().getFaixa())
+                            .tipoCor(request.getConfiguracao().getTipoCor())
                             .build()
             );
             dispositivoRepository.save(dispositivo);
