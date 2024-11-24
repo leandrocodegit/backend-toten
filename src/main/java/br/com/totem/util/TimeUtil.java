@@ -1,6 +1,7 @@
 package br.com.totem.util;
 
 import br.com.totem.controller.response.DispositivoResponse;
+import br.com.totem.controller.response.DispositivoResumeResponse;
 import br.com.totem.model.Dispositivo;
 
 import java.time.Duration;
@@ -22,6 +23,14 @@ public class TimeUtil {
     }
 
     public static boolean isTime(DispositivoResponse dispositivo) {
+        if (dispositivo == null || dispositivo.getTemporizador() == null) {
+            return false;
+        }
+        long differenceInMinutes = Duration.between(dispositivo.getTemporizador().getTime(), LocalDateTime.now()).toMinutes();
+        return differenceInMinutes <= 0;
+    }
+
+    public static boolean isTime(DispositivoResumeResponse dispositivo) {
         if (dispositivo == null || dispositivo.getTemporizador() == null) {
             return false;
         }
