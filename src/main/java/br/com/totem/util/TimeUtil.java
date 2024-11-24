@@ -27,7 +27,6 @@ public class TimeUtil {
             return false;
         }
         long differenceInMinutes = Duration.between(dispositivo.getTemporizador().getTime(), LocalDateTime.now()).toMinutes();
-        System.out.println("Temporizador: " + differenceInMinutes);
         return differenceInMinutes <= 0;
     }
 
