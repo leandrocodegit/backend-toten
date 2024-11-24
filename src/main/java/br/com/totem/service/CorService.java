@@ -74,6 +74,7 @@ public class CorService {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setCor(cor);
             dispositivoRepository.save(dispositivo);
+            comandoService.sincronizar(dispositivo.getMac());
             return dispositivo;
         }
         return null;
