@@ -30,7 +30,6 @@ public class DispositivoResponse {
     private Configuracao configuracao;
     private CorResponse cor;
     private Endereco endereco;
-    private String enderecoComplento;
     private String enderecoCompleto;
     private boolean isTimer;
     private Temporizador temporizador;
