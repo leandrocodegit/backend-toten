@@ -42,7 +42,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                 String requestURI = request.getRequestURI();
                 String httpMethod = request.getMethod();
 
-                if (httpMethod.equals("GET") && requestURI.equals("/totem/auth/valid/")) {
+                if (httpMethod.equals("GET") && requestURI.equals("/totem/auth/valid")) {
                     tipoToken = TipoToken.COMANDO;
                 }
 
