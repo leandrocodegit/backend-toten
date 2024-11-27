@@ -69,6 +69,9 @@ public class JWTTokenProvider {
             case REFRESH -> {
                 return Algorithm.HMAC512(SECRET_KEY);
             }
+            case COMANDO -> {
+                return Algorithm.HMAC384(SECRET_KEY);
+            }
         }
         return null;
     }

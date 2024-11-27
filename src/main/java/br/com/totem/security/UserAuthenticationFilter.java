@@ -29,11 +29,27 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            TipoToken tipoToken = TipoToken.ACCESS;
             if (isPublicEndpoint(request)) {
                 String token = recoveryToken(request);
 
+                String requestURI = request.getRequestURI();
+                String httpMethod = request.getMethod();
+
+                if(httpMethod.equals("GET") && requestURI.equals("/totem/auth/valid")) {
+                    Map<String, String[]> queryParams = request.getParameterMap();
+                    for (Map.Entry<String, String[]> entry : queryParams.entrySet()) {
+                        String[] paramValues = entry.getValue();
+                        if (!String.join(", ", paramValues).isEmpty()){
+                            token = String.join(", ", paramValues);
+                            tipoToken = TipoToken.COMANDO;
+                            break;
+                        }
+                    }
+                }
+
                 if (token != null) {
-                    String subject = jwtTokenProvider.getSubjectFromToken(token, TipoToken.ACCESS);
+                    String subject = jwtTokenProvider.getSubjectFromToken(token, tipoToken);
                     User user = userRepository.findByEmail(subject).get();
                     UserDetailsImpl userDetails = new UserDetailsImpl(user);
 

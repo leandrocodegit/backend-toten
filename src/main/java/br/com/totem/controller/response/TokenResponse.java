@@ -13,6 +13,7 @@ public class TokenResponse {
 
     private String access_token;
     private String refresh_token;
+    private String comando_token;
     private String type;
     private long expiresIn;
 }

@@ -33,11 +33,6 @@ public class AuthenticationController {
         System.out.println("token validado");
         return Boolean.TRUE;
     }
-    @GetMapping("/ws")
-    public Boolean validWs() {
-        System.out.println("token validado");
-        return Boolean.TRUE;
-    }
 
     @GetMapping("/refresh")
     public  ResponseEntity<TokenResponse> refresh(@RequestParam("token") String refreshToken) {
