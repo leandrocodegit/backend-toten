@@ -36,6 +36,19 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
     @Query("{" +
             "   $expr: {" +
             "     $and: [" +
+            "       { $ne: {id: 0}" +
+            "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }," +
+            "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?2 } } ] }," +
+            "     ]" +
+            "   }," +
+            "   'ativo': true" +
+            "   'todos': true" +
+            "}")
+    List<Agenda> findAllAgendasByDataDentroDoIntervaloTodosDispositivos(UUID id, LocalDate inicio, LocalDate termino);
+
+    @Query("{" +
+            "   $expr: {" +
+            "     $and: [" +
             "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?0 } } ] }," +
             "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?0 } } ] }," +
             "     ]" +

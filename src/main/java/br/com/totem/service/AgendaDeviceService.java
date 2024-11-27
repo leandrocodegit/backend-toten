@@ -48,7 +48,7 @@ public class AgendaDeviceService {
     }
 
     public boolean possuiAgendaDipositivoPrevistaHoje(Agenda agenda, String mac) {
-        return !agendaRepository.findFirstByDataAndDispositivo(agenda.getInicio(), agenda.getTermino(), mac, agenda.getId()).isEmpty();
+        return !agendaRepository.findFirstByDataAndDispositivo(agenda.getInicio().toLocalDate(), agenda.getTermino().toLocalDate(), mac, agenda.getId()).isEmpty();
     }
 
 }

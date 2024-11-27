@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,18 +37,23 @@ public class AgendaService {
 
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
-            if(request.getCor() == null || request.getCor().getId() == null){
+            if (request.getCor() == null || request.getCor().getId() == null) {
                 throw new ExceptionResponse("Configuração de cor é obrigatorio");
             }
             request.setId(UUID.randomUUID());
-            agendaRepository.save(agendaMapper.toEntity(request));
+
+            Agenda agenda = agendaMapper.toEntity(request);
+            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
+            agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
+            agendaRepository.save(agenda);
+            validarConflitos(agenda);
             logRepository.save(Log.builder()
                     .cor(null)
                     .mac(request.getId().toString())
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
                     .descricao(request.toString())
-                    .mensagem( "Nova agenda criada")
+                    .mensagem("Nova agenda criada")
                     .build());
         } else {
             throw new ExceptionResponse("Agenda já existe");
@@ -59,27 +66,24 @@ public class AgendaService {
         if (agendaOptional.isPresent()) {
             Agenda agenda = agendaOptional.get();
             agenda.setAtivo(request.isAtivo());
-            agenda.setInicio(request.getInicio());
-            agenda.setTermino(request.getTermino());
+            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
+            agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
             agenda.setTodos(request.isTodos());
             agenda.setExecucao(null);
-            if(request.isTodos()){
-                agenda.setDispositivos(dispositivoService.listaTodosEntidadeDispositivosPorFiltro(Filtro.ATIVO));
-            }else{
+            if (Boolean.TRUE.equals(request.isTodos())) {
+                agenda.setDispositivos(Collections.emptyList());
+            }else {
                 agenda.setDispositivos(request.getDispositivos());
             }
 
-            if(removerConflitos){
-            for (int i = 0; i < agenda.getDispositivos().size(); i++) {
-                if(agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, agenda.getDispositivos().get(i).getMac())){
-                    agenda.getDispositivos().remove(agenda.getDispositivos().get(i));
-                }
-            }}else {
-                agenda.getDispositivos().forEach(device -> {
-                    if(agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, device.getMac())){
-                        throw new ExceptionResponse("Conflito de datas");
+            if (removerConflitos) {
+                for (int i = 0; i < agenda.getDispositivos().size(); i++) {
+                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, agenda.getDispositivos().get(i).getMac()) || verificarSeTemAgendaParaTodos(agenda)) {
+                        agenda.getDispositivos().remove(agenda.getDispositivos().get(i));
                     }
-                });
+                }
+            } else {
+
             }
             if (request.getCor() != null && request.getCor().getId() != null)
                 agenda.setCor(configuracaoMapper.toEntity(request.getCor()));
@@ -90,11 +94,22 @@ public class AgendaService {
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
                     .descricao(agenda.toString())
-                    .mensagem( "Agenda foi atualizada")
+                    .mensagem("Agenda foi atualizada")
                     .build());
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
+    }
+
+    private void validarConflitos(Agenda agenda){
+        agenda.getDispositivos().forEach(device -> {
+            if(verificarSeTemAgendaParaTodos(agenda)){
+                throw new ExceptionResponse("Conflito de datas");
+            }
+            if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, device.getMac())) {
+                throw new ExceptionResponse("Conflito de datas");
+            }
+        });
     }
 
     public void removerAgenda(UUID id) {
@@ -102,8 +117,12 @@ public class AgendaService {
         agendaRepository.deleteById(id);
     }
 
-    public List<AgendaResponse> agendasDoMesAtual(boolean ativo){
+    public List<AgendaResponse> agendasDoMesAtual(boolean ativo) {
         Sort sort = Sort.by(Sort.Order.asc("inicio"));
-       return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(LocalDate.now().getMonthValue(),ativo, sort).stream().map(agendaMapper::toResponse).toList();
+        return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
+    }
+
+    public boolean verificarSeTemAgendaParaTodos(Agenda agenda) {
+        return !agendaRepository.findAllAgendasByDataDentroDoIntervaloTodosDispositivos(agenda.getId(), agenda.getInicio().toLocalDate(), agenda.getTermino().toLocalDate()).isEmpty();
     }
 }

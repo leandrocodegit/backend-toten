@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,9 +23,9 @@ public class Agenda {
     private String nome;
     private boolean ativo;
     private String status;
-    private LocalDate execucao;
-    private LocalDate inicio;
-    private LocalDate termino;
+    private LocalDateTime execucao;
+    private LocalDateTime inicio;
+    private LocalDateTime termino;
     @DBRef
     private Cor cor;
     @DBRef
