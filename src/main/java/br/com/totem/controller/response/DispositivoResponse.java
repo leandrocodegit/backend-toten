@@ -40,7 +40,6 @@ public class DispositivoResponse {
            return "Offline";
         return "Online";
     }
-
     public boolean isTimer() {
         return TimeUtil.isTime(this);
     }

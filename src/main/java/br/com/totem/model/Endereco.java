@@ -18,8 +18,8 @@ public class Endereco {
 
     @Override
     public String toString() {
-        if(street != null && numero != null && neighborhood != null && cep != null && state != null)
-            return street + " " + numero + " " + neighborhood + ", " + cep + ", " + city + " - " + state;
+        if(street != null && neighborhood != null && cep != null && state != null)
+            return street + " " + (numero != null ? numero : "") + " " + neighborhood + ", " + cep + ", " + city + " - " + state;
         return  "";
     }
 }
