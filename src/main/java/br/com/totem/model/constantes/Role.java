@@ -5,5 +5,6 @@ public enum Role {
     ADMIN,
     USER,
     OPERADOR,
-    AVANCADO
+    AVANCADO,
+    INTEGRACAO
 }

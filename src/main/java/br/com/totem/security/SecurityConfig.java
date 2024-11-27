@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/totem/mensagem",
             "/totem/topic/messages",
             "/totem/send",
-            "/totem/dashboard/gerar"
+            "/totem/dashboard/gerar",
+            "/totem/auth/secret"
 
     };
 
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/dashboard/gerar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/secret").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

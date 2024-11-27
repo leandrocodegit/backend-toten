@@ -2,6 +2,7 @@ package br.com.totem.controller;
 
 import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
+import br.com.totem.controller.response.TokenIntegracaoResponse;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AuthService;
@@ -29,11 +30,22 @@ public class AuthenticationController {
     }
 
     @GetMapping("/valid")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public  Boolean validaAccess() {
         System.out.println("token validado");
         return Boolean.TRUE;
     }
 
+    @GetMapping("/valid/integracao")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_INTEGRACAO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    public  Boolean validaAccessoIntegracao() {
+        return Boolean.TRUE;
+    }
+
+    @GetMapping("/secret")
+    public  ResponseEntity<TokenIntegracaoResponse> validaIntegracao(@RequestHeader("client-id") String clientId, @RequestHeader("secret") String secret) {
+        return ResponseEntity.ok(authService.validarIntegracao(clientId, secret));
+    }
     @GetMapping("/refresh")
     public  ResponseEntity<TokenResponse> refresh(@RequestParam("token") String refreshToken) {
         TokenResponse tokenResponse = authService.refreshtoken(refreshToken);

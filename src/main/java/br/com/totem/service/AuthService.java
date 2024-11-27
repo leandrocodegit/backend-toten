@@ -6,12 +6,15 @@ import br.com.totem.Exception.ExceptionResponse;
 import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
+import br.com.totem.controller.response.TokenIntegracaoResponse;
+import br.com.totem.model.Integracao;
 import br.com.totem.model.Log;
 import br.com.totem.model.MessageError;
 import br.com.totem.model.User;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Role;
 import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.repository.IntegracaoRepository;
 import br.com.totem.repository.LogRepository;
 import br.com.totem.repository.UserRepository;
 import br.com.totem.security.JWTTokenProvider;
@@ -28,10 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +42,7 @@ public class AuthService {
     private final SecurityConfig securityConfiguration;
     private final UserRepository userRepository;
     private final LogRepository logRepository;
+    private final IntegracaoRepository integracaoRepository;
 
     public TokenResponse authenticateUser(AuthUserRequest loginUserDto) {
 
@@ -55,6 +56,23 @@ public class AuthService {
                 jwtTokenProvider.generateToken(userDetails, TipoToken.REFRESH),
                 jwtTokenProvider.generateToken(userDetails, TipoToken.COMANDO),
                 "bearer", 0);
+    }
+
+    public TokenIntegracaoResponse validarIntegracao(String clientId, String secret) {
+
+        Integracao integracao = integracaoRepository.findByClientIdAndSecret(clientId, secret)
+                .orElseThrow(() -> new ExceptionResponse("Usuário não encontrado"));
+
+        User user = User.builder()
+                .email(integracao.getClientId())
+                .roles(Collections.singletonList(Role.INTEGRACAO))
+                .build();
+
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+        return new TokenIntegracaoResponse(
+                jwtTokenProvider.generateToken(userDetails, TipoToken.COMANDO),
+                "bearer", 60);
     }
 
     public TokenResponse refreshtoken(String refreshToken) {
