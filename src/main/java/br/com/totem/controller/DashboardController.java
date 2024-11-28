@@ -18,7 +18,7 @@ public  class DashboardController {
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<Dashboard> buscar() {
-         return ResponseEntity.ok(dashboardService.buscarDashboard());
+        return ResponseEntity.ok(dashboardService.buscarDashboard());
     }
 
     @CrossOrigin(

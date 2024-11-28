@@ -30,7 +30,11 @@ public class DashboardService {
     private final UUID id = UUID.fromString("dba60104-517a-4190-9d1d-77cf1e6d1442");
 
     public Dashboard buscarDashboard(){
-      return dashBoardrepository.findById(id).orElse(gerarDash());
+        var dash = dashBoardrepository.findById(id);
+        if(dash.isPresent()){
+            return dash.get();
+        }
+      return  gerarDash();
     }
 
     public Dashboard gerarDash() {
