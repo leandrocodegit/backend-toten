@@ -131,7 +131,7 @@ public class DashboardService {
                 if (offline.isPresent()) {
                     Optional<LogConexao> online = dashboard.getLogsConexao()
                             .stream()
-                            .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.OFFLINE))
+                            .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.ONLINE))
                             .findFirst();
 
                     if (online.isPresent()) {
