@@ -102,7 +102,7 @@ public class DashboardService {
         List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboard.setLogsConexao(l);
 
-        int quantidadeDispositivos = dashboard.getDispositivos().size();
+        int quantidadeDispositivos = dashboard.getDispositivos().getTotal();
         List<LogConexao> novosLogs = new ArrayList<>();
 
         dashboard.getLogsConexao().forEach(logConexao -> {
