@@ -50,4 +50,5 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Stri
             "}")
     Page<Dispositivo> findByMacAndNomeContaining(String texto, Pageable pageable);
 
+
 }

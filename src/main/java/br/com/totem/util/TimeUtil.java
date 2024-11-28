@@ -37,4 +37,11 @@ public class TimeUtil {
         long differenceInMinutes = Duration.between(dispositivo.getTemporizador().getTime(), LocalDateTime.now()).toMinutes();
         return differenceInMinutes <= 0;
     }
+
+    public String getConexao(LocalDateTime ultimaAtualizacao) {
+        long differenceInMinutes = Duration.between(ultimaAtualizacao, LocalDateTime.now()).toMinutes();
+        if (differenceInMinutes >= 5)
+            return "Offline";
+        return "Online";
+    }
 }

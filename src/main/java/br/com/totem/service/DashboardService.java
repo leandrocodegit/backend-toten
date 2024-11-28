@@ -1,7 +1,5 @@
 package br.com.totem.service;
 
-import br.com.totem.controller.response.DashboardResponse;
-import br.com.totem.controller.response.LogConexaoResponse;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Dashboard;
 import br.com.totem.model.DispositivoPorCor;
@@ -18,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -9,7 +9,7 @@ services:
       - "8000:8081"
     environment:
       - JAVA_OPTS=-Dspring.profiles.active=prod
-    container_name: totem-container
+    container_name: totem
     networks:
       - totem-network
 
