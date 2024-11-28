@@ -1,10 +1,12 @@
 package br.com.totem.service;
 
+import br.com.totem.controller.response.DispositivoDashResponse;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Dashboard;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.model.LogConexao;
 import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.constantes.StatusConexao;
 import br.com.totem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -43,11 +45,18 @@ public class DashboardService {
         dashboard.setUsuariosAtivos(userRepository.countByStatus(true));
         dashboard.setUsuariosInativos(userRepository.countByStatus(false));
 
-        dashboard.setDispositivos(dispositivoRepository.findAll().stream().map(dispositivoMapper::toResume).toList());
+
+        dashboard.setDispositivos(new DispositivoDashResponse());
 
         Map<String, DispositivoPorCor> cores = new HashMap<>();
 
-        dashboard.getDispositivos().forEach(device -> {
+        dispositivoRepository.findAll().stream().map(dispositivoMapper::toResume).toList().forEach(device -> {
+            if(device.getStatus().equals(StatusConexao.Online)){
+                dashboard.getDispositivos().setOnline(dashboard.getDispositivos().getOnline() + 1);
+            }else{
+                dashboard.getDispositivos().setOffline(dashboard.getDispositivos().getOffline() + 1);
+            }
+
             if (device.getCor() != null) {
                 if (cores.containsKey(device.getCor().getPrimaria())) {
                     DispositivoPorCor cor = cores.get(device.getCor().getPrimaria());
@@ -58,6 +67,7 @@ public class DashboardService {
             }
         });
         dashboard.setCores(cores.values().stream().toList());
+        dashboard.getDispositivos().setTotal(dashboard.getDispositivos().getOffline() + dashboard.getDispositivos().getOnline());
 
         Map<String, DispositivoPorCor> agendas = new HashMap<>();
         agendaRepository.findAllByAtivo(true).forEach(device -> {

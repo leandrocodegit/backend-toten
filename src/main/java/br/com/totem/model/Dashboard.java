@@ -1,5 +1,6 @@
 package br.com.totem.model;
 
+import br.com.totem.controller.response.DispositivoDashResponse;
 import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.controller.response.DispositivoResumeResponse;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class Dashboard {
     private LocalDateTime atualizacao;
     private long usuariosAtivos;
     private long usuariosInativos;
-    private List<DispositivoResumeResponse> dispositivos;
+    private DispositivoDashResponse dispositivos;
     private List<DispositivoPorCor> agendas;
     private List<DispositivoPorCor> agendasExecucao;
     private List<DispositivoPorCor> cores;
