@@ -1,6 +1,7 @@
 package br.com.totem.model;
 
 import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.constantes.StatusConexao;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,7 @@ public class Dispositivo {
     private LocalDateTime ultimaAtualizacao;
     private boolean ativo;
     private Comando comando;
+    private StatusConexao status;
     private String latitude;
     private String longitude;
     private String brokerId;
