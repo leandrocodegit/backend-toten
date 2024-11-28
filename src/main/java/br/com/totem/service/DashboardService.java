@@ -4,6 +4,7 @@ import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Dashboard;
 import br.com.totem.model.DispositivoPorCor;
 import br.com.totem.model.LogConexao;
+import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -12,10 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +27,12 @@ public class DashboardService {
     private final DashBoardrepository dashBoardrepository;
     private final UUID id = UUID.fromString("dba60104-517a-4190-9d1d-77cf1e6d1442");
 
-    public Dashboard buscarDashboard(){
+    public Dashboard buscarDashboard() {
         var dash = dashBoardrepository.findById(id);
-        if(dash.isPresent()){
+        if (dash.isPresent()) {
             return dash.get();
         }
-      return  gerarDash();
+        return gerarDash();
     }
 
     public Dashboard gerarDash() {
@@ -90,9 +88,59 @@ public class DashboardService {
 
         dashboard.setAgendas(agendas.values().stream().toList());
         dashboard.setAgendasExecucao(agendasExecucao.values().stream().toList());
-        dashboard.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE"),pageable).getContent());
+        dashboard.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE"), pageable).getContent());
         List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboard.setLogsConexao(l);
+
+        int quantidadeDispositivos = dashboard.getDispositivos().size();
+        List<LogConexao> novosLogs = new ArrayList<>();
+
+        dashboard.getLogsConexao().forEach(logConexao -> {
+            Optional<LogConexao> offline = dashboard.getLogsConexao()
+                    .stream()
+                    .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.OFFLINE))
+                    .findFirst();
+
+            if (offline.isPresent()) {
+                if (offline.get().getQuantidade() > quantidadeDispositivos) {
+                    offline.get().setQuantidade(quantidadeDispositivos);
+                }
+            }
+            if (logConexao.getComando().equals(Comando.ONLINE)) {
+                if (logConexao.getQuantidade() > quantidadeDispositivos) {
+                    if (offline.isPresent()) {
+                        logConexao.setQuantidade(quantidadeDispositivos - offline.get().getQuantidade());
+                    } else {
+                        logConexao.setQuantidade(quantidadeDispositivos);
+                        novosLogs.add(new LogConexao(logConexao.getHora(), Comando.OFFLINE, quantidadeDispositivos - logConexao.getQuantidade()));
+                    }
+                }else if(!offline.isPresent()){
+                    novosLogs.add(new LogConexao(logConexao.getHora(), Comando.OFFLINE, quantidadeDispositivos - logConexao.getQuantidade()));
+                }
+            }else{
+                if (offline.isPresent()) {
+                    Optional<LogConexao> online = dashboard.getLogsConexao()
+                            .stream()
+                            .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.OFFLINE))
+                            .findFirst();
+
+                    if (online.isPresent()) {
+                        if(online.get().getQuantidade() >= logConexao.getQuantidade()){
+                           logConexao.setQuantidade(0);
+                        }else{
+                            logConexao.setQuantidade(online.get().getQuantidade() - logConexao.getQuantidade());
+                        }
+                    } else {
+                        logConexao.setQuantidade(quantidadeDispositivos);
+                        novosLogs.add(new LogConexao(logConexao.getHora(), Comando.ONLINE, quantidadeDispositivos - logConexao.getQuantidade()));
+                    }
+                }
+            }
+        });
+
+        if (!novosLogs.isEmpty()) {
+            dashboard.getLogsConexao().addAll(novosLogs);
+        }
 
         dashBoardrepository.save(dashboard);
         return dashboard;
