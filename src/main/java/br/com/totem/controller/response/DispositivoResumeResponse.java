@@ -15,17 +15,10 @@ public class DispositivoResumeResponse {
     private String mac;
     private String nome;
     private LocalDateTime ultimaAtualizacao;
-    private String conexao;
+    private String status;
     private CorResponse cor;
     private boolean isTimer;
     private Temporizador temporizador;
-
-    public String getConexao() {
-        long differenceInMinutes = Duration.between(ultimaAtualizacao, LocalDateTime.now()).toMinutes();
-        if (differenceInMinutes >= 5)
-            return "Offline";
-        return "Online";
-    }
 
     public boolean isTimer() {
         return TimeUtil.isTime(this);
