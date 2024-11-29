@@ -102,55 +102,55 @@ public class DashboardService {
         List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboard.setLogsConexao(l);
 
-        int quantidadeDispositivos = (int) dispositivoRepository.count();
-        List<LogConexao> novosLogs = new ArrayList<>();
-
-        dashboard.getLogsConexao().forEach(logConexao -> {
-            Optional<LogConexao> offline = dashboard.getLogsConexao()
-                    .stream()
-                    .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.OFFLINE))
-                    .findFirst();
-
-            if (offline.isPresent()) {
-                if (offline.get().getQuantidade() > quantidadeDispositivos) {
-                    offline.get().setQuantidade(quantidadeDispositivos);
-                }
-            }
-            if (logConexao.getComando().equals(Comando.ONLINE)) {
-                if (logConexao.getQuantidade() > quantidadeDispositivos) {
-                    if (offline.isPresent()) {
-                        logConexao.setQuantidade(quantidadeDispositivos - offline.get().getQuantidade());
-                    } else {
-                        logConexao.setQuantidade(quantidadeDispositivos);
-                        novosLogs.add(new LogConexao(logConexao.getHora(), Comando.OFFLINE, quantidadeDispositivos - logConexao.getQuantidade()));
-                    }
-                }else if(!offline.isPresent()){
-                    novosLogs.add(new LogConexao(logConexao.getHora(), Comando.OFFLINE, quantidadeDispositivos - logConexao.getQuantidade()));
-                }
-            }else{
-                if (offline.isPresent()) {
-                    Optional<LogConexao> online = dashboard.getLogsConexao()
-                            .stream()
-                            .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.ONLINE))
-                            .findFirst();
-
-                    if (online.isPresent()) {
-                        if(online.get().getQuantidade() >= logConexao.getQuantidade()){
-                           logConexao.setQuantidade(0);
-                        }else{
-                            logConexao.setQuantidade(online.get().getQuantidade() - logConexao.getQuantidade());
-                        }
-                    } else {
-                        logConexao.setQuantidade(quantidadeDispositivos);
-                        novosLogs.add(new LogConexao(logConexao.getHora(), Comando.ONLINE, quantidadeDispositivos - logConexao.getQuantidade()));
-                    }
-                }
-            }
-        });
-
-        if (!novosLogs.isEmpty()) {
-            dashboard.getLogsConexao().addAll(novosLogs);
-        }
+//        int quantidadeDispositivos = (int) dispositivoRepository.count();
+//        List<LogConexao> novosLogs = new ArrayList<>();
+//
+//        dashboard.getLogsConexao().forEach(logConexao -> {
+//            Optional<LogConexao> offline = dashboard.getLogsConexao()
+//                    .stream()
+//                    .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.OFFLINE))
+//                    .findFirst();
+//
+//            if (offline.isPresent()) {
+//                if (offline.get().getQuantidade() > quantidadeDispositivos) {
+//                    offline.get().setQuantidade(quantidadeDispositivos);
+//                }
+//            }
+//            if (logConexao.getComando().equals(Comando.ONLINE)) {
+//                if (logConexao.getQuantidade() > quantidadeDispositivos) {
+//                    if (offline.isPresent()) {
+//                        logConexao.setQuantidade(quantidadeDispositivos - offline.get().getQuantidade());
+//                    } else {
+//                        logConexao.setQuantidade(quantidadeDispositivos);
+//                        novosLogs.add(new LogConexao(logConexao.getHora(), Comando.OFFLINE, quantidadeDispositivos - logConexao.getQuantidade()));
+//                    }
+//                }else if(!offline.isPresent()){
+//                    novosLogs.add(new LogConexao(logConexao.getHora(), Comando.OFFLINE, quantidadeDispositivos - logConexao.getQuantidade()));
+//                }
+//            }else{
+//                if (offline.isPresent()) {
+//                    Optional<LogConexao> online = dashboard.getLogsConexao()
+//                            .stream()
+//                            .filter(it -> it.getHora() == logConexao.getHora() && it.getComando().equals(Comando.ONLINE))
+//                            .findFirst();
+//
+//                    if (online.isPresent()) {
+//                        if(online.get().getQuantidade() >= logConexao.getQuantidade()){
+//                           logConexao.setQuantidade(0);
+//                        }else{
+//                            logConexao.setQuantidade(online.get().getQuantidade() - logConexao.getQuantidade());
+//                        }
+//                    } else {
+//                        logConexao.setQuantidade(quantidadeDispositivos);
+//                        novosLogs.add(new LogConexao(logConexao.getHora(), Comando.ONLINE, quantidadeDispositivos - logConexao.getQuantidade()));
+//                    }
+//                }
+//            }
+//        });
+//
+//        if (!novosLogs.isEmpty()) {
+//            dashboard.getLogsConexao().addAll(novosLogs);
+//        }
 
         dashBoardrepository.save(dashboard);
         return dashboard;
