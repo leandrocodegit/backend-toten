@@ -1,5 +1,6 @@
 package br.com.totem.controller.response;
 
+import br.com.totem.model.Conexao;
 import br.com.totem.model.Configuracao;
 import br.com.totem.model.Endereco;
 import br.com.totem.model.Temporizador;
@@ -22,9 +23,7 @@ public class DispositivoResponse {
     private int memoria;
     private String versao;
     private boolean ignorarAgenda;
-    private LocalDateTime ultimaAtualizacao;
     private boolean ativo;
-    private StatusConexao status;
     private String latitude;
     private String longitude;
     private Comando comando;
@@ -34,6 +33,7 @@ public class DispositivoResponse {
     private String enderecoCompleto;
     private boolean isTimer;
     private Temporizador temporizador;
+    private Conexao conexao;
 
     public boolean isTimer() {
         return TimeUtil.isTime(this);

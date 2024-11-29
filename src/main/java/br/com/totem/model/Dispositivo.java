@@ -24,10 +24,8 @@ public class Dispositivo {
     private Integer memoria;
     private String versao;
     private boolean ignorarAgenda;
-    private LocalDateTime ultimaAtualizacao;
     private boolean ativo;
     private Comando comando;
-    private StatusConexao status;
     private String latitude;
     private String longitude;
     private String brokerId;
@@ -35,6 +33,8 @@ public class Dispositivo {
     private String enderecoCompleto;
     private Temporizador temporizador;
     private Configuracao configuracao;
+    @DBRef
+    private Conexao conexao;
     @DBRef
     private Cor cor;
     @DBRef
