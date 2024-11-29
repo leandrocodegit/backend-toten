@@ -23,4 +23,4 @@ COPY --from=builder /app/target/totem-0.0.1-SNAPSHOT.jar /app/totem-0.0.1-SNAPSH
 EXPOSE 8081
 
 # Comando para executar a aplicação
-CMD ["java", "-jar", "/app/totem-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-Xms1g", "-Xmx1g", "-jar", "/app/totem-0.0.1-SNAPSHOT.jar"]
