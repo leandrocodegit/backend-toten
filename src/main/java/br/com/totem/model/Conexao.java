@@ -1,5 +1,6 @@
 package br.com.totem.model;
 
+import br.com.totem.model.constantes.StatusConexao;
 import com.led.broker.model.constantes.StatusConexao;
 import lombok.Builder;
 import lombok.Getter;
