@@ -190,9 +190,4 @@ public class DispositivoService {
         return dispositivos;
     }
 
-    public List<Dispositivo> dispositivosQueFicaramOffilne() {
-        LocalDateTime cincoMinutosAtras = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(6);
-        Date dataLimite = Date.from(cincoMinutosAtras.atZone(ZoneOffset.UTC).toInstant());
-        return dispositivoRepository.findAllAtivosComUltimaAtualizacaoAntesQueEstavaoOnline(dataLimite);
-    }
 }
