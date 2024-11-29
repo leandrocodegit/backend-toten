@@ -15,8 +15,7 @@ public class DispositivoResumeResponse {
 
     private String mac;
     private String nome;
-    private LocalDateTime ultimaAtualizacao;
-    private StatusConexao status;
+    private ConexaoResponse conexao;
     private CorResponse cor;
     private boolean isTimer;
     private Temporizador temporizador;

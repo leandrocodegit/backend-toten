@@ -1,4 +1,4 @@
-package br.com.totem.model;
+package br.com.totem.controller.response;
 
 import br.com.totem.model.constantes.StatusConexao;
 import lombok.Builder;
@@ -12,12 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@Document(collection = "conexoes")
-public class Conexao {
+public class ConexaoResponse {
 
-    @Id
-    private String mac;
     private LocalDateTime ultimaAtualizacao;
     private StatusConexao status;
-
 }

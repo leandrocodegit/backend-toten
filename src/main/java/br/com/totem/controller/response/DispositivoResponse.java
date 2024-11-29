@@ -33,7 +33,7 @@ public class DispositivoResponse {
     private String enderecoCompleto;
     private boolean isTimer;
     private Temporizador temporizador;
-    private Conexao conexao;
+    private ConexaoResponse conexao;
 
     public boolean isTimer() {
         return TimeUtil.isTime(this);
