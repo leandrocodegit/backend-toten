@@ -22,7 +22,7 @@ public  class DashboardController {
     }
 
     @CrossOrigin(
-            origins = "http://broker-container:8082",
+            origins = "http://conexao:8084",
             methods = {RequestMethod.GET},
             allowCredentials = "true"
     )
