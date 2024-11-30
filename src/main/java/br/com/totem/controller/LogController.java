@@ -28,7 +28,6 @@ public class LogController {
     @GetMapping("/{tipo}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<?> pesquisarPorEmail(@PathVariable String tipo, Pageable pageable) {
-        dashboardService.gerarDash();
         if(tipo.contains("TIME"))
             return ResponseEntity.ok(logService.listaLogsPorTipo(Arrays.asList(Comando.TIMER_CONCLUIDO.name(), Comando.TIMER_CRIADO.name(), Comando.TIMER_CANCELADO.name()), pageable));
         return ResponseEntity.ok(logService.listaLogsPorTipo(Arrays.asList(tipo), pageable));
