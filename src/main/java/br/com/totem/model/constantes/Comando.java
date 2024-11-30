@@ -14,7 +14,8 @@ public enum Comando {
     TESTE("Teste de cor"),
     CONCLUIDO("Teste concluido"),
     TIMER_CONCLUIDO("Timer finalizado para %S"),
-    TIMER_CRIADO("Timer criado para %S");
+    TIMER_CRIADO("Timer criado para %S"),
+    TIMER_CANCELADO("Timer cancelado para %S");
 
     private String value;
 

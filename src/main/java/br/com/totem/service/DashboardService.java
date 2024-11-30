@@ -98,7 +98,7 @@ public class DashboardService {
 
         dashboard.setAgendas(agendas.values().stream().toList());
         dashboard.setAgendasExecucao(agendasExecucao.values().stream().toList());
-        dashboard.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE", "TIMER_CRIADO"), pageable).getContent());
+        dashboard.setLogs(logRepository.findAllByComandoInOrderByDataDesc(List.of("ENVIADO", "CONCLUIDO", "SINCRONIZAR", "SISTEMA", "NENHUM_DEVICE", "OFFLINE", "TIMER_CRIADO","TIMER_CANCELADO"), pageable).getContent());
         List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboard.setLogsConexao(l);
 
