@@ -13,15 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@Document(collection = "operacoes")
 public class Operacao {
 
     @Id
     private String mac;
     private ModoOperacao modoOperacao;
-    @DBRef
     private Agenda agenda;
-    @DBRef
     private Cor corTemporizador;
     private LocalDateTime time;
 }
