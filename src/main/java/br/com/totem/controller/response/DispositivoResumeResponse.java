@@ -1,13 +1,8 @@
 package br.com.totem.controller.response;
 
-import br.com.totem.model.Temporizador;
-import br.com.totem.model.constantes.StatusConexao;
 import br.com.totem.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,7 +13,7 @@ public class DispositivoResumeResponse {
     private ConexaoResponse conexao;
     private CorResponse cor;
     private boolean isTimer;
-    private Temporizador temporizador;
+    private OperacaoResponse operacao;
 
     public boolean isTimer() {
         return TimeUtil.isTime(this);

@@ -1,5 +1,6 @@
 package br.com.totem.model;
 
+import br.com.totem.controller.response.OperacaoResponse;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.StatusConexao;
 import lombok.Builder;
@@ -31,8 +32,9 @@ public class Dispositivo {
     private String brokerId;
     private Endereco endereco;
     private String enderecoCompleto;
-    private Temporizador temporizador;
     private Configuracao configuracao;
+    @DBRef
+    private Operacao operacao;
     @DBRef
     private Conexao conexao;
     @DBRef

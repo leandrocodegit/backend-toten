@@ -1,17 +1,11 @@
 package br.com.totem.controller.response;
 
-import br.com.totem.model.Conexao;
 import br.com.totem.model.Configuracao;
 import br.com.totem.model.Endereco;
-import br.com.totem.model.Temporizador;
 import br.com.totem.model.constantes.Comando;
-import br.com.totem.model.constantes.StatusConexao;
 import br.com.totem.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,7 +26,7 @@ public class DispositivoResponse {
     private Endereco endereco;
     private String enderecoCompleto;
     private boolean isTimer;
-    private Temporizador temporizador;
+    private OperacaoResponse operacao;
     private ConexaoResponse conexao;
 
     public boolean isTimer() {
