@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public interface DispositivoRepository extends MongoRepository<Dispositivo, String> {
 
@@ -27,6 +28,8 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Stri
     List<Dispositivo> findAllByAtivo(boolean ativo);
     @Query("{ 'ativo': ?0, 'configuracao': { $ne: null } }")
     Page<Dispositivo> findAllByAtivo(boolean ativo, Pageable pageable);
+    @Query("{ 'ativo': ?0, 'configuracao': { $ne: null }, 'operacao.agenda': { $ne: null }, operacao.modoOperacap: 'AGENDA', 'operacao.agenda.id' : ?1 }")
+    List<Dispositivo> findAllAgendasEmOperacao(boolean ativo, UUID agendaId);
     @Query("{ 'ativo': ?0 }")
     Page<Dispositivo> findAllByInativo(boolean ativo, Pageable pageable);
     @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 }, 'configuracao': { $ne: null } }")

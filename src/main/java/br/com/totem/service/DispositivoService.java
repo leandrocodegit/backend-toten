@@ -124,6 +124,14 @@ public class DispositivoService {
         return listaTodosEntidadeDispositivosPorFiltro(filtro).stream().map(dispositivoMapper::toResponse).collect(Collectors.toList());
     }
 
+    public List<Dispositivo> listaTodosOperacaoAgenda(boolean ativo, Agenda agenda) {
+        return dispositivoRepository.findAllAgendasEmOperacao(ativo, agenda.getId());
+    }
+
+    public Dispositivo salvarDispositivo(Dispositivo dispositivo){
+       return  dispositivoRepository.save(dispositivo);
+    }
+
     public Page<Dispositivo> listaTodosEntidadeDispositivosPorFiltro(Filtro filtro, Pageable pageable) {
         switch (filtro) {
             case TODOS -> {

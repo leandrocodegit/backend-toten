@@ -41,5 +41,4 @@ public class Dispositivo {
     @DBRef
     private Agenda agenda;
 
-
 }

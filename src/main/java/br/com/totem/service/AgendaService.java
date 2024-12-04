@@ -7,6 +7,7 @@ import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.CorMapper;
 import br.com.totem.model.Agenda;
+import br.com.totem.model.Dispositivo;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.AgendaRepository;
@@ -82,8 +83,6 @@ public class AgendaService {
                         agenda.getDispositivos().remove(agenda.getDispositivos().get(i));
                     }
                 }
-            } else {
-
             }
             if (request.getCor() != null && request.getCor().getId() != null)
                 agenda.setCor(configuracaoMapper.toEntity(request.getCor()));
@@ -96,9 +95,19 @@ public class AgendaService {
                     .descricao(agenda.toString())
                     .mensagem("Agenda foi atualizada")
                     .build());
+
+
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
+    }
+
+    private void atualizarOperacaoes(Agenda agenda){
+        List<Dispositivo> dispositivos = dispositivoService.listaTodosOperacaoAgenda(true, agenda);
+        dispositivos.forEach(device -> {
+            device.getOperacao().setAgenda(agenda);
+            dispositivoService.salvarDispositivo(device);
+        });
     }
 
     private void validarConflitos(Agenda agenda){
