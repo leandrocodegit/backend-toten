@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface DispositivoRepository extends MongoRepository<Dispositivo, String> {
 
+    long countByAtivo(boolean ativo);
     @Aggregation(pipeline = {
             "{ $lookup: { from: 'cor', localField: 'cor.primaria', foreignField: '_id', as: 'configuracaoDetalhada' } }",
             "{ $unwind: '$configuracaoDetalhada' }",

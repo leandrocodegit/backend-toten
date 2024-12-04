@@ -1,5 +1,6 @@
 package br.com.totem.service;
 
+import br.com.totem.Exception.ExceptionResponse;
 import br.com.totem.controller.request.DispositivoRequest;
 import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.DispositivoResponse;
@@ -9,6 +10,7 @@ import br.com.totem.model.constantes.Comando;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DispositivoService {
 
+    @Value("${quantidade-clientes}")
+    private int quantidadeClientes;
     private final DispositivoRepository dispositivoRepository;
     private final DispositivoMapper dispositivoMapper;
     private final LogRepository logRepository;
@@ -79,6 +83,11 @@ public class DispositivoService {
     }
 
     public void ativarDispositivos(String mac) {
+
+        if(dispositivoRepository.countByAtivo(true) < quantidadeClientes) {
+             throw new ExceptionResponse("O limite de dispositivos ativos foi excedido");
+        }
+
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(mac);
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
