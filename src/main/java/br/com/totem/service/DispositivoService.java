@@ -91,7 +91,7 @@ public class DispositivoService {
             dispositivo.setAtivo(!dispositivo.isAtivo());
 
             if(dispositivo.isAtivo() && dispositivoRepository.countByAtivo(true) >= quantidadeClientes) {
-                throw new ExceptionResponse("O limite de dispositivos ativos foi excedido");
+                throw new ExceptionResponse("O limite de dispositivos ativos foi excedido em " + quantidadeClientes);
             }
 
             dispositivoRepository.save(dispositivo);
