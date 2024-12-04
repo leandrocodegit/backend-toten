@@ -84,14 +84,16 @@ public class DispositivoService {
 
     public void ativarDispositivos(String mac) {
 
-        if(dispositivoRepository.countByAtivo(true) < quantidadeClientes) {
-             throw new ExceptionResponse("O limite de dispositivos ativos foi excedido");
-        }
 
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(mac);
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setAtivo(!dispositivo.isAtivo());
+
+            if(Boolean.TRUE.equals(dispositivo) && dispositivoRepository.countByAtivo(true) < quantidadeClientes) {
+                throw new ExceptionResponse("O limite de dispositivos ativos foi excedido");
+            }
+
             dispositivoRepository.save(dispositivo);
             logRepository.save(Log.builder()
                     .cor(null)
