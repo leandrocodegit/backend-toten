@@ -7,6 +7,8 @@ import br.com.totem.controller.response.DispositivoResponse;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.constantes.StatusConexao;
+import br.com.totem.repository.ConexaoRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class DispositivoService {
     private final LogRepository logRepository;
     private final ComandoService comandoService;
     private final AgendaDeviceService agendaDeviceService;
+    private final ConexaoRepository conexaoRepository;
 
     public void atualizarNomeDispositivo(DispositivoRequest request) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
@@ -92,6 +95,11 @@ public class DispositivoService {
 
             if(dispositivo.isAtivo() && dispositivoRepository.countByAtivo(true) >= quantidadeClientes) {
                 throw new ExceptionResponse("O limite de dispositivos ativos foi excedido em " + quantidadeClientes);
+            }
+
+            if(!dispositivo.isAtivo()){
+                dispositivo.getConexao().setStatus(StatusConexao.Offline);
+                conexaoRepository.save(dispositivo.getConexao());
             }
 
             dispositivoRepository.save(dispositivo);
