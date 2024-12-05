@@ -51,7 +51,7 @@ public class DashboardService {
         Map<String, DispositivoPorCor> cores = new HashMap<>();
 
         dispositivoRepository.findAll().stream().map(dispositivoMapper::toResume).toList().forEach(device -> {
-            if(device.getConexao().getStatus().equals(StatusConexao.Online)){
+            if(device.getConexao().getStatus() != null && device.getConexao().getStatus().equals(StatusConexao.Online)){
                 dashboard.getDispositivos().setOnline(dashboard.getDispositivos().getOnline() + 1);
             }else{
                 dashboard.getDispositivos().setOffline(dashboard.getDispositivos().getOffline() + 1);
