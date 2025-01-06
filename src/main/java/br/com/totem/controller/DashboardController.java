@@ -16,7 +16,6 @@ public  class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<Dashboard> buscar() {
         return ResponseEntity.ok(dashboardService.buscarDashboard());
     }

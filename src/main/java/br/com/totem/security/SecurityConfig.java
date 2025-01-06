@@ -38,7 +38,8 @@ public class SecurityConfig {
             "/totem/topic/messages",
             "/totem/send",
             "/totem/dashboard/gerar",
-            "/totem/auth/secret"
+            "/totem/auth/secret",
+            "/totem/dispositivo/firmware"
 
     };
 
@@ -55,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/dashboard/gerar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/secret").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/dispositivo/firmware").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

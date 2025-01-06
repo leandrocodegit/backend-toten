@@ -21,13 +21,13 @@ public class DispositivoController {
     private final DispositivoService dispositivoService;
 
     @GetMapping("/{mac}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<DispositivoResponse> buscar(@PathVariable String mac) {        ;
         return ResponseEntity.ok(dispositivoService.buscarPorMac(mac));
     }
 
     @GetMapping("/pesquisar/{pesquisa}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<?> pesquisar(@PathVariable String pesquisa, Pageable pageable) {        ;
         return ResponseEntity.ok(dispositivoService.pesquisarDispositivos(pesquisa, pageable));
     }
@@ -47,13 +47,13 @@ public class DispositivoController {
     }
 
     @GetMapping("/lista")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<?> lista(Pageable pageable) {
         return ResponseEntity.ok(dispositivoService.listaTodosDispositivos(pageable));
     }
 
     @GetMapping("/filtro/{filtro}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<?> listaAtivos(@PathVariable Filtro filtro, Pageable pageable, @RequestParam(required = false) boolean unpaged) {
         if(unpaged){
             return ResponseEntity.ok(dispositivoService.listaTodosDispositivosPorFiltro(filtro));
@@ -62,7 +62,7 @@ public class DispositivoController {
     }
 
     @GetMapping("/ativar/{mac}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_AVANCADO')")
     public ResponseEntity<List<DispositivoResponse>> Ativar(@PathVariable String mac) {
         dispositivoService.ativarDispositivos(mac);
         return ResponseEntity.accepted().build();

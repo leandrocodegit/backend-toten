@@ -30,14 +30,14 @@ public class AuthenticationController {
     }
 
     @GetMapping("/valid")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
     public  Boolean validaAccess() {
         System.out.println("token validado");
         return Boolean.TRUE;
     }
 
     @GetMapping("/valid/integracao")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_INTEGRACAO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_INTEGRACAO','ROLE_USER', 'ROLE_ADMIN')")
     public  Boolean validaAccessoIntegracao() {
         return Boolean.TRUE;
     }
@@ -59,7 +59,7 @@ public class AuthenticationController {
     }
 
     @PatchMapping("/password")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<String> alteraSenha(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequest userUpdateRequest) {
         authService.alterarSenha(userUpdateRequest, token);
         return ResponseEntity.ok().build();
