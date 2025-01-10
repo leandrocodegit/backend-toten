@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Permitir todas as rotas
-                .allowedOrigins("http://gateway","http://vps55601.publiccloud.com.br", "http://localhost:4200", "http://sincroled.com.br", "https://sincroled.com.br") // Liste suas origens permitidas
+                .allowedOrigins("http://sincroled.com.br", "http://gateway","http://vps55601.publiccloud.com.br", "http://localhost:4200", "http://sincroled.com.br") // Liste suas origens permitidas
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
