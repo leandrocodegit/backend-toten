@@ -34,6 +34,8 @@ public class SecurityConfig {
             "/totem/auth/login",
             "/totem/auth/refresh",
             "/totem/dashboard/gerar",
+            "/totem/dashboard/gerar/true",
+            "/totem/dashboard/gerar/false",
             "/totem/mensagem",
             "/totem/topic/messages",
             "/totem/send",
