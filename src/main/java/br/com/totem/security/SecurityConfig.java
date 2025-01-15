@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/dashboard/gerar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/dashboard/gerar/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/secret").permitAll()
                         .requestMatchers(HttpMethod.GET, "/dispositivo/firmware").permitAll()
                         .anyRequest().authenticated())
