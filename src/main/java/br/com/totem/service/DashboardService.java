@@ -43,6 +43,8 @@ public class DashboardService {
             Optional<Dashboard> optionalDashboard = dashBoardrepository.findById(id);
             Map<String, DispositivoPorCor> cores = new HashMap<>();
             optionalDashboard.get().setDispositivos(new DispositivoDashResponse());
+            System.out.println("Apenas");
+            System.out.println(optionalDashboard.isPresent());
 
             if(optionalDashboard.isPresent()) {
                 dispositivoRepository.findAllByAtivo(true).stream().map(dispositivoMapper::toResume).toList().forEach(device -> {
