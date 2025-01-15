@@ -39,7 +39,6 @@ public class SecurityConfig {
             "/totem/mensagem",
             "/totem/topic/messages",
             "/totem/send",
-            "/totem/dashboard/gerar",
             "/totem/auth/secret",
             "/totem/dispositivo/firmware"
 

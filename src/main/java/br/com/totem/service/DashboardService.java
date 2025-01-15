@@ -61,6 +61,7 @@ public class DashboardService {
                         }
                     }
                 });
+                System.out.println(optionalDashboard.get().getDispositivos().toString());
                 dashBoardrepository.save(optionalDashboard.get());
                 return optionalDashboard.get();
             }
