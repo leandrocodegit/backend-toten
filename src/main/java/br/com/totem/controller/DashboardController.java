@@ -25,8 +25,10 @@ public  class DashboardController {
             methods = {RequestMethod.GET},
             allowCredentials = "true"
     )
-    @GetMapping("/gerar")
-    public ResponseEntity<Dashboard> gerarDash() {
-        return ResponseEntity.ok(dashboardService.gerarDash());
+    @GetMapping("/gerar/{apenasConexoes}")
+    public ResponseEntity<Dashboard> gerarDash(@PathVariable boolean apenasConexoes) {
+        return ResponseEntity.ok(dashboardService.gerarDash(apenasConexoes));
     }
+
+
 }

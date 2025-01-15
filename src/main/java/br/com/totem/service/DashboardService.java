@@ -34,10 +34,37 @@ public class DashboardService {
         if (dash.isPresent()) {
             return dash.get();
         }
-        return gerarDash();
+        return gerarDash(false);
     }
 
-    public Dashboard gerarDash() {
+    public Dashboard gerarDash(boolean apenasConexoes) {
+
+        if(apenasConexoes) {
+            Optional<Dashboard> optionalDashboard = dashBoardrepository.findById(id);
+            Map<String, DispositivoPorCor> cores = new HashMap<>();
+            optionalDashboard.get().setDispositivos(new DispositivoDashResponse());
+
+            if(optionalDashboard.isPresent()) {
+                dispositivoRepository.findAllByAtivo(true).stream().map(dispositivoMapper::toResume).toList().forEach(device -> {
+                    if (device.getConexao().getStatus() != null && device.getConexao().getStatus().equals(StatusConexao.Online)) {
+                        optionalDashboard.get().getDispositivos().setOnline(optionalDashboard.get().getDispositivos().getOnline() + 1);
+                    } else {
+                        optionalDashboard.get().getDispositivos().setOffline(optionalDashboard.get().getDispositivos().getOffline() + 1);
+                    }
+
+                    if (device.getCor() != null) {
+                        if (cores.containsKey(device.getCor().getPrimaria())) {
+                            DispositivoPorCor cor = cores.get(device.getCor().getPrimaria());
+                            cor.setQuantidade(cor.getQuantidade() + 1);
+                        } else {
+                            cores.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
+                        }
+                    }
+                });
+                dashBoardrepository.save(optionalDashboard.get());
+                return optionalDashboard.get();
+            }
+        }
 
         Dashboard dashboard = new Dashboard();
         dashboard.setId(id);
