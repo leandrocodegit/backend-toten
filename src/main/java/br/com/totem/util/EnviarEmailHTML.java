@@ -1,16 +1,18 @@
 package br.com.totem.util;
 
 import br.com.totem.controller.request.MensagemEmailRequest;
+import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
 
+@Service
 public class EnviarEmailHTML {
-    public static void enviar(MensagemEmailRequest request) {
+    public void enviar(MensagemEmailRequest request) {
         String host = "smtp.zoho.com"; // Servidor SMTP do Zoho
-        String from = request.getEmail(); // Seu e-mail no Zoho
-        String to = "comercial@sincroled.com.br"; // E-mail do destinatário
+        String from = "comercial@sincroled.com.br"; // Seu e-mail no Zoho
+        String to =  "comercial@sincroled.com.br";  // E-mail do destinatário
         String password = "Sincroled@1520";
 
         // Configurações das propriedades do servidor
@@ -43,7 +45,10 @@ public class EnviarEmailHTML {
 
             // Definindo o conteúdo HTML
             String htmlContent = "<html><body>"
-                    + "<p>" + request.getMensagem() + "</p>"
+                    + "<p><strong>Nome: </strong>" + request.getNome() + "</p>"
+                    + "<p><strong>Celular: </strong>" + request.getCelular() + "</p>"
+                    + "<p><strong>Email: </strong>" + request.getEmail() + "</p>"
+                    + "<p><strong>Mensagem: </strong>" + request.getMensagem() + "</p>"
                     + "</body></html>";
             message.setContent(htmlContent, "text/html");
 
