@@ -18,6 +18,6 @@ public class EmailController {
     @PostMapping
     public ResponseEntity<String> enviarEmail(@RequestBody MensagemEmailRequest request){
         enviarEmailHTML.enviar(request);
-        ResponseEntity.ok().build();
+       return ResponseEntity.ok().build();
     }
 }
