@@ -83,7 +83,7 @@ public class DispositivoService {
                     .descricao(dispositivo.getConfiguracao().toString())
                     .mensagem( "Dispositivo foi alterado a configuracao")
                     .build());
-            System.out.println("Chamando atuializacao dashboard");
+            System.out.println("Chamando atualizacao dashboard");
             conexaoService.atualizarDashboar();
         }
     }
