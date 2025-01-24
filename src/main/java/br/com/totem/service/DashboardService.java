@@ -44,8 +44,6 @@ public class DashboardService {
             Map<String, DispositivoPorCor> cores = new HashMap<>();
             optionalDashboard.get().setDispositivos(new DispositivoDashResponse());
 
-            System.out.println(optionalDashboard.isPresent());
-
             if(optionalDashboard.isPresent()) {
                 dispositivoRepository.findAllByAtivo(true).stream().map(dispositivoMapper::toResume).toList().forEach(device -> {
                     if (device.getConexao().getStatus() != null && device.getConexao().getStatus().equals(StatusConexao.Online)) {
@@ -63,7 +61,6 @@ public class DashboardService {
                         }
                     }
                 });
-                System.out.println(optionalDashboard.get().getDispositivos().toString());
                 dashBoardrepository.save(optionalDashboard.get());
                 return optionalDashboard.get();
             }
