@@ -27,6 +27,7 @@ public class CorService {
     private final CorMapper corMapper;
     private final ComandoService comandoService;
     private final LogRepository logRepository;
+    private final ConexaoService conexaoService;
 
 
     public Page<CorResponse> listaTodasCores(Pageable pageable) {
@@ -52,6 +53,8 @@ public class CorService {
         corRepository.save(cor);
         if (principal) {
             salvarCorDisposisito(cor, request.getMac());
+            System.out.println("Chamando atualizacao dashboard");
+            conexaoService.atualizarDashboar();
         }
     }
 

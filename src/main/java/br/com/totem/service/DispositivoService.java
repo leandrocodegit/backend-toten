@@ -37,7 +37,7 @@ public class DispositivoService {
     private final ComandoService comandoService;
     private final AgendaDeviceService agendaDeviceService;
     private final ConexaoRepository conexaoRepository;
-    private final ConexaoService conexaoService;
+
 
     public void atualizarNomeDispositivo(DispositivoRequest request) {
         Optional<Dispositivo> dispositivoOptional = dispositivoRepository.findById(request.getMac());
@@ -83,8 +83,6 @@ public class DispositivoService {
                     .descricao(dispositivo.getConfiguracao().toString())
                     .mensagem( "Dispositivo foi alterado a configuracao")
                     .build());
-            System.out.println("Chamando atualizacao dashboard");
-            conexaoService.atualizarDashboar();
         }
     }
 
