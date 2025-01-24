@@ -52,7 +52,7 @@ public class CorService {
         }
         corRepository.save(cor);
         if (principal) {
-            salvarCorDisposisito(cor, request.getMac());
+         //   salvarCorDisposisito(cor, request.getMac());
             System.out.println("Chamando atualizacao dashboard");
             conexaoService.atualizarDashboar();
         }

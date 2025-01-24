@@ -38,7 +38,7 @@ public class DashboardService {
     }
 
     public Dashboard gerarDash(boolean apenasConexoes) {
-        System.out.println("Apenas " +  apenasConexoes);
+
         if(apenasConexoes) {
             Optional<Dashboard> optionalDashboard = dashBoardrepository.findById(id);
             Map<String, DispositivoPorCor> cores = new HashMap<>();
@@ -61,6 +61,7 @@ public class DashboardService {
                         }
                     }
                 });
+                optionalDashboard.get().setCores(cores.values().stream().toList());
                 dashBoardrepository.save(optionalDashboard.get());
                 return optionalDashboard.get();
             }
