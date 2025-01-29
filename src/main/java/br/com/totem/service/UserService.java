@@ -32,13 +32,18 @@ public class UserService {
     private final LogRepository logRepository;
 
     public UserResponse buscarPorEmail(String email){
-        return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow());
+        return userMapper.toResponse(userRepository.buscarPorEmail(email).orElseThrow(() -> new ExceptionResponse("Não encontrado")));
     }
 
     public void atualizarUsuario(UserUpdateRequest userRequest, String token){
 
+
         Optional<User> userOptional = userRepository.findById(userRequest.getId());
         if(userOptional.isPresent()){
+
+            if(userOptional.get().getEmail().equals("master")){
+                throw new ExceptionResponse("Falha ao atualizar usuário");
+            }
 
             AuthService.isStrongPassword(userRequest.getPassword(), userRequest.getConfirmPassword());
             authService.validaPermissaoTrocaSenha(userOptional.get(), token, TipoToken.ACCESS);
@@ -64,10 +69,14 @@ public class UserService {
         return userRepository.findByNomeAndEmailContaining(pesquisa, pageable).map(userMapper::toResponse);
     }
     public Page<UserResponse> listaTodosUsuarios(Pageable pageable){
-        return userRepository.findAll(pageable).map(userMapper::toResponse);
+        return userRepository.listaUsuarios(pageable).map(userMapper::toResponse);
     }
 
     public void removerUsuario(UUID id){
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent() && user.get().getEmail().equals("master")){
+            throw new ExceptionResponse("Falha ao remover usuário");
+        }
         userRepository.deleteById(id);
         logRepository.save(Log.builder()
                 .cor(null)

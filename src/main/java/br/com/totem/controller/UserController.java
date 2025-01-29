@@ -22,7 +22,7 @@ public class UserController {
     private final AuthService authService;
 
     @GetMapping("/{email}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER','ROLE_OPERADOR', 'ROLE_ADMIN')")
     public ResponseEntity<?> pesquisarPorEmail(@PathVariable String email) {        ;
         return ResponseEntity.ok(userService.buscarPorEmail(email));
     }
