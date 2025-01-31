@@ -49,6 +49,7 @@ public class DispositivoService {
             dispositivo.setEndereco(request.getEndereco());
             dispositivo.setEnderecoCompleto(request.getEndereco().toString());
             dispositivo.setIgnorarAgenda(request.isIgnorarAgenda());
+            dispositivo.setPermiteComando(request.isPermiteComando());
             dispositivoRepository.save(dispositivo);
             logRepository.save(Log.builder()
                     .cor(null)

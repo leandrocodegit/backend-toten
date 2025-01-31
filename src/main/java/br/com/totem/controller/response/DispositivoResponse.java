@@ -18,6 +18,7 @@ public class DispositivoResponse {
     private String versao;
     private boolean ignorarAgenda;
     private boolean ativo;
+    private boolean permiteComando;
     private String latitude;
     private String longitude;
     private Comando comando;
