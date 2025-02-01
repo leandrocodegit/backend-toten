@@ -26,6 +26,6 @@ public class AgendaRequest {
     private LocalDate termino;
     @NotNull
     private CorRequest cor;
-    private List<Dispositivo> dispositivos;
+    private List<DispositivoRequest> dispositivos;
     private boolean todos;
 }

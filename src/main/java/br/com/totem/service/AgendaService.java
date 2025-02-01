@@ -6,6 +6,7 @@ import br.com.totem.controller.request.Filtro;
 import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.CorMapper;
+import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
@@ -30,7 +31,7 @@ public class AgendaService {
     private final AgendaRepository agendaRepository;
     private final AgendaMapper agendaMapper;
     private final CorMapper configuracaoMapper;
-    private final DispositivoService dispositivoService;
+    private final DispositivoMapper dispositivoMapper;
     private final AgendaDeviceService agendaDeviceService;
     private final ComandoService comandoService;
     private final LogRepository logRepository;
@@ -73,7 +74,7 @@ public class AgendaService {
             if (Boolean.TRUE.equals(request.isTodos())) {
                 agenda.setDispositivos(Collections.emptyList());
             }else {
-                agenda.setDispositivos(request.getDispositivos());
+                agenda.setDispositivos(request.getDispositivos().stream().map(dispositivoMapper::toEntity).toList());
             }
 
             if (removerConflitos) {
