@@ -43,8 +43,8 @@ public class AgendaService {
             request.setId(UUID.randomUUID());
 
             Agenda agenda = agendaMapper.toEntity(request);
-            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
-            agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
+            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(0,0,0)));
+            agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(0,0,0)));
             agendaRepository.save(agenda);
             validarConflitos(agenda);
             logRepository.save(Log.builder()
