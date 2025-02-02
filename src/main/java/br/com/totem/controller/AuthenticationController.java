@@ -4,6 +4,7 @@ import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenIntegracaoResponse;
 import br.com.totem.controller.response.TokenResponse;
+import br.com.totem.model.constantes.TipoToken;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +32,16 @@ public class AuthenticationController {
 
     @GetMapping("/valid")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
-    public  Boolean validaAccess() {
-        System.out.println("token validado");
-        return Boolean.TRUE;
+    public  ResponseEntity<String> validaAccess(@RequestHeader String authorization) {
+        String user = jwtTokenProvider.getSubjectFromToken(authorization.replace("Bearer ", ""), TipoToken.COMANDO);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/valid/integracao")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_INTEGRACAO','ROLE_USER', 'ROLE_ADMIN')")
-    public  Boolean validaAccessoIntegracao() {
-        return Boolean.TRUE;
+    public  ResponseEntity<String> validaAccessoIntegracao(@RequestHeader String authorization) {
+        String user = jwtTokenProvider.getSubjectFromToken(authorization, TipoToken.COMANDO);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/secret")
