@@ -66,6 +66,7 @@ public class AgendaService {
 
         if (agendaOptional.isPresent()) {
             Agenda agenda = agendaOptional.get();
+            agenda.setNome(request.getNome());
             agenda.setAtivo(request.isAtivo());
             agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(3,0,0)));
             agenda.setTermino(LocalDateTime.of(request.getTermino(), LocalTime.of(3,0,0)));
