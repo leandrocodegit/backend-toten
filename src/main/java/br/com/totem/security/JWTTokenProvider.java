@@ -52,7 +52,7 @@ public class JWTTokenProvider {
             return JWT.require(getAlgorithm(tipo))
                     .withIssuer(ISSUER)
                     .build()
-                    .verify(token)
+                    .verify(token.replace("Bearer ", ""))
                     .getSubject();
         } catch (JWTVerificationException exception) {
             throw new JWTVerificationException("Token inválido ou expirado.");
