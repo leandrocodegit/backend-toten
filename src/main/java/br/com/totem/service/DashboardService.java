@@ -123,13 +123,13 @@ public class DashboardService {
                 }
             });
             Map<String, DispositivoPorCor> agendasExecucao = new HashMap<>();
-            agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(device -> {
-                if (device.getCor() != null) {
-                    if (agendasExecucao.containsKey(device.getCor().getPrimaria())) {
-                        DispositivoPorCor cor = agendasExecucao.get(device.getCor().getPrimaria());
+            agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(agenda -> {
+                if (agenda.getCor() != null && agenda.isAtivo() && agenda.getDispositivos().size() > 0) {
+                    if (agendasExecucao.containsKey(agenda.getCor().getPrimaria())) {
+                        DispositivoPorCor cor = agendasExecucao.get(agenda.getCor().getPrimaria());
                         cor.setQuantidade(cor.getQuantidade() + 1);
                     } else {
-                        agendasExecucao.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
+                        agendasExecucao.put(agenda.getCor().getPrimaria(), new DispositivoPorCor(agenda.getCor().getPrimaria(), 1));
                     }
                 }
             });
