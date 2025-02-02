@@ -117,10 +117,16 @@ public class AgendaService {
         var bool = agenda.getInicio().equals(LocalDateTime.now().toLocalDate());
         if(bool){
             var dispositivos = dispositivoRepository.findAllById(agenda.getDispositivos());
+            if(agenda.isTodos())
+                dispositivos = dispositivoRepository.findAll();
             dispositivos.forEach(device -> {
-                device.getOperacao().setModoOperacao(ModoOperacao.AGENDA);
-                device.getOperacao().setAgenda(agenda);
-                operacaoRepository.save(device.getOperacao());
+                if(agenda.isAtivo()){
+                    if(!device.isIgnorarAgenda()) {
+                        device.getOperacao().setModoOperacao(ModoOperacao.AGENDA);
+                        device.getOperacao().setAgenda(agenda);
+                        operacaoRepository.save(device.getOperacao());
+                    }
+                }
             });
         }
     }
