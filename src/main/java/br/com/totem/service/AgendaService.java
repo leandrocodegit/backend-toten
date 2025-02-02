@@ -58,7 +58,7 @@ public class AgendaService {
                     .mac(request.getId().toString())
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
-                    .descricao(request.toString())
+                    .descricao("Nova agenda")
                     .mensagem("Nova agenda criada")
                     .build());
         } else {
@@ -101,7 +101,7 @@ public class AgendaService {
                     .mac(agenda.getId().toString())
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
-                    .descricao(agenda.toString())
+                    .descricao("Atualizado agenda")
                     .mensagem("Agenda foi atualizada")
                     .build());
             verificaSeAgendaHoje(agenda);
