@@ -100,7 +100,7 @@ public class AgendaService {
                     .mensagem("Agenda foi atualizada")
                     .build());
 
-            comandoService.sincronizarTodos();
+            comandoService.sincronizarTodos(false);
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
@@ -118,7 +118,7 @@ public class AgendaService {
     }
 
     public void removerAgenda(UUID id) {
-        comandoService.sincronizarTodos();
+        comandoService.sincronizarTodos(false);
         agendaRepository.deleteById(id);
     }
 

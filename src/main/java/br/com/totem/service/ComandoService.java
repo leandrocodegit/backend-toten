@@ -9,6 +9,6 @@ public interface ComandoService {
 
     @GetMapping("/interno/{mac}")
     public void sincronizar(@PathVariable("mac") String mac);
-    @GetMapping("/interno/sincronizar/false")
-    public void sincronizarTodos();
+    @GetMapping("/interno/sincronizar/{responder}")
+    public void sincronizarTodos(@PathVariable boolean responder);
 }
