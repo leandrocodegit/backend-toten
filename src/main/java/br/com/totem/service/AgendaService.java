@@ -10,8 +10,11 @@ import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Agenda;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
+import br.com.totem.model.constantes.ModoOperacao;
 import br.com.totem.repository.AgendaRepository;
+import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import br.com.totem.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,8 @@ public class AgendaService {
     private final ComandoService comandoService;
     private final LogRepository logRepository;
     private final DashboardService dashboardService;
+    private final DispositivoRepository dispositivoRepository;
+    private final OperacaoRepository operacaoRepository;
 
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
@@ -99,6 +104,7 @@ public class AgendaService {
                     .descricao(agenda.toString())
                     .mensagem("Agenda foi atualizada")
                     .build());
+            verificaSeAgendaHoje(agenda);
             dashboardService.atualizarDashboardAgendas();
             comandoService.sincronizarTodos(false);
         } else {
@@ -106,6 +112,18 @@ public class AgendaService {
         }
     }
 
+
+    public void verificaSeAgendaHoje(Agenda agenda){
+        var bool = agenda.getInicio().equals(LocalDateTime.now().toLocalDate());
+        if(bool){
+            var dispositivos = dispositivoRepository.findAllById(agenda.getDispositivos());
+            dispositivos.forEach(device -> {
+                device.getOperacao().setModoOperacao(ModoOperacao.AGENDA);
+                device.getOperacao().setAgenda(agenda);
+                operacaoRepository.save(device.getOperacao());
+            });
+        }
+    }
     private void validarConflitos(Agenda agenda){
         agenda.getDispositivos().forEach(device -> {
             if(verificarSeTemAgendaParaTodos(agenda)){

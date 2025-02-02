@@ -1,8 +1,6 @@
 package br.com.totem.model;
 
 import br.com.totem.model.constantes.ModoOperacao;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
