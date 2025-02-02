@@ -11,10 +11,12 @@ import br.com.totem.model.Agenda;
 import br.com.totem.model.Log;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.ModoOperacao;
+import br.com.totem.model.constantes.TipoToken;
 import br.com.totem.repository.AgendaRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
 import br.com.totem.repository.OperacaoRepository;
+import br.com.totem.security.JWTTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,7 @@ public class AgendaService {
     private final DashboardService dashboardService;
     private final DispositivoRepository dispositivoRepository;
     private final OperacaoRepository operacaoRepository;
+    private final JWTTokenProvider jwtTokenProvider;
 
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
@@ -66,8 +69,9 @@ public class AgendaService {
         }
     }
 
-    public void alterarAgenda(AgendaRequest request, boolean removerConflitos) {
+    public void alterarAgenda(AgendaRequest request, boolean removerConflitos, String token) {
         Optional<Agenda> agendaOptional = agendaRepository.findById(request.getId());
+        var user = jwtTokenProvider.getSubjectFromToken(token, TipoToken.ACCESS);
 
         if (agendaOptional.isPresent()) {
 
@@ -106,7 +110,7 @@ public class AgendaService {
                     .build());
             verificaSeAgendaHoje(agenda);
             dashboardService.atualizarDashboardAgendas();
-            comandoService.sincronizarTodos(false);
+            comandoService.sincronizarTodos(user,false);
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
@@ -143,8 +147,8 @@ public class AgendaService {
         });
     }
 
-    public void removerAgenda(UUID id) {
-        comandoService.sincronizarTodos(false);
+    public void removerAgenda(UUID id, String user) {
+        comandoService.sincronizarTodos(user,false);
         agendaRepository.deleteById(id);
     }
 

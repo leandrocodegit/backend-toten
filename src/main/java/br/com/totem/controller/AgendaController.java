@@ -4,6 +4,8 @@ import br.com.totem.controller.request.AgendaRequest;
 import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.controller.response.TokenResponse;
 import br.com.totem.mapper.AgendaMapper;
+import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AgendaDeviceService;
 import br.com.totem.service.AgendaService;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ public class AgendaController {
     private final AgendaService agendaService;
     private final AgendaDeviceService agendaDeviceService;
     private final AgendaMapper agendaMapper;
+    private final JWTTokenProvider jwtTokenProvider;
 
 
     @GetMapping
@@ -48,8 +51,9 @@ public class AgendaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<List<AgendaResponse>> removerAgenda(@PathVariable UUID id) {
-        agendaService.removerAgenda(id);
+    public ResponseEntity<List<AgendaResponse>> removerAgenda(@PathVariable UUID id, @RequestHeader String authorization) {
+        var user = jwtTokenProvider.getSubjectFromToken(authorization, TipoToken.ACCESS);
+        agendaService.removerAgenda(id, user);
         return ResponseEntity.ok().build();
     }
 
@@ -59,8 +63,8 @@ public class AgendaController {
     }
 
     @PatchMapping("/{removerConflitos}")
-    public ResponseEntity<TokenResponse> atualizarAgenda(@RequestBody AgendaRequest request, @PathVariable boolean removerConflitos) {
-        agendaService.alterarAgenda(request, removerConflitos);
+    public ResponseEntity<TokenResponse> atualizarAgenda(@RequestBody AgendaRequest request, @PathVariable boolean removerConflitos, @RequestHeader String authorization) {
+        agendaService.alterarAgenda(request, removerConflitos, authorization);
         return ResponseEntity.ok().build();
     }
 
