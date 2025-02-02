@@ -18,4 +18,8 @@ public class LogService {
     public Page<Log> listaLogsPorTipo(List<String> tipos, Pageable pageable){
         return logRepository.findAllByComandoInOrderByDataDesc(tipos, pageable);
     }
+
+    public Page<Log> listaLogs(Pageable pageable){
+        return logRepository.findAll(pageable);
+    }
 }

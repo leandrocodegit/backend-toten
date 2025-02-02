@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +26,12 @@ public class LogController {
     private final LogService logService;
     private final DashboardService dashboardService;
 
+
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
+    public ResponseEntity<?> pesquisarPorEmail(Pageable pageable) {
+        return ResponseEntity.ok(logService.listaLogs(pageable));
+    }
     @GetMapping("/{tipo}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<?> pesquisarPorEmail(@PathVariable String tipo, Pageable pageable) {
@@ -32,4 +39,6 @@ public class LogController {
             return ResponseEntity.ok(logService.listaLogsPorTipo(Arrays.asList(Comando.TIMER_CONCLUIDO.name(), Comando.TIMER_CRIADO.name(), Comando.TIMER_CANCELADO.name()), pageable));
         return ResponseEntity.ok(logService.listaLogsPorTipo(Arrays.asList(tipo), pageable));
     }
+
+
 }
