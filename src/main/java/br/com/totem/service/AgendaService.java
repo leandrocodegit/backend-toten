@@ -116,7 +116,7 @@ public class AgendaService {
     public void verificaSeAgendaHoje(Agenda agenda){
         var bool = agenda.getInicio().toLocalDate().equals(LocalDate.now()) || agenda.getInicio().toLocalDate().isBefore(LocalDate.now());
         if(bool)
-            bool = agenda.getTermino().toLocalDate().equals(LocalDate.now()) || agenda.getTermino().toLocalDate().isBefore(LocalDate.now());;
+            bool = agenda.getTermino().toLocalDate().equals(LocalDate.now()) || agenda.getTermino().toLocalDate().isAfter(LocalDate.now());;
         if(bool){
             var dispositivos = dispositivoRepository.findAllById(agenda.getDispositivos());
             if(agenda.isTodos())
