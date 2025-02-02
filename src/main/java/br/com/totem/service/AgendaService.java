@@ -66,7 +66,6 @@ public class AgendaService {
 
         if (agendaOptional.isPresent()) {
 
-            var listaDispositivos = agendaOptional.get().getDispositivos();
             Agenda agenda = agendaOptional.get();
             agenda.setNome(request.getNome());
             agenda.setAtivo(request.isAtivo());
@@ -101,9 +100,7 @@ public class AgendaService {
                     .mensagem("Agenda foi atualizada")
                     .build());
 
-            listaDispositivos.forEach(mac -> {
-                comandoService.sincronizar(mac);
-            });
+            comandoService.sincronizarTodos();
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
