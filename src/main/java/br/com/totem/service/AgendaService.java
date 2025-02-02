@@ -74,12 +74,12 @@ public class AgendaService {
             if (Boolean.TRUE.equals(request.isTodos())) {
                 agenda.setDispositivos(Collections.emptyList());
             }else {
-                agenda.setDispositivos(request.getDispositivos().stream().map(dispositivoMapper::toEntity).toList());
+                agenda.setDispositivos(request.getDispositivos());
             }
 
             if (removerConflitos) {
                 for (int i = 0; i < agenda.getDispositivos().size(); i++) {
-                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, agenda.getDispositivos().get(i).getMac()) || verificarSeTemAgendaParaTodos(agenda)) {
+                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, agenda.getDispositivos().get(i)) || verificarSeTemAgendaParaTodos(agenda)) {
                         agenda.getDispositivos().remove(agenda.getDispositivos().get(i));
                     }
                 }
@@ -107,7 +107,7 @@ public class AgendaService {
             if(verificarSeTemAgendaParaTodos(agenda)){
                 throw new ExceptionResponse("Conflito de datas");
             }
-            if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, device.getMac())) {
+            if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, device)) {
                 throw new ExceptionResponse("Conflito de datas");
             }
         });

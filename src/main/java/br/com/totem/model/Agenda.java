@@ -1,5 +1,7 @@
 package br.com.totem.model;
 
+import br.com.totem.model.constantes.ModoOperacao;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +30,7 @@ public class Agenda {
     private LocalDateTime termino;
     @DBRef
     private Cor cor;
-    @DBRef
-    private List<Dispositivo> dispositivos;
+    private List<String> dispositivos;
     private boolean todos;
 }
+

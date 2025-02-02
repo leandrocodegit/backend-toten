@@ -3,6 +3,7 @@ package br.com.totem.model;
 import br.com.totem.controller.response.OperacaoResponse;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.StatusConexao;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,8 +41,5 @@ public class Dispositivo {
     private Conexao conexao;
     @DBRef
     private Cor cor;
-    @DBRef
-    private Agenda agenda;
-
 
 }
