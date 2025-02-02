@@ -71,20 +71,6 @@ public class DashboardService {
         dashboard.getDispositivos().setTotal(dashboard.getDispositivos().getOffline() + dashboard.getDispositivos().getOnline());
 
 
-
-        Map<String, DispositivoPorCor> agendasExecucao = new HashMap<>();
-        agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(device -> {
-            if (device.getCor() != null) {
-                if (agendasExecucao.containsKey(device.getCor().getPrimaria())) {
-                    DispositivoPorCor cor = agendasExecucao.get(device.getCor().getPrimaria());
-                    cor.setQuantidade(cor.getQuantidade() + 1);
-                } else {
-                    agendasExecucao.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
-                }
-            }
-        });
-
-        dashboard.setAgendasExecucao(agendasExecucao.values().stream().toList());
         List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
         dashboard.setLogsConexao(l);
 
@@ -136,6 +122,19 @@ public class DashboardService {
                     }
                 }
             });
+            Map<String, DispositivoPorCor> agendasExecucao = new HashMap<>();
+            agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(device -> {
+                if (device.getCor() != null) {
+                    if (agendasExecucao.containsKey(device.getCor().getPrimaria())) {
+                        DispositivoPorCor cor = agendasExecucao.get(device.getCor().getPrimaria());
+                        cor.setQuantidade(cor.getQuantidade() + 1);
+                    } else {
+                        agendasExecucao.put(device.getCor().getPrimaria(), new DispositivoPorCor(device.getCor().getPrimaria(), 1));
+                    }
+                }
+            });
+
+            optionalDashboard.get().setAgendasExecucao(agendasExecucao.values().stream().toList());
             optionalDashboard.get().setAgendas(agendas.values().stream().toList());
             dashBoardrepository.save(optionalDashboard.get());
         }
