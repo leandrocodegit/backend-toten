@@ -31,10 +31,10 @@ public class AgendaService {
     private final AgendaRepository agendaRepository;
     private final AgendaMapper agendaMapper;
     private final CorMapper configuracaoMapper;
-    private final DispositivoMapper dispositivoMapper;
     private final AgendaDeviceService agendaDeviceService;
     private final ComandoService comandoService;
     private final LogRepository logRepository;
+    private final DashboardService dashboardService;
 
     public void criarAgenda(AgendaRequest request) {
         if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
@@ -99,7 +99,7 @@ public class AgendaService {
                     .descricao(agenda.toString())
                     .mensagem("Agenda foi atualizada")
                     .build());
-
+            dashboardService.atualizarDashboardAgendas();
             comandoService.sincronizarTodos(false);
         } else {
             throw new ExceptionResponse("Agenda não existe");

@@ -25,9 +25,21 @@ public  class DashboardController {
             methods = {RequestMethod.GET},
             allowCredentials = "true"
     )
-    @GetMapping("/gerar/{apenasConexoes}")
-    public ResponseEntity<Dashboard> gerarDash(@PathVariable boolean apenasConexoes) {
-        return ResponseEntity.ok(dashboardService.gerarDash(apenasConexoes));
+    @GetMapping("/gerar")
+    public ResponseEntity<Dashboard> gerarDash() {
+        return ResponseEntity.ok(dashboardService.gerarDash());
+    }
+
+    @GetMapping("/atualizar/conexoes")
+    public ResponseEntity<Dashboard> atualizarConexoes() {
+        dashboardService.atualizarConexoes();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/atualizar/agendas")
+    public ResponseEntity<Dashboard> atualizarAgendas() {
+        dashboardService.atualizarConexoes();
+        return ResponseEntity.ok().build();
     }
 
 

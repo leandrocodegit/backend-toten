@@ -26,6 +26,5 @@ public class Dashboard {
     private List<DispositivoPorCor> agendas;
     private List<DispositivoPorCor> agendasExecucao;
     private List<DispositivoPorCor> cores;
-    private List<Log> logs;
     private List<LogConexao> logsConexao;
 }
