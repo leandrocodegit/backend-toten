@@ -32,9 +32,8 @@ public class AuthenticationController {
 
     @GetMapping("/valid")
     @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
-    public  ResponseEntity<String> validaAccess(@RequestHeader String authorization) {
-        String user = jwtTokenProvider.getSubjectFromToken(authorization.replace("Bearer ", ""), TipoToken.COMANDO);
-        return ResponseEntity.ok(user);
+    public  String validaAccess(@RequestHeader String authorization) {
+        return jwtTokenProvider.getSubjectFromToken(authorization.replace("Bearer ", ""), TipoToken.COMANDO);
     }
 
     @GetMapping("/valid/integracao")
