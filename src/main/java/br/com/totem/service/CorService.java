@@ -6,9 +6,11 @@ import br.com.totem.controller.response.CorResponse;
 import br.com.totem.mapper.CorMapper;
 import br.com.totem.model.Cor;
 import br.com.totem.model.Dispositivo;
+import br.com.totem.model.Parametro;
 import br.com.totem.repository.CorRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
+import br.com.totem.repository.ParametroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +28,7 @@ public class CorService {
     private final DispositivoRepository dispositivoRepository;
     private final CorMapper corMapper;
     private final ComandoService comandoService;
-    private final LogRepository logRepository;
+    private final ParametroRepository parametroRepository;
     private final ConexaoService conexaoService;
 
 
@@ -50,6 +52,12 @@ public class CorService {
         if (request.getId() == null) {
             cor.setId(UUID.randomUUID());
         }
+
+        cor.getParametros().forEach(parametro ->  {
+            if(parametro.getId() == null)
+                parametro.setId(UUID.randomUUID());
+        });
+        parametroRepository.saveAll(cor.getParametros());
         corRepository.save(cor);
         if (principal) {
             salvarCorDisposisito(cor, request.getMac());
