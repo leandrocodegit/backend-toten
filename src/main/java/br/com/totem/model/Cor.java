@@ -20,6 +20,7 @@ public class Cor {
     private UUID id;
     private String nome;
     private long time;
+    private int quantidadePinos;
     private boolean rapida;
     private List<Parametro> parametros;
     @Transient
