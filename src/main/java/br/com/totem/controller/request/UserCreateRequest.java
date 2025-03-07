@@ -13,5 +13,6 @@ public class UserCreateRequest extends AuthUserRequest {
 
     private String nome;
     private List<Role> roles;
+    private Boolean business;
 
 }

@@ -5,5 +5,6 @@ public enum Role {
     ADMIN,
     USER,
     AVANCADO,
-    INTEGRACAO
+    INTEGRACAO,
+    ROOT
 }

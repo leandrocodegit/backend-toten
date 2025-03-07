@@ -26,7 +26,7 @@ public class IntegracaoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
     public ResponseEntity<String> criarIntegracao(@RequestBody IntegracaoRequest request) {
         integracaoService.criarIntegracao(request);
         return ResponseEntity.ok().build();

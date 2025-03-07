@@ -13,8 +13,12 @@ import java.util.UUID;
 public class UserResponse {
 
     private UUID id;
+    private UUID clienteId;
+    private String nomeCliente;
     private String nome;
     private String email;
     private Boolean status;
+    private Boolean business;
+    private Boolean principal;
     private List<Role> roles;
 }

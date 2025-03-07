@@ -1,6 +1,10 @@
 package br.com.totem.repository;
 
 import br.com.totem.model.Agenda;
+import br.com.totem.model.Cliente;
+import br.com.totem.model.Operacao;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -8,15 +12,25 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
 
+    @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, }")
+    Page<Agenda> findAllByCliente(UUID clienteId, Pageable pageable);
+    @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'id': ?1 }")
+    Optional<Agenda> findByClienteAndId(UUID clienteId, UUID id);
     @Query("{ 'cor._id': ?0 }")
     List<Agenda> findAgendasByCorId(UUID configuracaoId);
+    @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'cor._id': ?1 }")
+    List<Agenda> findAgendasByCorId(UUID clienteId, UUID configuracaoId);
 
-    @Query("{ 'dispositivos.mac': ?0 }")
-    List<Agenda> findAgendasByDispositivoId(String mac);
+
+    @Query("{ 'dispositivos.id': ?0 }")
+    List<Agenda> findAgendasByDispositivoId(long id);
+    @Query("{'cliente': { $ne: null },  'cliente.id': ?0, 'dispositivos.id': ?1 }")
+    List<Agenda> findAgendasByDispositivoId(UUID clienteId, long id);
 
     @Query("{" +
             "   $expr: {" +
@@ -46,6 +60,13 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
             "}")
     List<Agenda> findAllAgendasByDataDentroDoIntervaloTodosDispositivos(UUID id, LocalDate inicio, LocalDate termino);
 
+
+    @Query("{ $or: [ { 'todos': true }, { 'dispositivos': { $in: ?0 } } ], 'ativo': true }")
+    List<Agenda> findByDispositivosOuTodosAtivos(List<Long> dispositivos);
+
+    @Query("{ $and: [ { 'id': { $ne: ?0 } }, { $or: [ { 'todos': true }, { 'dispositivos': { $in: ?1 } } ] }, { 'ativo': true } ] }")
+    List<Agenda> findByDispositivosOuTodosAtivos(UUID id, List<Long> dispositivos);
+
     @Query("{" +
             "   $expr: {" +
             "     $and: [" +
@@ -66,6 +87,16 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
             " 'ativo': ?1" +
             "}")
     List<Agenda> findAllDoMesAtualInOrderByInicioDesc(int mes, boolean ativo, Sort sort);
+    @Query("{" +
+            "'cliente': { $ne: null },  'cliente.id': ?0," +
+            " $expr: {" +
+            "   $and: [" +
+            "       { $eq: [ { $month: '$inicio' }, ?0 ] }," +
+            "   ]" +
+            " }," +
+            " 'ativo': ?1" +
+            "}")
+    List<Agenda> findAllDoMesAtualInOrderByInicioDesc(UUID clienteId, int mes, boolean ativo, Sort sort);
     @Aggregation(pipeline = {
                     "     {" +
                     "       $project:" +
@@ -80,17 +111,21 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
     List<Agenda> findAllByAtivo(boolean ativo);
 
     @Query("{" +
+            "'cliente': { $ne: null },  'cliente.id': ?0," +
             " $expr: {" +
             "   $and: [" +
-            "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }," +
-            "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?0 } } ] }" +
+            "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?0 } } ] }," +
+            "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }" +
             "   ]" +
             " }," +
-            " 'dispositivos.mac': ?2," +
+            " 'dispositivos.id': ?2," +
             " 'ativo': true" +
             " '_id': { $ne: ?3 }" +
             "}")
-    List<Agenda> findFirstByDataAndDispositivo(LocalDate inicio, LocalDate termino, String dispositivoMac, UUID agendaId);
+    List<Agenda> findFirstByDataAndDispositivo(UUID clienteId, LocalDate inicio, LocalDate termino, long dispositivoId, UUID agendaId);
+
+    @Query("{ 'cor.id': ?0 }")
+    List<Agenda> findAgendasPorCorVibracao(UUID id);
 
 
 }

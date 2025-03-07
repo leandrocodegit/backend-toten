@@ -1,9 +1,6 @@
 package br.com.totem.model;
 
-import br.com.totem.controller.response.OperacaoResponse;
 import br.com.totem.model.constantes.Comando;
-import br.com.totem.model.constantes.StatusConexao;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -20,7 +17,9 @@ import java.time.LocalDateTime;
 public class Dispositivo {
 
     @Id
-    private String mac;
+    private long id;
+    @DBRef
+    private Cliente cliente;
     private String nome;
     private String ip;
     private Integer memoria;
@@ -34,7 +33,9 @@ public class Dispositivo {
     private String brokerId;
     private Endereco endereco;
     private String enderecoCompleto;
-    private Configuracao configuracao;
+    private Float sensibilidadeVibracao;
+    private Integer tempoAtividade;
+    private String corVibracao;
     @DBRef
     private Operacao operacao;
     @DBRef

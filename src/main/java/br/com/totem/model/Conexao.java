@@ -1,6 +1,7 @@
 package br.com.totem.model;
 
 import br.com.totem.model.constantes.StatusConexao;
+import br.com.totem.model.constantes.TipoConexao;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +17,28 @@ import java.time.LocalDateTime;
 public class Conexao {
 
     @Id
-    private String mac;
+    private String id;
     private LocalDateTime ultimaAtualizacao;
     private StatusConexao status;
+    private StatusConexao statusMCU;
+    private TipoConexao tipoConexao;
+    private Boolean habilitarWifi;
+    private String ssid;
+    private String senha;
+    private Boolean habilitarLoraWan;
+    private Integer modoLora;
+    private String classe;
+    private String devEui;
+    private String appEui;
+    private String appKey;
+    private String nwkSKey;
+    private String appSKey;
+    private String devAddr;
+    private Integer txPower;
+    private Integer dataRate;
+    private Integer adr;
+    private Integer snr;
+    private Integer rssi;
+    private Boolean autoJoin = Boolean.FALSE;
 
 }

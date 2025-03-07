@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,16 @@ public class CorResponse {
     private long time;
     private int quantidadePinos;
     private boolean rapida;
+    private boolean vibracao;
+    private boolean exclusiva;
+    private int velocidade;
     private List<Parametro> parametros;
     @Transient
     private boolean responder;
+
+    public List<Parametro> getParametros() {
+        if(parametros == null)
+            return Collections.EMPTY_LIST;
+        return parametros;
+    }
 }

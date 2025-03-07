@@ -19,9 +19,11 @@ public class CorRequest {
     private long time;
     private int quantidadePinos;
     private boolean rapida;
+    private boolean vibracao;
+    private int velocidade;
     private List<Parametro> parametros;
     @Transient
     private boolean responder;
-    private String mac;
+    private long deviceId;
 
 }

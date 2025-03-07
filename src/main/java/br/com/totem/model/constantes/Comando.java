@@ -15,7 +15,10 @@ public enum Comando {
     CONCLUIDO("Teste concluido"),
     TIMER_CONCLUIDO("Timer finalizado para %S"),
     TIMER_CRIADO("Timer criado para %S"),
-    TIMER_CANCELADO("Timer cancelado para %S");
+    TIMER_CANCELADO("Timer cancelado para %S"),
+    BOTAO_ACIONADO("Botão pressionado"),
+    OCORRENCIA("Evento de ocorrência acionado"),
+    VIBRACAO("Vibração detectada");
 
     private String value;
 

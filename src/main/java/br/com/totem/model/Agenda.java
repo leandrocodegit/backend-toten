@@ -20,8 +20,11 @@ import java.util.UUID;
 @Document(collection = "agendas")
 public class Agenda {
 
+
     @Id
     private UUID id;
+    @DBRef
+    private Cliente cliente;
     private String nome;
     private boolean ativo;
     private String status;
@@ -30,7 +33,7 @@ public class Agenda {
     private LocalDateTime termino;
     @DBRef
     private Cor cor;
-    private List<String> dispositivos;
+    private List<Long> dispositivos;
     private boolean todos;
 }
 

@@ -2,6 +2,7 @@ package br.com.totem.security;
 
 import br.com.totem.Exception.ExceptionAuthorization;
 import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.repository.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -27,9 +28,11 @@ public class JWTTokenProvider {
 
     private static final String SECRET_KEY = "PWSraVLSZfsAbPDxWiAkcZvIjUOajrtmHx1Rk059l2I=";
 
-    private static final String ISSUER = "pizzurg-api"; // Emissor do token
+    private static final String ISSUER = "sincroled-api";
 
-    public String generateToken(UserDetails user, TipoToken tipoToken) {
+
+
+    public String generateToken(UserDetailsImpl user, TipoToken tipoToken) {
         try {
 
             List<String> roles = user.getAuthorities().stream()
@@ -41,6 +44,8 @@ public class JWTTokenProvider {
                     .withExpiresAt(expirationDate(getTime(tipoToken)))
                     .withSubject(user.getUsername())
                     .withClaim("roles", roles)
+                    .withClaim("cliente-id", user.getUser().getCliente() != null && user.getUser().getCliente().getId() != null ? user.getUser().getCliente().getId().toString() : "")
+                    .withClaim("business", user.getUser().getBusiness())
                     .sign(getAlgorithm(tipoToken));
         } catch (JWTCreationException exception) {
             throw new JWTCreationException("Erro ao gerar token.", exception);

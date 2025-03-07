@@ -3,6 +3,7 @@ package br.com.totem.service;
 import br.com.totem.controller.response.AgendaResponse;
 import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.model.Agenda;
+import br.com.totem.model.constantes.Role;
 import br.com.totem.repository.AgendaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,13 +23,16 @@ public class AgendaDeviceService {
 
     private final AgendaRepository agendaRepository;
     private final AgendaMapper agendaMapper;
+    private final AuthService authService;
 
-    public Page<AgendaResponse> listaTodosAgendas(Pageable pageable) {
-        return agendaRepository.findAll(pageable).map(agendaMapper::toResponse);
+    public Page<AgendaResponse> listaTodosAgendas(String token, UUID clienteId, Pageable pageable) {
+        if (authService.validaPermissao(token, Role.ROOT))
+            return agendaRepository.findAll(pageable).map(agendaMapper::toResponse);
+        return agendaRepository.findAllByCliente(clienteId, pageable).map(agendaMapper::toResponse);
     }
 
-    public List<AgendaResponse> listaTodosAgendasPorDispositivo(String mac) {
-        return agendaRepository.findAgendasByDispositivoId(mac).stream().map(agendaMapper::toResponse).collect(Collectors.toList());
+    public List<AgendaResponse> listaTodosAgendasPorDispositivo(long id) {
+        return agendaRepository.findAgendasByDispositivoId(id).stream().map(agendaMapper::toResponse).collect(Collectors.toList());
     }
 
     public List<AgendaResponse> listaTodosAgendasPorCor(UUID ID) {
@@ -39,16 +43,17 @@ public class AgendaDeviceService {
         LocalDate data = LocalDateTime.now().plusHours(3).toLocalDate();
         return agendaRepository.findAgendasByDataDentroDoIntervalo(data);
     }
-    public Agenda buscarAgendaDipositivoPrevistaHoje(String mac) {
-        List<Agenda> agendaList = agendaRepository.findFirstByDataAndDispositivo(LocalDate.now(), LocalDate.now(), mac, UUID.randomUUID());
-        if(!agendaList.isEmpty()){
+
+    public Agenda buscarAgendaDipositivoPrevistaHoje(UUID clienteId, long id) {
+        List<Agenda> agendaList = agendaRepository.findFirstByDataAndDispositivo(clienteId, LocalDate.now(), LocalDate.now(), id, UUID.randomUUID());
+        if (!agendaList.isEmpty()) {
             return agendaList.get(0);
         }
         return null;
     }
 
-    public boolean possuiAgendaDipositivoPrevistaHoje(Agenda agenda, String mac) {
-        return !agendaRepository.findFirstByDataAndDispositivo(agenda.getInicio().toLocalDate(), agenda.getTermino().toLocalDate(), mac, agenda.getId()).isEmpty();
+    public boolean possuiAgendaDipositivoPrevistaHoje(UUID clienteId, Agenda agenda, long id) {
+        return !agendaRepository.findFirstByDataAndDispositivo(clienteId, agenda.getInicio().toLocalDate(), agenda.getTermino().toLocalDate(), id, agenda.getId()).isEmpty();
     }
 
 }

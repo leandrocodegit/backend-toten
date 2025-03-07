@@ -8,10 +8,9 @@ import br.com.totem.mapper.AgendaMapper;
 import br.com.totem.mapper.CorMapper;
 import br.com.totem.mapper.DispositivoMapper;
 import br.com.totem.model.Agenda;
+import br.com.totem.model.Cliente;
 import br.com.totem.model.Log;
-import br.com.totem.model.constantes.Comando;
-import br.com.totem.model.constantes.ModoOperacao;
-import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.model.constantes.*;
 import br.com.totem.repository.AgendaRepository;
 import br.com.totem.repository.DispositivoRepository;
 import br.com.totem.repository.LogRepository;
@@ -24,10 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,25 +39,31 @@ public class AgendaService {
     private final DispositivoRepository dispositivoRepository;
     private final OperacaoRepository operacaoRepository;
     private final JWTTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
-    public void criarAgenda(AgendaRequest request) {
-        if (request.getId() == null || !agendaRepository.findById(request.getId()).isPresent()) {
+
+    public void criarAgenda(UUID clienteId, AgendaRequest request) {
+        var agendaOptional = agendaRepository.findByClienteAndId(clienteId, request.getId());
+        if (request.getId() == null || !agendaOptional.isPresent()) {
             if (request.getCor() == null || request.getCor().getId() == null) {
                 throw new ExceptionResponse("Configuração de cor é obrigatorio");
             }
-            request.setId(UUID.randomUUID());
+
 
             Agenda agenda = agendaMapper.toEntity(request);
-            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(0,0,0)));
-            agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(0,0,0)));
+            validarConflitos(clienteId, agenda);
+            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(0, 0, 0)));
+            agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(0, 0, 0)));
+            agenda.setId(UUID.randomUUID());
+            agenda.setCliente(Cliente.builder().id(clienteId).principal(false).build());
             agendaRepository.save(agenda);
-            validarConflitos(agenda);
             logRepository.save(Log.builder()
                     .cor(null)
-                    .mac(request.getId().toString())
+                    .id(agenda.getId().toString())
+                    .tipoLog(TipoLog.AGENDA)
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
-                    .descricao("Nova agenda")
+                    .descricao(agenda.getNome())
                     .mensagem("Nova agenda criada")
                     .build());
         } else {
@@ -69,28 +71,32 @@ public class AgendaService {
         }
     }
 
-    public void alterarAgenda(AgendaRequest request, boolean removerConflitos, String token) {
-        Optional<Agenda> agendaOptional = agendaRepository.findById(request.getId());
+    public void alterarAgenda(String token, UUID clienteId, AgendaRequest request, boolean removerConflitos) {
+        Optional<Agenda> agendaOptional = Optional.empty();
+        if (authService.validaPermissao(token, Role.ROOT))
+            agendaOptional = agendaRepository.findById(request.getId());
+        else agendaOptional = agendaRepository.findByClienteAndId(clienteId, request.getId());
         var user = jwtTokenProvider.getSubjectFromToken(token, TipoToken.ACCESS);
 
         if (agendaOptional.isPresent()) {
-
+            validarConflitos(clienteId, agendaMapper.toEntity(request));
             Agenda agenda = agendaOptional.get();
+
             agenda.setNome(request.getNome());
             agenda.setAtivo(request.isAtivo());
-            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(0,0,0)));
-            agenda.setTermino(LocalDateTime.of(request.getTermino(), LocalTime.of(0,0,0)));
+            agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(0, 0, 0)));
+            agenda.setTermino(LocalDateTime.of(request.getTermino(), LocalTime.of(0, 0, 0)));
             agenda.setTodos(request.isTodos());
             agenda.setExecucao(null);
             if (Boolean.TRUE.equals(request.isTodos())) {
                 agenda.setDispositivos(Collections.emptyList());
-            }else {
+            } else {
                 agenda.setDispositivos(request.getDispositivos());
             }
 
             if (removerConflitos) {
                 for (int i = 0; i < agenda.getDispositivos().size(); i++) {
-                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, agenda.getDispositivos().get(i)) || verificarSeTemAgendaParaTodos(agenda)) {
+                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(clienteId, agenda, agenda.getDispositivos().get(i)) || verificarSeTemAgendaParaTodos(agenda)) {
                         agenda.getDispositivos().remove(agenda.getDispositivos().get(i));
                     }
                 }
@@ -102,32 +108,34 @@ public class AgendaService {
             agendaRepository.save(agenda);
             logRepository.save(Log.builder()
                     .cor(null)
-                    .mac(agenda.getId().toString())
+                    .id(agenda.getId().toString())
+                    .tipoLog(TipoLog.AGENDA)
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
-                    .descricao("Atualizado agenda")
+                    .descricao(agenda.getNome())
                     .mensagem("Agenda foi atualizada")
                     .build());
             verificaSeAgendaHoje(agenda);
             dashboardService.atualizarDashboardAgendas();
-            comandoService.sincronizarTodos(user,false);
+            comandoService.sincronizarTodos(user, false);
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
     }
 
 
-    public void verificaSeAgendaHoje(Agenda agenda){
+    public void verificaSeAgendaHoje(Agenda agenda) {
         var bool = agenda.getInicio().toLocalDate().equals(LocalDate.now()) || agenda.getInicio().toLocalDate().isBefore(LocalDate.now());
-        if(bool)
-            bool = agenda.getTermino().toLocalDate().equals(LocalDate.now()) || agenda.getTermino().toLocalDate().isAfter(LocalDate.now());;
-        if(bool){
+        if (bool)
+            bool = agenda.getTermino().toLocalDate().equals(LocalDate.now()) || agenda.getTermino().toLocalDate().isAfter(LocalDate.now());
+        ;
+        if (bool) {
             var dispositivos = dispositivoRepository.findAllById(agenda.getDispositivos());
-            if(agenda.isTodos())
+            if (agenda.isTodos())
                 dispositivos = dispositivoRepository.findAll();
             dispositivos.forEach(device -> {
-                if(agenda.isAtivo()){
-                    if(!device.isIgnorarAgenda()) {
+                if (agenda.isAtivo()) {
+                    if (!device.isIgnorarAgenda()) {
                         device.getOperacao().setModoOperacao(ModoOperacao.AGENDA);
                         device.getOperacao().setAgenda(agenda);
                         operacaoRepository.save(device.getOperacao());
@@ -136,28 +144,44 @@ public class AgendaService {
             });
         }
     }
-    private void validarConflitos(Agenda agenda){
+
+    private void validarConflitos(UUID clienteId, Agenda agenda) {
         agenda.getDispositivos().forEach(device -> {
-            if(verificarSeTemAgendaParaTodos(agenda)){
+            if (verificarSeTemAgendaParaTodos(agenda)) {
                 throw new ExceptionResponse("Conflito de datas");
             }
-            if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(agenda, device)) {
+            if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(clienteId, agenda, device)) {
                 throw new ExceptionResponse("Conflito de datas");
             }
         });
     }
 
     public void removerAgenda(UUID id, String user) {
-        comandoService.sincronizarTodos(user,false);
         agendaRepository.deleteById(id);
+        comandoService.sincronizarTodos(user, false);
     }
 
-    public List<AgendaResponse> agendasDoMesAtual(boolean ativo) {
+    public List<AgendaResponse> agendasDoMesAtual(String token, UUID clienteId, boolean ativo) {
         Sort sort = Sort.by(Sort.Order.asc("inicio"));
-        return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
+        if (authService.validaPermissao(token, Role.ROOT))
+            return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
+        return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(clienteId, LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
     }
 
     public boolean verificarSeTemAgendaParaTodos(Agenda agenda) {
-        return !agendaRepository.findAllAgendasByDataDentroDoIntervaloTodosDispositivos(agenda.getId(), agenda.getInicio().toLocalDate(), agenda.getTermino().toLocalDate()).isEmpty();
+        List<Agenda> agendas = new ArrayList<>();
+        if (agenda.getId() == null)
+            agendas = agendaRepository.findByDispositivosOuTodosAtivos(agenda.getDispositivos());
+        else agendas = agendaRepository.findByDispositivosOuTodosAtivos(agenda.getId(), agenda.getDispositivos());
+
+        var retorno = agendas.stream().anyMatch(ag -> {
+            var inicio = ag.getInicio().getDayOfMonth() == agenda.getInicio().getDayOfMonth() && ag.getInicio().getMonth() == agenda.getInicio().getMonth();
+            var termino = ag.getTermino().getDayOfMonth() == agenda.getTermino().getDayOfMonth() && ag.getTermino().getMonth() == agenda.getTermino().getMonth();
+            if ((inicio || ag.getInicio().isBefore(agenda.getInicio())) &&
+                    (termino || ag.getTermino().isAfter(agenda.getTermino())))
+                return true;
+            return false;
+        });
+        return retorno;
     }
 }

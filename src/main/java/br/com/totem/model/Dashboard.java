@@ -6,6 +6,7 @@ import br.com.totem.controller.response.DispositivoResumeResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class Dashboard {
 
     @Id
     private UUID id;
+    @DBRef
+    private Cliente cliente;
     private LocalDateTime atualizacao;
     private long usuariosAtivos;
     private long usuariosInativos;

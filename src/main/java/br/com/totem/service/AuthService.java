@@ -7,12 +7,10 @@ import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenIntegracaoResponse;
-import br.com.totem.model.Integracao;
-import br.com.totem.model.Log;
-import br.com.totem.model.MessageError;
-import br.com.totem.model.User;
+import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Role;
+import br.com.totem.model.constantes.TipoLog;
 import br.com.totem.model.constantes.TipoToken;
 import br.com.totem.repository.IntegracaoRepository;
 import br.com.totem.repository.LogRepository;
@@ -96,24 +94,36 @@ public class AuthService {
         return null;
     }
 
-    public void criarUsuario(UserCreateRequest request) {
+    public void criarUsuario(String token, UUID clienteId, UserCreateRequest request) {
         if (!userRepository.findByEmail(request.getEmail()).isPresent()) {
+
+            var cliente = Cliente.builder().id(clienteId).principal(false).build();
+
+            if (clienteId == null && validaPermissao(token, Role.ROOT))
+                cliente = null;
+
+            if (!validaPermissao(token, Role.ADMIN))
+                throw new ExceptionResponse("Usuário sem permissão");
+
             User user = User.builder()
                     .id(UUID.randomUUID())
                     .nome(request.getNome())
                     .email(request.getEmail())
-                    .password(securityConfiguration.passwordEncoder().encode(request.getPassword()))
+                    .password(securityConfiguration.passwordEncoder().encode("Sincroled@123"))
                     .roles(request.getRoles())
+                    .cliente(cliente)
+                    .business(request.getBusiness())
                     .status(true)
                     .build();
             userRepository.save(user);
             logRepository.save(Log.builder()
                     .cor(null)
-                    .mac(user.getEmail())
+                    .id(user.getId().toString())
+                    .tipoLog(TipoLog.USER)
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
                     .descricao(user.toString())
-                    .mensagem( "Novo usuário adicionado")
+                    .mensagem("Novo usuário adicionado")
                     .build());
         } else {
             throw new ExceptionResponse("Usuário já existe");
@@ -132,11 +142,12 @@ public class AuthService {
             userRepository.save(user);
             logRepository.save(Log.builder()
                     .cor(null)
-                    .mac(user.getId().toString())
+                    .id(user.getId().toString())
+                    .tipoLog(TipoLog.USER)
                     .data(LocalDateTime.now())
                     .comando(Comando.CONFIGURACAO)
                     .descricao(user.toString())
-                    .mensagem( "Usuário alterou " + user.getEmail() + " a senha")
+                    .mensagem("Usuário alterou " + user.getEmail() + " a senha")
                     .build());
         } else {
             throw new ExceptionResponse("Operação não permitida");
@@ -150,6 +161,23 @@ public class AuthService {
         if (!userOptional.isPresent() || !subject.equals(user.getEmail()) && userOptional.get().getRoles().stream().noneMatch(role -> role.equals(Role.ADMIN))) {
             throw new ExceptionResponse("Operação não permitida");
         }
+    }
+
+    public boolean validaPermissao(String token, Role rolePermissao) {
+        String subject = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), TipoToken.ACCESS);
+        Optional<User> userOptional = userRepository.findByEmail(subject);
+        return userOptional.isPresent() && userOptional.get().getRoles().stream().anyMatch(role -> role.equals(rolePermissao));
+    }
+
+    public boolean validaPermissaoCriarCliente(String token, Role... rolePermissao) {
+        String subject = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), TipoToken.ACCESS);
+        Optional<User> userOptional = userRepository.findByEmail(subject);
+        if (userOptional.isPresent() && userOptional.get().getRoles().stream().anyMatch(role -> Arrays.stream(rolePermissao).anyMatch(rolePermite -> role.equals(rolePermite)))) {
+            if (userOptional.get().getRoles().stream().anyMatch(rolePermite -> Role.ROOT.equals(rolePermite)))
+                return true;
+            return userOptional.get().getBusiness() != null && userOptional.get().getBusiness();
+        }
+        return false;
     }
 
     public static void isStrongPassword(String password, String confirmPassword) {

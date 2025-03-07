@@ -31,13 +31,13 @@ public class AuthenticationController {
     }
 
     @GetMapping("/valid")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
     public  String validaAccess(@RequestHeader String authorization) {
         return jwtTokenProvider.getSubjectFromToken(authorization.replace("Bearer ", ""), TipoToken.COMANDO);
     }
 
     @GetMapping("/valid/integracao")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_INTEGRACAO','ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_INTEGRACAO','ROLE_USER', 'ROLE_ADMIN')")
     public  ResponseEntity<String> validaAccessoIntegracao(@RequestHeader String authorization) {
         String user = jwtTokenProvider.getSubjectFromToken(authorization, TipoToken.COMANDO);
         return ResponseEntity.ok(user);
@@ -60,7 +60,7 @@ public class AuthenticationController {
     }
 
     @PatchMapping("/password")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<String> alteraSenha(@RequestHeader("Authorization") String token, @RequestBody UserUpdateRequest userUpdateRequest) {
         authService.alterarSenha(userUpdateRequest, token);
         return ResponseEntity.ok().build();

@@ -72,19 +72,16 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
-                    System.out.println("Erro");
                     throw new ExceptionAuthorization("O token está ausente.");
                 }
             }
             filterChain.doFilter(request, response);
         } catch (Exception err) {
-            err.printStackTrace();
-            throw new ExceptionAuthorization("O token inválido");
+            throw new ExceptionAuthorization("Token inválido");
         }
     }
 
     private String recoveryToken(HttpServletRequest request) {
-
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
             return authorizationHeader.replace("Bearer ", "");

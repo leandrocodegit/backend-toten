@@ -31,13 +31,13 @@ public class AgendaController {
 
 
     @GetMapping
-    public ResponseEntity<Page<AgendaResponse>> listaTodasAgenda(Pageable pageable) {
-        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendas(pageable));
+    public ResponseEntity<Page<AgendaResponse>> listaTodasAgenda(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, Pageable pageable) {
+        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendas(token, clienteId, pageable));
     }
 
     @GetMapping("/mes")
-    public ResponseEntity<?> listaTodasAgendaMesAtual(Pageable pageable) {
-        return ResponseEntity.ok(agendaService.agendasDoMesAtual(true));
+    public ResponseEntity<?> listaTodasAgendaMesAtual(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, Pageable pageable) {
+        return ResponseEntity.ok(agendaService.agendasDoMesAtual(token, clienteId,true));
     }
 
     @GetMapping("/hoje")
@@ -46,8 +46,8 @@ public class AgendaController {
     }
 
     @GetMapping("/dispositivo/{mac}")
-    public ResponseEntity<List<AgendaResponse>> listaTodasAgendaPorDispositivo(@PathVariable String mac) {
-        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendasPorDispositivo(mac));
+    public ResponseEntity<List<AgendaResponse>> listaTodasAgendaPorDispositivo(@PathVariable long id) {
+        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendasPorDispositivo(id));
     }
 
     @DeleteMapping("/{id}")
@@ -63,15 +63,15 @@ public class AgendaController {
     }
 
     @PatchMapping("/{removerConflitos}")
-    public ResponseEntity<TokenResponse> atualizarAgenda(@RequestBody AgendaRequest request, @PathVariable boolean removerConflitos, @RequestHeader String authorization) {
-        agendaService.alterarAgenda(request, removerConflitos, authorization);
+    public ResponseEntity<TokenResponse> atualizarAgenda(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody AgendaRequest request, @PathVariable boolean removerConflitos, @RequestHeader String authorization) {
+        agendaService.alterarAgenda(token, clienteId, request, removerConflitos);
         return ResponseEntity.ok().build();
     }
 
 
     @PostMapping
-    public ResponseEntity<TokenResponse> criarAgenda(@RequestBody @Valid AgendaRequest request) {
-        agendaService.criarAgenda(request);
+    public ResponseEntity<TokenResponse> criarAgenda(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody @Valid AgendaRequest request) {
+        agendaService.criarAgenda(clienteId, request);
         return ResponseEntity.ok().build();
     }
 

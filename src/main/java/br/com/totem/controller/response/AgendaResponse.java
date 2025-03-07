@@ -19,7 +19,7 @@ public class AgendaResponse {
     private LocalDate inicio;
     private LocalDate termino;
     private CorResponse cor;
-    private List<String> dispositivos;
+    private List<Long> dispositivos;
     private boolean todos;
 
     public String getStatus() {

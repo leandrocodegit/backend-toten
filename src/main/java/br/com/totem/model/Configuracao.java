@@ -14,5 +14,6 @@ public class Configuracao {
     private int intensidade;
     private int faixa;
     private TipoCor tipoCor;
+    private boolean ativo;
 
 }

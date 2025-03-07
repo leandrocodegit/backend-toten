@@ -14,22 +14,17 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "cores")
-public class Cor {
+@Document(collection = "clientes")
+public class Cliente {
 
     @Id
     private UUID id;
-    @DBRef
-    private Cliente cliente;
     private String nome;
-    private long time;
-    private int quantidadePinos;
-    private boolean rapida;
-    private Boolean vibracao;
-    private boolean exclusiva;
-    private int velocidade;
-    private List<Parametro> parametros;
-    @Transient
-    private boolean responder;
+    private Boolean ativo = Boolean.FALSE;
+    private Endereco endereco;
+    private boolean principal;
+    private String enderecoCompleto;
+    @DBRef
+    private List<Cliente> clientes;
 
 }

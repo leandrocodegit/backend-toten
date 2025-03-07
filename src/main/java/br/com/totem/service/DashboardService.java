@@ -58,16 +58,16 @@ public class DashboardService {
                 dashboard.getDispositivos().setOffline(dashboard.getDispositivos().getOffline() + 1);
             }
 
-            if (device.getCor() != null) {
-                device.getCor().getParametros().forEach(parametro -> {
-                    if (cores.containsKey(parametro.getPrimaria())) {
-                        DispositivoPorCor cor = cores.get(parametro.getPrimaria());
-                        cor.setQuantidade(cor.getQuantidade() + 1);
-                    } else {
-                        cores.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
-                    }
-                });
-            }
+//            if (device.getCor() != null) {
+//                device.getCor().getParametros().forEach(parametro -> {
+//                    if (cores.containsKey(parametro.getCorHexa())) {
+//                        DispositivoPorCor cor = cores.get(parametro.getPrimaria());
+//                        cor.setQuantidade(cor.getQuantidade() + 1);
+//                    } else {
+//                        cores.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
+//                    }
+//                });
+//            }
         });
         dashboard.setCores(cores.values().stream().toList());
         dashboard.getDispositivos().setTotal(dashboard.getDispositivos().getOffline() + dashboard.getDispositivos().getOnline());
@@ -96,12 +96,12 @@ public class DashboardService {
                     optionalDashboard.get().getDispositivos().setOffline(optionalDashboard.get().getDispositivos().getOffline() + 1);
                 }
                 device.getCor().getParametros().forEach(parametro -> {
-                    if (cores.containsKey(parametro.getPrimaria())) {
-                        DispositivoPorCor cor = cores.get(parametro.getPrimaria());
-                        cor.setQuantidade(cor.getQuantidade() + 1);
-                    } else {
-                        cores.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
-                    }
+//                    if (cores.containsKey(parametro.getPrimaria())) {
+//                        DispositivoPorCor cor = cores.get(parametro.getPrimaria());
+//                        cor.setQuantidade(cor.getQuantidade() + 1);
+//                    } else {
+//                        cores.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
+//                    }
                 });
             });
             optionalDashboard.get().setCores(cores.values().stream().toList());
@@ -117,12 +117,12 @@ public class DashboardService {
             agendaRepository.findAllByAtivo(true).forEach(device -> {
                 if (device.getCor() != null) {
                     device.getCor().getParametros().forEach(parametro -> {
-                        if (agendas.containsKey(parametro.getPrimaria())) {
-                            DispositivoPorCor cor = agendas.get(parametro.getPrimaria());
-                            cor.setQuantidade(cor.getQuantidade() + 1);
-                        } else {
-                            agendas.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
-                        }
+//                        if (agendas.containsKey(parametro.getPrimaria())) {
+//                            DispositivoPorCor cor = agendas.get(parametro.getPrimaria());
+//                            cor.setQuantidade(cor.getQuantidade() + 1);
+//                        } else {
+//                            agendas.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
+//                        }
                     });
                 }
             });
@@ -130,12 +130,12 @@ public class DashboardService {
             agendaRepository.findAllAgendasByDataDentroDoIntervalo(LocalDate.now()).forEach(agenda -> {
                 if (agenda.getCor() != null && agenda.isAtivo() && agenda.getDispositivos().size() > 0) {
                     agenda.getCor().getParametros().forEach(parametro -> {
-                        if (agendasExecucao.containsKey(parametro.getPrimaria())) {
-                            DispositivoPorCor cor = agendasExecucao.get(parametro.getPrimaria());
-                            cor.setQuantidade(cor.getQuantidade() + 1);
-                        } else {
-                            agendasExecucao.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
-                        }
+//                        if (agendasExecucao.containsKey(parametro.getPrimaria())) {
+//                            DispositivoPorCor cor = agendasExecucao.get(parametro.getPrimaria());
+//                            cor.setQuantidade(cor.getQuantidade() + 1);
+//                        } else {
+//                            agendasExecucao.put(parametro.getPrimaria(), new DispositivoPorCor(parametro.getPrimaria(), 1));
+//                        }
                     });
                 }
             });

@@ -42,7 +42,7 @@ public class ExceptionResponseHandler {
         return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED, request, exception.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(ExceptionAuthorization.class)
+    @ExceptionHandler(ExceptionAuthorization.class)
     public ResponseEntity<Error> handleExceptionAuthorization(ExceptionAuthorization exception, WebRequest request) {
         return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED, request, exception.getMessage());
     }
@@ -61,7 +61,7 @@ public class ExceptionResponseHandler {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, request, exception.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(MappingException.class)
+    @ExceptionHandler(MappingException.class)
     public ResponseEntity<Error> handleMappingException(ExceptionResponse exception, WebRequest request) {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, request, exception.getMessage());
     }

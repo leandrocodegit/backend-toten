@@ -23,38 +23,43 @@ public class CorController {
 
     private final CorService corService;
 
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_ADMIN', 'ROLE_INTEGRACAO', 'ROLE_USER')")
+    public ResponseEntity<CorResponse> buscarCor(@RequestHeader("Authorization") String token, @RequestHeader UUID clienteId,@PathVariable UUID id) {
+        return ResponseEntity.ok(corService.buscaCor(token, clienteId, id));
+    }
     @PostMapping("/duplicar")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
-    public ResponseEntity<TokenResponse> duplicar(@RequestBody CorRequest request) {
-        corService.duplicarCor(request);
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_ADMIN')")
+    public ResponseEntity<TokenResponse> duplicar(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody CorRequest request) {
+        corService.duplicarCor(token, clienteId, request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{principal}")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
-    public ResponseEntity<?> salvar(@RequestBody @Valid CorRequest request, @PathVariable boolean principal) {
-        corService.salvarCor(request, principal);
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_ADMIN')")
+    public ResponseEntity<CorResponse> salvar(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody @Valid CorRequest request, @PathVariable boolean principal) {        ;
+        return ResponseEntity.ok(corService.salvarCor(token, clienteId, request, principal));
+    }
+
+    @PostMapping("/vibracao")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_ADMIN')")
+    public ResponseEntity<?> salvarVibracaoDispositivo(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody @Valid CorRequest request, @PathVariable boolean principal) {
+        corService.salvarCorVibracao(token, clienteId,request, principal);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN')")
-    public ResponseEntity<TokenResponse> remover(@PathVariable UUID id) {
-        corService.removerConfiguracao(id);
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_ADMIN')")
+    public ResponseEntity<TokenResponse> remover(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable UUID id) {
+        corService.removerConfiguracao(token, clienteId, id);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_AVANCADO','ROLE_ADMIN', 'ROLE_INTEGRACAO', 'ROLE_USER')")
-    public ResponseEntity<Page<CorResponse>> listaCores(Pageable pageable) {
-        return ResponseEntity.ok(corService.listaTodasCores(pageable));
+    @GetMapping("/{rapida}/{vibracao}/{exclusiva}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_ADMIN', 'ROLE_INTEGRACAO', 'ROLE_USER')")
+    public ResponseEntity<Page<CorResponse>> listaCores(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable boolean rapida,@PathVariable boolean vibracao,@PathVariable boolean exclusiva, Pageable pageable) {
+        return ResponseEntity.ok(corService.listaTodasCores(token, clienteId, rapida, vibracao, exclusiva, pageable));
     }
-
-    @GetMapping("/rapidas")
-    @PreAuthorize("hasAnyAuthority('ROLE_OPERADOR','ROLE_AVANCADO','ROLE_ADMIN')")
-    public ResponseEntity<List<CorResponse>> listaCoresRapeidas() {
-        return ResponseEntity.ok(corService.listaTodasCoresRapidas());
-    }
-
 
 }

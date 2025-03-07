@@ -18,4 +18,6 @@ public class UserUpdateRequest {
     private String password;
     private String ConfirmPassword;
     private List<Role> roles;
+    private Boolean business;
+    private UUID clienteId;
 }
