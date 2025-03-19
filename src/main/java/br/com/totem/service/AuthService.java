@@ -64,7 +64,7 @@ public class AuthService {
         var email = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
         var clienteId = jwtTokenProvider.getclienteIdToken(token.replace("Bearer ", ""), tipoToken);
         if(validaPermissaoEmail(email, Role.ROOT)){
-            return userRepository.buscarPorEmail(email).orElseThrow(() -> new ExceptionResponse("Não encontrado"));
+            return userRepository.buscarPorEmailSemExecao(email).orElseThrow(() -> new ExceptionResponse("Não encontrado"));
         }else{
             return userRepository.buscarPorEmail(UUID.fromString(clienteId), email).orElseThrow(() -> new ExceptionResponse("Não encontrado"));
         }

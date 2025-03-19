@@ -24,6 +24,8 @@ public interface UserRepository  extends MongoRepository<User, UUID> {
             "   ]" +
             "}")
     Optional<User> buscarPorEmail(String email);
+    @Query("{ 'email': ?0 }")
+    Optional<User> buscarPorEmailSemExecao(String email);
     @Query("{" +
             "'cliente': { $ne: null }, 'cliente.id': ?0, " +
             "   $and: [" +
