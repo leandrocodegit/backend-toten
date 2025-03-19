@@ -64,6 +64,10 @@ public class AuthService {
     public UUID getClienteId(String token){
         return recuperarUsuarioLogado(token, TipoToken.ACCESS).getCliente().getId();
     }
+
+    public Cliente getCliente(String token){
+        return recuperarUsuarioLogado(token, TipoToken.ACCESS).getCliente();
+    }
     public User recuperarUsuarioLogado(String token, TipoToken tipoToken){
         var email = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
         var clienteId = jwtTokenProvider.getclienteIdToken(token.replace("Bearer ", ""), tipoToken);

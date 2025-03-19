@@ -73,7 +73,7 @@ public class DashboardService {
         dashboard.getDispositivos().setTotal(dashboard.getDispositivos().getOffline() + dashboard.getDispositivos().getOnline());
 
 
-        List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour();
+        List<LogConexao> l = logRepository.findLogsGroupedByCommandAndHour(clienteId);
         dashboard.setLogsConexao(l);
 
 

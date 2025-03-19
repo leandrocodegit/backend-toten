@@ -29,15 +29,15 @@ public class LogController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
-    public ResponseEntity<?> pesquisarPorEmail(Pageable pageable) {
-        return ResponseEntity.ok(logService.listaLogs(pageable));
+    public ResponseEntity<?> pesquisarPorEmail(@RequestHeader("Authorization") String token, Pageable pageable) {
+        return ResponseEntity.ok(logService.listaLogs(token, pageable));
     }
     @GetMapping("/{tipo}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
-    public ResponseEntity<?> pesquisarPorEmail(@PathVariable String tipo, Pageable pageable) {
+    public ResponseEntity<?> pesquisarPorEmail(@RequestHeader("Authorization") String token, @PathVariable String tipo, Pageable pageable) {
         if(tipo.contains("TIME"))
-            return ResponseEntity.ok(logService.listaLogsPorTipo(Arrays.asList(Comando.TIMER_CONCLUIDO.name(), Comando.TIMER_CRIADO.name(), Comando.TIMER_CANCELADO.name()), pageable));
-        return ResponseEntity.ok(logService.listaLogsPorTipo(Arrays.asList(tipo), pageable));
+            return ResponseEntity.ok(logService.listaLogsPorTipo(token, Arrays.asList(Comando.TIMER_CONCLUIDO.name(), Comando.TIMER_CRIADO.name(), Comando.TIMER_CANCELADO.name()), pageable));
+        return ResponseEntity.ok(logService.listaLogsPorTipo(token, Arrays.asList(tipo), pageable));
     }
 
 
