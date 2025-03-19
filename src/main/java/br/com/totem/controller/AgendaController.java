@@ -51,9 +51,8 @@ public class AgendaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<List<AgendaResponse>> removerAgenda(@PathVariable UUID id, @RequestHeader String authorization) {
-        var user = jwtTokenProvider.getSubjectFromToken(authorization, TipoToken.ACCESS);
-        agendaService.removerAgenda(id, user);
+    public ResponseEntity<List<AgendaResponse>> removerAgenda(@RequestHeader("Authorization") String token, @PathVariable UUID id) {
+        agendaService.removerAgenda(token, id);
         return ResponseEntity.ok().build();
     }
 

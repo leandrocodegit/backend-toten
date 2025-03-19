@@ -118,7 +118,7 @@ public class AgendaService {
                     .build());
             verificaSeAgendaHoje(agenda);
             dashboardService.atualizarDashboardAgendas(user.getCliente().getId());
-            comandoService.sincronizarTodos(user.getEmail(), false);
+            comandoService.sincronizarTodos( false, user.getCliente().getId(), user.getEmail());
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
@@ -157,9 +157,10 @@ public class AgendaService {
         });
     }
 
-    public void removerAgenda(UUID id, String user) {
+    public void removerAgenda(String token, UUID id) {
+        var user = authService.recuperarUsuarioLogado(token);
         agendaRepository.deleteById(id);
-        comandoService.sincronizarTodos(user, false);
+        comandoService.sincronizarTodos( false, user.getCliente().getId(), user.getEmail());
     }
 
     public List<AgendaResponse> agendasDoMesAtual(String token, boolean ativo) {
