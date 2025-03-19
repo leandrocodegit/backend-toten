@@ -46,7 +46,7 @@ public class AuthService {
     public TokenResponse authenticateUser(AuthUserRequest loginUserDto) {
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(loginUserDto.getEmail(), loginUserDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginUserDto.getEmail().trim(), loginUserDto.getPassword());
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
