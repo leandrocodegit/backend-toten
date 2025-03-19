@@ -20,7 +20,6 @@ public class Operacao {
 
     @Id
     private String id;
-    private UUID cliente;
     private ModoOperacao modoOperacao;
     @DBRef
     private Agenda agenda;

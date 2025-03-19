@@ -31,7 +31,7 @@ public class DispositivoController {
     @GetMapping("/pesquisar/{pesquisa}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<?> pesquisar(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable String pesquisa, Pageable pageable) {        ;
-        return ResponseEntity.ok(dispositivoService.pesquisarDispositivos(token, clienteId, pesquisa, pageable));
+        return ResponseEntity.ok(dispositivoService.pesquisarDispositivos(token, pesquisa, pageable));
     }
 
     @PatchMapping()
@@ -50,15 +50,15 @@ public class DispositivoController {
 
     @GetMapping("/lista")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
-    public ResponseEntity<?> lista(@RequestHeader(required = false) UUID clienteId,  @RequestHeader("Authorization") String token, Pageable pageable) {
-        return ResponseEntity.ok(dispositivoService.listaTodosDispositivos(token, clienteId, pageable));
+    public ResponseEntity<?> lista(@RequestHeader("Authorization") String token, Pageable pageable) {
+        return ResponseEntity.ok(dispositivoService.listaTodosDispositivos(token, pageable));
     }
 
     @GetMapping("/filtro/{filtro}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_USER','ROLE_AVANCADO', 'ROLE_ADMIN')")
     public ResponseEntity<?> listaAtivos(@RequestHeader(required = false) UUID clienteId,  @RequestHeader("Authorization") String token, @PathVariable Filtro filtro, Pageable pageable, @RequestParam(required = false) boolean unpaged) {
         if(unpaged){
-            return ResponseEntity.ok(dispositivoService.listaTodosDispositivosPorFiltro(token, clienteId, filtro));
+            return ResponseEntity.ok(dispositivoService.listaTodosDispositivosPorFiltro(token, filtro));
         }
         var r = dispositivoService.listaTodosDispositivosPorFiltro(token,clienteId, filtro, pageable);
         return ResponseEntity.ok(dispositivoService.listaTodosDispositivosPorFiltro(token,clienteId, filtro, pageable));
@@ -66,8 +66,8 @@ public class DispositivoController {
 
     @GetMapping("/ativar/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN','ROLE_AVANCADO')")
-    public ResponseEntity<List<DispositivoResponse>> Ativar(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable long id) {
-        dispositivoService.ativarDispositivos(token, clienteId, id);
+    public ResponseEntity<List<DispositivoResponse>> Ativar(@RequestHeader("Authorization") String token, @PathVariable long id) {
+        dispositivoService.ativarDispositivos(token, id);
         return ResponseEntity.accepted().build();
     }
 

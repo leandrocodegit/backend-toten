@@ -20,8 +20,6 @@ public class Dashboard {
 
     @Id
     private UUID id;
-    @DBRef
-    private Cliente cliente;
     private LocalDateTime atualizacao;
     private long usuariosAtivos;
     private long usuariosInativos;

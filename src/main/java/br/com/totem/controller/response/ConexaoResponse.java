@@ -33,8 +33,12 @@ public class ConexaoResponse {
     private String devAddr;
     private int txPower;
     private int dataRate;
-    private int adr;
-    private int snr;
+    private boolean adr;
+    private double snr;
     private int rssi;
     private boolean autoJoin;
+    private int tempoAtividade;
+    private boolean fracionarMensagem;
+    private String latitude;
+    private String longitude;
 }

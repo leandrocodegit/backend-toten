@@ -25,10 +25,11 @@ public class AgendaDeviceService {
     private final AgendaMapper agendaMapper;
     private final AuthService authService;
 
-    public Page<AgendaResponse> listaTodosAgendas(String token, UUID clienteId, Pageable pageable) {
-        if (authService.validaPermissao(token, Role.ROOT))
+    public Page<AgendaResponse> listaTodosAgendas(String token, Pageable pageable) {
+        var user = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(user, Role.ROOT))
             return agendaRepository.findAll(pageable).map(agendaMapper::toResponse);
-        return agendaRepository.findAllByCliente(clienteId, pageable).map(agendaMapper::toResponse);
+        return agendaRepository.findAllByCliente(user.getCliente().getId(), pageable).map(agendaMapper::toResponse);
     }
 
     public List<AgendaResponse> listaTodosAgendasPorDispositivo(long id) {

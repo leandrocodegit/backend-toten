@@ -42,8 +42,9 @@ public class AgendaService {
     private final AuthService authService;
 
 
-    public void criarAgenda(UUID clienteId, AgendaRequest request) {
-        var agendaOptional = agendaRepository.findByClienteAndId(clienteId, request.getId());
+    public void criarAgenda(String token, AgendaRequest request) {
+        var user = authService.recuperarUsuarioLogado(token);
+        var agendaOptional = agendaRepository.findByClienteAndId(user.getCliente().getId(), request.getId());
         if (request.getId() == null || !agendaOptional.isPresent()) {
             if (request.getCor() == null || request.getCor().getId() == null) {
                 throw new ExceptionResponse("Configuração de cor é obrigatorio");
@@ -51,11 +52,11 @@ public class AgendaService {
 
 
             Agenda agenda = agendaMapper.toEntity(request);
-            validarConflitos(clienteId, agenda);
+            validarConflitos(user.getCliente().getId(), agenda);
             agenda.setInicio(LocalDateTime.of(request.getInicio(), LocalTime.of(0, 0, 0)));
             agenda.setTermino(LocalDateTime.of(request.getInicio(), LocalTime.of(0, 0, 0)));
             agenda.setId(UUID.randomUUID());
-            agenda.setCliente(Cliente.builder().id(clienteId).principal(false).build());
+            agenda.setCliente(Cliente.builder().id(user.getCliente().getId()).principal(false).build());
             agendaRepository.save(agenda);
             logRepository.save(Log.builder()
                     .cor(null)
@@ -71,15 +72,15 @@ public class AgendaService {
         }
     }
 
-    public void alterarAgenda(String token, UUID clienteId, AgendaRequest request, boolean removerConflitos) {
+    public void alterarAgenda(String token, AgendaRequest request, boolean removerConflitos) {
         Optional<Agenda> agendaOptional = Optional.empty();
+        var user = authService.recuperarUsuarioLogado(token);
         if (authService.validaPermissao(token, Role.ROOT))
             agendaOptional = agendaRepository.findById(request.getId());
-        else agendaOptional = agendaRepository.findByClienteAndId(clienteId, request.getId());
-        var user = jwtTokenProvider.getSubjectFromToken(token, TipoToken.ACCESS);
+        else agendaOptional = agendaRepository.findByClienteAndId(user.getCliente().getId(), request.getId());
 
         if (agendaOptional.isPresent()) {
-            validarConflitos(clienteId, agendaMapper.toEntity(request));
+            validarConflitos(user.getCliente().getId(), agendaMapper.toEntity(request));
             Agenda agenda = agendaOptional.get();
 
             agenda.setNome(request.getNome());
@@ -96,7 +97,7 @@ public class AgendaService {
 
             if (removerConflitos) {
                 for (int i = 0; i < agenda.getDispositivos().size(); i++) {
-                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(clienteId, agenda, agenda.getDispositivos().get(i)) || verificarSeTemAgendaParaTodos(agenda)) {
+                    if (agendaDeviceService.possuiAgendaDipositivoPrevistaHoje(user.getCliente().getId(), agenda, agenda.getDispositivos().get(i)) || verificarSeTemAgendaParaTodos(agenda)) {
                         agenda.getDispositivos().remove(agenda.getDispositivos().get(i));
                     }
                 }
@@ -116,8 +117,8 @@ public class AgendaService {
                     .mensagem("Agenda foi atualizada")
                     .build());
             verificaSeAgendaHoje(agenda);
-            dashboardService.atualizarDashboardAgendas();
-            comandoService.sincronizarTodos(user, false);
+            dashboardService.atualizarDashboardAgendas(user.getCliente().getId());
+            comandoService.sincronizarTodos(user.getEmail(), false);
         } else {
             throw new ExceptionResponse("Agenda não existe");
         }
@@ -161,11 +162,12 @@ public class AgendaService {
         comandoService.sincronizarTodos(user, false);
     }
 
-    public List<AgendaResponse> agendasDoMesAtual(String token, UUID clienteId, boolean ativo) {
+    public List<AgendaResponse> agendasDoMesAtual(String token, boolean ativo) {
+        var user = authService.recuperarUsuarioLogado(token);
         Sort sort = Sort.by(Sort.Order.asc("inicio"));
         if (authService.validaPermissao(token, Role.ROOT))
             return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
-        return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(clienteId, LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
+        return agendaRepository.findAllDoMesAtualInOrderByInicioDesc(user.getCliente().getId(), LocalDate.now().getMonthValue(), ativo, sort).stream().map(agendaMapper::toResponse).toList();
     }
 
     public boolean verificarSeTemAgendaParaTodos(Agenda agenda) {

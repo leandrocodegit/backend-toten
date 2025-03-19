@@ -7,6 +7,7 @@ import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserCreateRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenIntegracaoResponse;
+import br.com.totem.controller.response.UserResponse;
 import br.com.totem.model.*;
 import br.com.totem.model.constantes.Comando;
 import br.com.totem.model.constantes.Role;
@@ -55,6 +56,21 @@ public class AuthService {
                 jwtTokenProvider.generateToken(userDetails, TipoToken.COMANDO),
                 "bearer", 0);
     }
+
+    public User recuperarUsuarioLogado(String token){
+        return recuperarUsuarioLogado(token, TipoToken.ACCESS);
+    }
+    public User recuperarUsuarioLogado(String token, TipoToken tipoToken){
+        var email = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
+        var clienteId = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
+        if(validaPermissaoEmail(email, Role.ROOT)){
+            return userRepository.buscarPorEmail(email).orElseThrow(() -> new ExceptionResponse("Não encontrado"));
+        }else{
+            return userRepository.buscarPorEmail(UUID.fromString(clienteId), email).orElseThrow(() -> new ExceptionResponse("Não encontrado"));
+        }
+    }
+
+
 
     public TokenIntegracaoResponse validarIntegracao(String clientId, String secret) {
 
@@ -163,10 +179,18 @@ public class AuthService {
         }
     }
 
-    public boolean validaPermissao(String token, Role rolePermissao) {
+    public boolean validaPermissaoEmail(String email, Role... rolePermissao) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        return userOptional.isPresent() && userOptional.get().getRoles().stream().anyMatch(role -> Arrays.stream(rolePermissao).anyMatch(rolePermite -> role.equals(rolePermite)));
+    }
+    public boolean validaPermissao(String token, Role... rolePermissao) {
         String subject = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), TipoToken.ACCESS);
         Optional<User> userOptional = userRepository.findByEmail(subject);
-        return userOptional.isPresent() && userOptional.get().getRoles().stream().anyMatch(role -> role.equals(rolePermissao));
+        return userOptional.isPresent() && userOptional.get().getRoles().stream().anyMatch(role -> Arrays.stream(rolePermissao).anyMatch(rolePermite -> role.equals(rolePermite)));
+    }
+
+    public boolean validaPermissao(User user, Role... rolePermissao) {
+        return user.getRoles().stream().anyMatch(role -> Arrays.stream(rolePermissao).anyMatch(rolePermite -> role.equals(rolePermite)));
     }
 
     public boolean validaPermissaoCriarCliente(String token, Role... rolePermissao) {

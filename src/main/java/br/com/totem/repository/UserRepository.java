@@ -1,5 +1,6 @@
 package br.com.totem.repository;
 
+import br.com.totem.model.Cliente;
 import br.com.totem.model.Cor;
 import br.com.totem.model.User;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ public interface UserRepository  extends MongoRepository<User, UUID> {
     Optional<User> findByEmailAndStatus(String email, Boolean status);
     @Query("{" +
             "   $and: [" +
-            "       { 'email': ?1 }," +
+            "       { 'email': ?0 }," +
             "       { 'email': { $not: { $regex: 'master', $options: 'i' } } }" +
             "   ]" +
             "}")
@@ -34,7 +35,8 @@ public interface UserRepository  extends MongoRepository<User, UUID> {
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'email': { $not: { $regex: 'master', $options: 'i' } } }")
     Optional<User> findByEmail(UUID clienteId, String email);
     Optional<User> findByEmail(String email);
-    long countByStatus(Boolean status);
+
+    long countByClienteAndStatus(Cliente clienteId, Boolean status);
 
     @Query("{" +
             "'cliente': { $ne: null }, 'cliente.id': ?0, " +
@@ -47,6 +49,7 @@ public interface UserRepository  extends MongoRepository<User, UUID> {
             "   ]" +
             "}")
     Page<User> findByNomeAndEmailContaining(UUID clienteId, String texto, Pageable pageable);
-    @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'email': { $not: { $regex: 'master', $options: 'i' } } }")
-    Page<User> listaUsuarios(UUID clienteId, Pageable pageable);
+    @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'business': ?1, 'email': { $not: { $regex: 'master', $options: 'i' } } }")
+    Page<User> listaUsuarios(UUID clienteId, boolean business, Pageable pageable);
+    Page<User> findAllByBusiness(boolean business, Pageable pageable);
 }

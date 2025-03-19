@@ -17,6 +17,6 @@ public class DispositivoRequest {
     private String longitude;
     private Endereco endereco;
     private Float sensibilidadeVibracao;
-    private Integer tempoAtividade;
     private ConfiguracaoRequest configuracao;
+    private ConexaoRequest conexao;
 }

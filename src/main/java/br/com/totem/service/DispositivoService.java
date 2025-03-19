@@ -51,8 +51,11 @@ public class DispositivoService {
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setNome(request.getNome());
-            dispositivo.setLatitude(request.getLatitude() != null ? request.getLatitude() : "");
-            dispositivo.setLongitude(request.getLongitude() != null ? request.getLongitude() : "");
+            if(request.getConexao() != null){
+                dispositivo.getConexao().setLatitude(request.getConexao().getLatitude() != null ? request.getConexao().getLatitude() : "");
+                dispositivo.getConexao().setLongitude(request.getConexao().getLongitude() != null ? request.getConexao().getLongitude() : "");
+                conexaoRepository.save(dispositivo.getConexao());
+            }
             dispositivo.setEndereco(request.getEndereco());
             dispositivo.setIgnorarAgenda(request.isIgnorarAgenda());
             dispositivo.setPermiteComando(request.isPermiteComando());
@@ -99,9 +102,10 @@ public class DispositivoService {
             dispositivo.getConexao().setDevEui(request.getConexao().getDevEui());
             dispositivo.getConexao().setTxPower(request.getConexao().getTxPower());
             dispositivo.getConexao().setDataRate(request.getConexao().getDataRate());
-            dispositivo.getConexao().setAdr(request.getConexao().getAdr());
-            dispositivo.getConexao().setSnr(request.getConexao().getSnr());
-
+            dispositivo.getConexao().setAutoJoin(request.getConexao().isAutoJoin());
+            dispositivo.getConexao().setFracionarMensagem(request.getConexao().isFracionarMensagem());
+            dispositivo.getConexao().setAdr(request.getConexao().isAdr());
+            dispositivo.getConexao().setTempoAtividade(request.getConexao().getTempoAtividade());
 
             if (request.getCorVibracao() != null) {
                 var cor = corRepository.findById(request.getCorVibracao());
@@ -131,11 +135,12 @@ public class DispositivoService {
         }
     }
 
-    public void ativarDispositivos(String token, UUID clienteId, long id) {
+    public void ativarDispositivos(String token, long id) {
         Optional<Dispositivo> dispositivoOptional = Optional.empty();
+        var user = authService.recuperarUsuarioLogado(token);
         if (authService.validaPermissao(token, Role.ROOT))
             dispositivoOptional = dispositivoRepository.findById(id);
-        else dispositivoRepository.findByClienteAndId(clienteId, id);
+        else dispositivoRepository.findByClienteAndId(user.getCliente().getId(), id);
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setAtivo(!dispositivo.isAtivo());
@@ -166,26 +171,29 @@ public class DispositivoService {
         return dispositivoMapper.toResponse(dispositivoRepository.findByClienteAndId(clienteId, id).orElseThrow());
     }
 
-    public Page<DispositivoResponse> pesquisarDispositivos(String token, UUID clienteId, String pesquisa, Pageable pageable) {
-        if (authService.validaPermissao(token, Role.ROOT))
+    public Page<DispositivoResponse> pesquisarDispositivos(String token, String pesquisa, Pageable pageable) {
+        var user = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(user, Role.ROOT))
             return dispositivoRepository.findByIdAndNomeContaining(pesquisa, pageable).map(dispositivoMapper::toResponse);
-        return dispositivoRepository.findByIdAndNomeContainingAndClienteId(clienteId, pesquisa, pageable).map(dispositivoMapper::toResponse);
+        return dispositivoRepository.findByIdAndNomeContainingAndClienteId(user.getCliente().getId(), pesquisa, pageable).map(dispositivoMapper::toResponse);
     }
 
-    public Page<DispositivoResponse> listaTodosDispositivos(String token, UUID clienteId, Pageable pageable) {
-        if (authService.validaPermissao(token, Role.ROOT))
+    public Page<DispositivoResponse> listaTodosDispositivos(String token, Pageable pageable) {
+        var user = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(user, Role.ROOT))
             return dispositivoRepository.findAll(pageable).map(dispositivoMapper::toResponse);
-        return dispositivoRepository.findAllByCliente(clienteId, pageable).map(dispositivoMapper::toResponse);
+        return dispositivoRepository.findAllByCliente(user.getCliente().getId(), pageable).map(dispositivoMapper::toResponse);
     }
 
     public Page<DispositivoResponse> listaTodosDispositivosPorFiltro(String token, UUID clienteId, Filtro filtro, Pageable pageable) {
         return listaTodosEntidadeDispositivosPorFiltro(clienteId, token, filtro, pageable).map(dispositivoMapper::toResponse);
     }
 
-    public List<DispositivoResponse> listaTodosDispositivosPorFiltro(String token, UUID clienteId, Filtro filtro) {
-        if (authService.validaPermissao(token, Role.ROOT))
+    public List<DispositivoResponse> listaTodosDispositivosPorFiltro(String token, Filtro filtro) {
+        var user = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(user, Role.ROOT))
             filtro = Filtro.TODOS;
-        return listaTodosEntidadeDispositivosPorFiltro(clienteId, filtro).stream().map(dispositivoMapper::toResponse).collect(Collectors.toList());
+        return listaTodosEntidadeDispositivosPorFiltro(user.getCliente().getId(), filtro).stream().map(dispositivoMapper::toResponse).collect(Collectors.toList());
     }
 
     public Page<Dispositivo> listaTodosEntidadeDispositivosPorFiltro(UUID clienteId, String token, Filtro filtro, Pageable pageable) {

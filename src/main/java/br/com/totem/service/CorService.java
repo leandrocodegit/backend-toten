@@ -87,13 +87,7 @@ public class CorService {
         if (request.getId() == null) {
             cor.setId(UUID.randomUUID());
             if (cor.getParametros() == null || cor.getParametros().isEmpty()) {
-                cor.setParametros(List.of(Parametro.builder()
-                        .cor(new int[]{255, 0, 0, 0, 255, 0, 0, 255})
-                        .correcao(new int[]{255, 255, 255})
-                        .efeito(Efeito.COLORIDO)
-                        .corHexa(List.of("red", "green", "blue"))
-                        .pino(1)
-                        .build()));
+                cor.setParametros(Cor.padrao().getParametros());
             }
 
         } else {
@@ -114,8 +108,10 @@ public class CorService {
         if (principal) {
             salvarCorDisposisito(token, clienteId, cor, request.getDeviceId(), principal);
             System.out.println("Chamando atualizacao dashboard");
-            //  conexaoService.atualizarDashboar();
         }
+
+        if (clienteId != null)
+            conexaoService.atualizarDashboar(clienteId);
 
         if (cor.getVibracao())
             comandoService.sincronizarVibracao(cor.getId());
@@ -143,15 +139,16 @@ public class CorService {
 
     public CorResponse buscaCor(String token, UUID clienteId, UUID id) {
         Cor cor = null;
-        if(authService.validaPermissao(token, Role.ROOT))
-         cor = corRepository.findById(id).orElseThrow(() -> new ExceptionResponse("Cor não encontrada"));
-        else cor = corRepository.findByClienteAndId(clienteId, id).orElseThrow(() -> new ExceptionResponse("Cor não encontrada"));
+        if (authService.validaPermissao(token, Role.ROOT))
+            cor = corRepository.findById(id).orElseThrow(() -> new ExceptionResponse("Cor não encontrada"));
+        else
+            cor = corRepository.findByClienteAndId(clienteId, id).orElseThrow(() -> new ExceptionResponse("Cor não encontrada"));
         return corMapper.toResponse(cor);
     }
 
     public void duplicarCor(String token, UUID clienteId, CorRequest request) {
 
-        if(clienteId == null)
+        if (clienteId == null)
             throw new ExceptionResponse("Essa ação requer um cliente logado");
         Cor cor = corMapper.toEntity(request);
         cor.setId(UUID.randomUUID());
@@ -181,8 +178,8 @@ public class CorService {
 
     public Dispositivo salvarCorDisposisito(String token, UUID clienteId, Cor cor, long id, boolean principal) {
         Optional<Dispositivo> dispositivoOptional = Optional.empty();
-        if(authService.validaPermissao(token, Role.ROOT))
-          dispositivoOptional = dispositivoRepository.findById(id);
+        if (authService.validaPermissao(token, Role.ROOT))
+            dispositivoOptional = dispositivoRepository.findById(id);
         else dispositivoOptional = dispositivoRepository.findByClienteAndId(clienteId, id);
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();

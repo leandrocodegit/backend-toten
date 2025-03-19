@@ -66,6 +66,20 @@ public class JWTTokenProvider {
         }
     }
 
+    public String getclienteIdToken(String token, TipoToken tipo) {
+        try {
+            return JWT.require(getAlgorithm(tipo))
+                    .withIssuer(ISSUER)
+                    .build()
+                    .verify(token.replace("Bearer ", ""))
+                    .getClaims().get("cliente").asString();
+        } catch (JWTVerificationException exception) {
+            throw new JWTVerificationException("Token inválido ou expirado.");
+        }catch (Exception exception) {
+            throw new JWTVerificationException("Token inválido ou expirado.");
+        }
+    }
+
     public Algorithm getAlgorithm(TipoToken tipoToken) {
         switch (tipoToken) {
             case ACCESS -> {

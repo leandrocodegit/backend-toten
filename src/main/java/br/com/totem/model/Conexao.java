@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -36,9 +37,13 @@ public class Conexao {
     private String devAddr;
     private Integer txPower;
     private Integer dataRate;
-    private Integer adr;
-    private Integer snr;
+    private Boolean adr = Boolean.FALSE;
+    private Double snr;
     private Integer rssi;
     private Boolean autoJoin = Boolean.FALSE;
+    private Integer tempoAtividade;
+    private Boolean fracionarMensagem = Boolean.FALSE;
+    private String latitude;
+    private String longitude;
 
 }

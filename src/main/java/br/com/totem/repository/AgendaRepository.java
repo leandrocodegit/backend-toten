@@ -79,6 +79,18 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
     List<Agenda> findAllAgendasByDataDentroDoIntervalo(LocalDate data);
 
     @Query("{" +
+            "'cliente': { $ne: null },  'cliente.id': ?0, 'dispositivos.id': ?1 }" +
+            "   $expr: {" +
+            "     $and: [" +
+            "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }," +
+            "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }," +
+            "     ]" +
+            "   }," +
+            "   'ativo': true" +
+            "}")
+    List<Agenda> findAllAgendasByDataDentroDoIntervalo(UUID clienteId, LocalDate data);
+
+    @Query("{" +
             " $expr: {" +
             "   $and: [" +
             "       { $eq: [ { $month: '$inicio' }, ?0 ] }," +
@@ -108,19 +120,20 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
     })
     List<Integer> findAllDoMes(boolean ativo);
 
-    List<Agenda> findAllByAtivo(boolean ativo);
+    @Query("{'cliente': { $ne: null },  'cliente.id': ?0, 'ativo': ?1 }")
+    List<Agenda> findAllByAtivo(UUID clienteId, boolean ativo);
 
     @Query("{" +
             "'cliente': { $ne: null },  'cliente.id': ?0," +
             " $expr: {" +
             "   $and: [" +
-            "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?0 } } ] }," +
-            "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }" +
+            "       { $lte: [ { $dateToString: { format: '%m-%d', date: '$inicio' } }, { $dateToString: { format: '%m-%d', date: ?1 } } ] }," +
+            "       { $gte: [ { $dateToString: { format: '%m-%d', date: '$termino' } }, { $dateToString: { format: '%m-%d', date: ?2 } } ] }" +
             "   ]" +
             " }," +
-            " 'dispositivos.id': ?2," +
+            " 'dispositivos.id': ?3," +
             " 'ativo': true" +
-            " '_id': { $ne: ?3 }" +
+            " '_id': { $ne: ?4 }" +
             "}")
     List<Agenda> findFirstByDataAndDispositivo(UUID clienteId, LocalDate inicio, LocalDate termino, long dispositivoId, UUID agendaId);
 

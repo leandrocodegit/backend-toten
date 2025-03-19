@@ -52,10 +52,10 @@ public class UserController {
     public ResponseEntity<?> pesquisar(@RequestHeader(required = false) UUID clienteId, @PathVariable String pesquisa, Pageable pageable) {        ;
         return ResponseEntity.ok(userService.pesquisarUsuarios(clienteId, pesquisa, pageable));
     }
-    @GetMapping()
+    @GetMapping("/lista/{business}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO', 'ROLE_OPERADOR', 'ROLE_ADMIN')")
-    public ResponseEntity<?> listaTodosUsuarios(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, Pageable pageable) {        ;
-        return ResponseEntity.ok(userService.listaTodosUsuarios(token, clienteId, pageable));
+    public ResponseEntity<?> listaTodosUsuarios(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable boolean business, Pageable pageable) {        ;
+        return ResponseEntity.ok(userService.listaTodosUsuarios(token, clienteId, business, pageable));
     }
 
     @DeleteMapping("/{id}")

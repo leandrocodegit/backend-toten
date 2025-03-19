@@ -1,5 +1,7 @@
 package br.com.totem.model;
 
+import br.com.totem.model.constantes.Efeito;
+import br.com.totem.model.constantes.TipoCor;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -31,5 +33,35 @@ public class Cor {
     private List<Parametro> parametros;
     @Transient
     private boolean responder;
+
+    public static Cor padrao(){
+        return Cor.builder()
+                .id(UUID.randomUUID())
+                .nome("Padrão")
+                .quantidadePinos(0)
+                .rapida(false)
+                .time(0)
+                .velocidade(100)
+                .vibracao(false)
+                .exclusiva(true)
+                .responder(false)
+                .parametros(List.of(
+                        Parametro.builder()
+                                .cor(new int[] {255,0,0,0,255,0,0,0,255})
+                                .correcao(new int[] {255,255,255})
+                                .corHexa(List.of("red","green","blue"))
+                                .pino(1)
+                                .efeito(Efeito.COLORIDO)
+                                .configuracao(Configuracao.builder()
+                                        .tipoCor(TipoCor.RGB)
+                                        .leds(10)
+                                        .faixa(2)
+                                        .intensidade(255)
+                                        .ativo(true).build())
+                                .build()
+                ))
+                .build();
+
+    }
 
 }

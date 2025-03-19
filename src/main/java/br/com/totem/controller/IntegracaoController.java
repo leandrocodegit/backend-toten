@@ -21,14 +21,14 @@ public class IntegracaoController {
 
 
     @GetMapping
-    public ResponseEntity<Page<IntegracaoResponse>> lista(Pageable pageable) {
-        return ResponseEntity.ok(integracaoService.listaIntegracoes(pageable));
+    public ResponseEntity<Page<IntegracaoResponse>> lista(@RequestHeader("Authorization") String token, Pageable pageable) {
+        return ResponseEntity.ok(integracaoService.listaIntegracoes(token, pageable));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<String> criarIntegracao(@RequestBody IntegracaoRequest request) {
-        integracaoService.criarIntegracao(request);
+    public ResponseEntity<String> criarIntegracao(@RequestHeader("Authorization") String token, @RequestBody IntegracaoRequest request) {
+        integracaoService.criarIntegracao(token, request);
         return ResponseEntity.ok().build();
     }
 

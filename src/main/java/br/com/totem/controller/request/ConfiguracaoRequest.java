@@ -18,4 +18,5 @@ public class ConfiguracaoRequest {
     private ConexaoRequest conexao;
     private UUID corVibracao;
 
+
 }

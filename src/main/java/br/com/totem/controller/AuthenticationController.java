@@ -4,9 +4,12 @@ import br.com.totem.controller.request.AuthUserRequest;
 import br.com.totem.controller.request.UserUpdateRequest;
 import br.com.totem.controller.response.TokenIntegracaoResponse;
 import br.com.totem.controller.response.TokenResponse;
+import br.com.totem.controller.response.UserResponse;
 import br.com.totem.model.constantes.TipoToken;
+import br.com.totem.repository.UserRepository;
 import br.com.totem.security.JWTTokenProvider;
 import br.com.totem.service.AuthService;
+import br.com.totem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +25,7 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
     private final JWTTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
 
     @PostMapping("/login")
@@ -32,8 +36,8 @@ public class AuthenticationController {
 
     @GetMapping("/valid")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_AVANCADO','ROLE_USER', 'ROLE_ADMIN')")
-    public  String validaAccess(@RequestHeader String authorization) {
-        return jwtTokenProvider.getSubjectFromToken(authorization.replace("Bearer ", ""), TipoToken.COMANDO);
+    public  ResponseEntity<UserResponse> validaAccess(@RequestHeader String authorization) {
+        return ResponseEntity.ok(userService.recuperarUsuarioLogado(authorization, TipoToken.COMANDO));
     }
 
     @GetMapping("/valid/integracao")

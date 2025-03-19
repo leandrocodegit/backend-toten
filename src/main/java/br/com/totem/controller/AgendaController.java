@@ -31,13 +31,13 @@ public class AgendaController {
 
 
     @GetMapping
-    public ResponseEntity<Page<AgendaResponse>> listaTodasAgenda(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, Pageable pageable) {
-        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendas(token, clienteId, pageable));
+    public ResponseEntity<Page<AgendaResponse>> listaTodasAgenda(@RequestHeader("Authorization") String token, Pageable pageable) {
+        return ResponseEntity.ok(agendaDeviceService.listaTodosAgendas(token, pageable));
     }
 
     @GetMapping("/mes")
-    public ResponseEntity<?> listaTodasAgendaMesAtual(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, Pageable pageable) {
-        return ResponseEntity.ok(agendaService.agendasDoMesAtual(token, clienteId,true));
+    public ResponseEntity<?> listaTodasAgendaMesAtual(@RequestHeader("Authorization") String token, Pageable pageable) {
+        return ResponseEntity.ok(agendaService.agendasDoMesAtual(token, true));
     }
 
     @GetMapping("/hoje")
@@ -63,15 +63,15 @@ public class AgendaController {
     }
 
     @PatchMapping("/{removerConflitos}")
-    public ResponseEntity<TokenResponse> atualizarAgenda(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody AgendaRequest request, @PathVariable boolean removerConflitos, @RequestHeader String authorization) {
-        agendaService.alterarAgenda(token, clienteId, request, removerConflitos);
+    public ResponseEntity<TokenResponse> atualizarAgenda(@RequestHeader("Authorization") String token, @RequestBody AgendaRequest request, @PathVariable boolean removerConflitos, @RequestHeader String authorization) {
+        agendaService.alterarAgenda(token, request, removerConflitos);
         return ResponseEntity.ok().build();
     }
 
 
     @PostMapping
-    public ResponseEntity<TokenResponse> criarAgenda(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody @Valid AgendaRequest request) {
-        agendaService.criarAgenda(clienteId, request);
+    public ResponseEntity<TokenResponse> criarAgenda(@RequestHeader("Authorization") String token, @RequestBody @Valid AgendaRequest request) {
+        agendaService.criarAgenda(token, request);
         return ResponseEntity.ok().build();
     }
 

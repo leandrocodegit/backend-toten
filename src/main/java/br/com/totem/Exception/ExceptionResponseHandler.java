@@ -43,8 +43,8 @@ public class ExceptionResponseHandler {
     }
 
     @ExceptionHandler(ExceptionAuthorization.class)
-    public ResponseEntity<Error> handleExceptionAuthorization(ExceptionAuthorization exception, WebRequest request) {
-        return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED, request, exception.getMessage());
+    public ResponseEntity<Error> handleExceptionAuthorization(ExceptionAuthorization exception) {
+        return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED, null, exception.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)

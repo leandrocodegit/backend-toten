@@ -25,9 +25,11 @@ public class ConexaoRequest {
     private String devAddr;
     private int txPower;
     private int dataRate;
-    private int adr;
-    private int snr;
-    private int rssi;
+    private boolean adr;
     private boolean autoJoin;
+    private int tempoAtividade;
+    private boolean fracionarMensagem;
+    private String latitude;
+    private String longitude;
 
 }

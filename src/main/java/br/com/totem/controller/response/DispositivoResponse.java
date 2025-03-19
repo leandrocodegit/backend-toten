@@ -32,7 +32,6 @@ public class DispositivoResponse {
     private Endereco endereco;
     private String enderecoCompleto;
     private Float sensibilidadeVibracao;
-    private Integer tempoAtividade;
     private boolean isTimer;
     private OperacaoResponse operacao;
     private ConexaoResponse conexao;

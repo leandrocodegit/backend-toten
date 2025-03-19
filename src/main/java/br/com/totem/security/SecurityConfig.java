@@ -36,6 +36,7 @@ public class SecurityConfig {
             "/totem/dashboard/gerar",
             "/totem/dashboard/gerar/true",
             "/totem/dashboard/gerar/false",
+            "/totem/dashboard/atualizar/conexoes",
             "/totem/mensagem",
             "/totem/topic/messages",
             "/totem/send",
@@ -55,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/dashboard/gerar/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/dashboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/secret").permitAll()
                         .requestMatchers(HttpMethod.GET, "/dispositivo/firmware").permitAll()
                         .requestMatchers(HttpMethod.POST, "/email").permitAll()
