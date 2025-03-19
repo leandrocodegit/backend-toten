@@ -62,7 +62,7 @@ public class AuthService {
     }
     public User recuperarUsuarioLogado(String token, TipoToken tipoToken){
         var email = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
-        var clienteId = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
+        var clienteId = jwtTokenProvider.getclienteIdToken(token.replace("Bearer ", ""), tipoToken);
         if(validaPermissaoEmail(email, Role.ROOT)){
             return userRepository.buscarPorEmail(email).orElseThrow(() -> new ExceptionResponse("Não encontrado"));
         }else{
