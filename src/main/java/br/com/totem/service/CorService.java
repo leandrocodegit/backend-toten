@@ -110,11 +110,13 @@ public class CorService {
             System.out.println("Chamando atualizacao dashboard");
         }
 
-        if (clienteId != null)
-            conexaoService.atualizarDashboar(clienteId);
-
-        if (cor.getVibracao())
-            comandoService.sincronizarVibracao(cor.getId());
+        try {
+            if (clienteId != null)
+                conexaoService.atualizarDashboar(clienteId);
+            if (cor.getVibracao())
+                comandoService.sincronizarVibracao(cor.getId());
+        } catch (Exception err) {
+        }
         return corMapper.toResponse(corSalve);
     }
 
