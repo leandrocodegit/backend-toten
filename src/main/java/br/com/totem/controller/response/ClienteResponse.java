@@ -16,6 +16,7 @@ public class ClienteResponse {
     private UUID id;
     private String nome;
     private Boolean ativo = Boolean.FALSE;
+    private boolean principal;
     private Endereco endereco;
     private List<ClienteResponse> clientes;
 }

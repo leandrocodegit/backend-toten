@@ -46,67 +46,83 @@ public class UserService {
         return userMapper.toResponse(authService.recuperarUsuarioLogado(token, tipoToken));
     }
 
-    public UserResponse buscarPorEmail(String token, UUID clienteId, String email) {
-        if (authService.validaPermissao(token, Role.ROOT)) {
+    public UserResponse buscarPorEmail(String token, String email) {
+        var userLogado = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(userLogado, Role.ROOT)) {
             return userMapper.toResponse(userRepository.buscarPorEmail(email).orElseThrow(() -> new ExceptionResponse("Não encontrado")));
         } else {
-            return userMapper.toResponse(userRepository.buscarPorEmail(clienteId, email).orElseThrow(() -> new ExceptionResponse("Não encontrado")));
+            return userMapper.toResponse(userRepository.buscarPorEmail(userLogado.getCliente().getId(), email).orElseThrow(() -> new ExceptionResponse("Não encontrado")));
         }
     }
 
-    public void atualizarUsuario(UUID clienteId, UserUpdateRequest userRequest, String token) {
+    public void atualizarUsuario(String token, UserUpdateRequest userRequest) {
 
-        if (userRequest.getClienteId() == null) {
-            throw new ExceptionResponse("Necessário informar um cliente");
-        }
-
-        Optional<User> userOptional = Optional.empty();
-        if (authService.validaPermissao(token, Role.ROOT)) {
-            userOptional = userRepository.findById(userRequest.getId());
-        } else {
-            userOptional = userRepository.findByClienteAndId(clienteId, userRequest.getId());
-        }
-
-        if (userOptional.isPresent()) {
-
-            if (userOptional.get().getEmail().equals("master")) {
-                throw new ExceptionResponse("Falha ao atualizar usuário");
+        var userLogado = authService.recuperarUsuarioLogado(token);
+        if(userLogado.getId().toString().equals(userRequest.getId().toString())){
+            var userDB = userRepository.findByClienteAndId(userLogado.getCliente().getId(), userRequest.getId())
+                    .orElseThrow(() -> new ExceptionResponse("Não encontrado"));
+            userDB.setNome(userRequest.getNome());
+            userDB.setEmail(userRequest.getEmail());
+        }else {
+            if (userRequest.getClienteId() == null) {
+                throw new ExceptionResponse("Necessário informar um cliente");
             }
 
-            authService.validaPermissaoTrocaSenha(userOptional.get(), token, TipoToken.ACCESS);
-            User user = userOptional.get();
-            user.setEmail(userRequest.getEmail());
-            user.setStatus(true);
-            if (authService.validaPermissao(token, Role.ADMIN))
-                user.setRoles(userRequest.getRoles());
-            if (userRequest.getClienteId() == null)
-                userRequest.setClienteId(clienteId);
-
-            if (authService.validaPermissaoCriarCliente(token, Role.ROOT)) {
-                user.setBusiness(userRequest.getBusiness());
+            Optional<User> userOptional = Optional.empty();
+            if (authService.validaPermissao(userLogado, Role.ROOT)) {
+                userOptional = userRepository.findById(userRequest.getId());
+            } else {
+                userOptional = userRepository.findByClienteAndId(userLogado.getCliente().getId(), userRequest.getId());
             }
 
-            user.setCliente(Cliente.builder().id(userRequest.getClienteId()).principal(false).build());
-            userRepository.save(user);
-            logRepository.save(Log.builder()
-                    .cor(null)
-                    .id(user.getId().toString())
-                    .data(LocalDateTime.now())
-                    .comando(Comando.CONFIGURACAO)
-                    .descricao(user.toString())
-                    .mensagem("Usuário " + user.getEmail() + " foi atualizado")
-                    .build());
-        } else {
-            throw new ExceptionResponse("Operação não permitida");
+            if (userOptional.isPresent()) {
+
+                if (userOptional.get().getEmail().equals("master")) {
+                    throw new ExceptionResponse("Falha ao atualizar usuário");
+                }
+
+                authService.validaPermissaoTrocaSenha(userOptional.get(), token, TipoToken.ACCESS);
+                User user = userOptional.get();
+                user.setEmail(userRequest.getEmail());
+                user.setStatus(true);
+                if (authService.validaPermissao(token, Role.ADMIN)) {
+                    user.setRoles(userRequest.getRoles());
+                    if (!user.getBusiness())
+                        userRequest.setClienteId(user.getCliente().getId());
+                }
+
+                if (authService.validaPermissaoCriarCliente(token, Role.ROOT)) {
+                    user.setBusiness(userRequest.getBusiness());
+                }
+
+                user.setCliente(Cliente.builder().id(userRequest.getClienteId()).principal(false).build());
+                userRepository.save(user);
+                logRepository.save(Log.builder()
+                        .cor(null)
+                        .id(user.getId().toString())
+                        .data(LocalDateTime.now())
+                        .comando(Comando.CONFIGURACAO)
+                        .descricao(user.toString())
+                        .mensagem("Usuário " + user.getEmail() + " foi atualizado")
+                        .build());
+            } else {
+                throw new ExceptionResponse("Operação não permitida");
+            }
         }
     }
 
-    public void atualizarSenhaUsuario(UUID clienteId, UserUpdateRequest userRequest, String token) {
+    public void atualizarSenhaUsuario(String token, UserUpdateRequest userRequest) {
         Optional<User> userOptional = Optional.empty();
-        if (authService.validaPermissao(token, Role.ROOT)) {
+
+        var userLogado = authService.recuperarUsuarioLogado(token);
+        if(!userLogado.getId().toString().equals(userLogado.getId().toString()) || !authService.validaPermissao(userLogado, Role.ROOT, Role.ADMIN)){
+            throw new ExceptionResponse("Açao não permitida");
+        }
+
+        if (authService.validaPermissao(userLogado, Role.ROOT)) {
             userOptional = userRepository.findById(userRequest.getId());
         } else {
-            userOptional = userRepository.findByClienteAndId(clienteId, userRequest.getId());
+            userOptional = userRepository.findByClienteAndId(userLogado.getCliente().getId(), userRequest.getId());
         }
 
         if (userOptional.isPresent()) {
@@ -131,21 +147,28 @@ public class UserService {
         }
     }
 
-    public Page<UserResponse> pesquisarUsuarios(UUID clienteId, String pesquisa, Pageable pageable) {
-        return userRepository.findByNomeAndEmailContaining(clienteId, pesquisa, pageable).map(userMapper::toResponse);
+    public Page<UserResponse> pesquisarUsuarios(String token, String pesquisa, Pageable pageable) {
+        return userRepository.findByNomeAndEmailContaining(authService.getClienteId(token), pesquisa, pageable).map(userMapper::toResponse);
     }
 
-    public Page<UserResponse> listaTodosUsuarios(String token, UUID clienteId, boolean business, Pageable pageable) {
-        if (authService.validaPermissao(token, Role.ROOT))
+    public Page<UserResponse> listaTodosUsuarios(String token, boolean business, Pageable pageable) {
+        var userLogado = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(userLogado, Role.ROOT))
             return userRepository.findAllByBusiness(business, pageable).map(userMapper::toResponse);
-        return userRepository.listaUsuarios(clienteId, business, pageable).map(userMapper::toResponse);
+        return userRepository.listaUsuarios(userLogado.getCliente().getId(), business, pageable).map(userMapper::toResponse);
     }
 
-    public void removerUsuario(String token, UUID clienteId, UUID id) {
+    public void removerUsuario(String token, UUID id) {
         Optional<User> user = Optional.empty();
-        if (authService.validaPermissao(token, Role.ROOT))
+
+        var userLogado = authService.recuperarUsuarioLogado(token);
+        if(userLogado.getId().toString().equals(userLogado.getId().toString()) || !authService.validaPermissao(userLogado, Role.ROOT, Role.ADMIN)){
+                    throw new ExceptionResponse("Açao não permitida");
+        }
+
+        if (authService.validaPermissao(userLogado, Role.ROOT))
             user = userRepository.findById(id);
-        else user = userRepository.findByClienteAndId(clienteId, id);
+        else user = userRepository.findByClienteAndId(userLogado.getCliente().getId(), id);
 
         if (!user.isPresent()) {
             throw new ExceptionResponse("Usuário não encontrado");

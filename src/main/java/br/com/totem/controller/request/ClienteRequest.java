@@ -13,5 +13,6 @@ public class ClienteRequest {
     private UUID id;
     private String nome;
     private Boolean ativo = Boolean.FALSE;
+    private Boolean principal = Boolean.FALSE;
     private Endereco endereco;
 }

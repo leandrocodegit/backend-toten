@@ -29,32 +29,32 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<ClienteResponse> buscar(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable UUID id) {
-        return ResponseEntity.ok(clienteService.buscarClinte(token, clienteId, id));
+    public ResponseEntity<ClienteResponse> buscar(@RequestHeader("Authorization") String token, @PathVariable UUID id) {
+        return ResponseEntity.ok(clienteService.buscarClinte(token, id));
     }
 
     @GetMapping("/ativo/{ativo}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<Page<ClienteResponse>> listaCleintes(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @PathVariable boolean ativo, Pageable pageable) {
-        return ResponseEntity.ok(clienteService.listaClientes(token, clienteId, ativo, pageable));
+    public ResponseEntity<Page<ClienteResponse>> listaCleintes(@RequestHeader("Authorization") String token, @PathVariable boolean ativo, Pageable pageable) {
+        return ResponseEntity.ok(clienteService.listaClientes(token, ativo, pageable));
     }
 
     @GetMapping("/pesquisar/{ativo}/{texto}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<Page<ClienteResponse>> pesquisar(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId,  @PathVariable boolean ativo, @PathVariable String texto, Pageable pageable) {
-        return ResponseEntity.ok(clienteService.pesquisarDispositivos(token, clienteId, texto, ativo, pageable));
+    public ResponseEntity<Page<ClienteResponse>> pesquisar(@RequestHeader("Authorization") String token, @PathVariable boolean ativo, @PathVariable String texto, Pageable pageable) {
+        return ResponseEntity.ok(clienteService.pesquisarDispositivos(token, texto, ativo, pageable));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<ClienteResponse> criarCleinte(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody ClienteRequest request) {       ;
-        return ResponseEntity.ok(clienteService.salvarCliente(token, clienteId, request));
+    public ResponseEntity<ClienteResponse> criarCleinte(@RequestHeader("Authorization") String token, @RequestBody ClienteRequest request) {       ;
+        return ResponseEntity.ok(clienteService.salvarCliente(token, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<ClienteResponse> removerCleinte(@RequestHeader UUID clienteId, @PathVariable UUID id) {
-        clienteService.removerClinte(id);
+    public ResponseEntity<ClienteResponse> removerCleinte(@RequestHeader("Authorization") String token,  @PathVariable UUID id) {
+        clienteService.removerClinte(token, id);
         return ResponseEntity.ok().build();
     }
 

@@ -60,6 +60,10 @@ public class AuthService {
     public User recuperarUsuarioLogado(String token){
         return recuperarUsuarioLogado(token, TipoToken.ACCESS);
     }
+
+    public UUID getClienteId(String token){
+        return recuperarUsuarioLogado(token, TipoToken.ACCESS).getCliente().getId();
+    }
     public User recuperarUsuarioLogado(String token, TipoToken tipoToken){
         var email = jwtTokenProvider.getSubjectFromToken(token.replace("Bearer ", ""), tipoToken);
         var clienteId = jwtTokenProvider.getclienteIdToken(token.replace("Bearer ", ""), tipoToken);
@@ -110,16 +114,16 @@ public class AuthService {
         return null;
     }
 
-    public void criarUsuario(String token, UUID clienteId, UserCreateRequest request) {
+    public void criarUsuario(String token, UserCreateRequest request) {
         if (!userRepository.findByEmail(request.getEmail()).isPresent()) {
 
-            var cliente = Cliente.builder().id(clienteId).principal(false).build();
+            var cliente = Cliente.builder().id(request.getClienteId()).principal(false).build();
+            var userLogado = recuperarUsuarioLogado(token);
 
-            if (clienteId == null && validaPermissao(token, Role.ROOT))
-                cliente = null;
-
-            if (!validaPermissao(token, Role.ADMIN))
+            if (!validaPermissao(userLogado, Role.ADMIN, Role.ROOT))
                 throw new ExceptionResponse("Usuário sem permissão");
+
+            cliente = userLogado.getCliente();
 
             User user = User.builder()
                     .id(UUID.randomUUID())

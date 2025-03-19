@@ -39,20 +39,21 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final AuthService authService;
 
-    public Page<ClienteResponse> pesquisarDispositivos(String token, UUID clienteId, String pesquisa, boolean ativo, Pageable pageable) {
+    public Page<ClienteResponse> pesquisarDispositivos(String token, String pesquisa, boolean ativo, Pageable pageable) {
+        var user = authService.recuperarUsuarioLogado(token);
         if (authService.validaPermissao(token, Role.ROOT))
             return clienteRepository.findByIdAndNomeContaining(pesquisa, ativo, pageable).map(clienteMapper::toResponse);
-        return clienteRepository.findByIdAndNomeContaining(clienteId, pesquisa, ativo, pageable).map(clienteMapper::toResponse);
+        return clienteRepository.findByIdAndNomeContaining(user.getCliente().getId(), pesquisa, ativo, pageable).map(clienteMapper::toResponse);
     }
 
-    public Page<ClienteResponse> listaClientes(String token, UUID clienteId, boolean ativo, Pageable pageable) {
-
+    public Page<ClienteResponse> listaClientes(String token, boolean ativo, Pageable pageable) {
+        var user = authService.recuperarUsuarioLogado(token);
         if (authService.validaPermissao(token, Role.ROOT))
             return clienteRepository.findAllByAtivo(ativo, pageable).map(clienteMapper::toResponse);
 
-        if (clienteId == null)
+        if (user.getCliente() == null)
             return Page.empty();
-        var clientePai = buscarClinte(clienteId);
+        var clientePai = clienteMapper.toResponse(user.getCliente());
         if (clientePai.getClientes() == null)
             clientePai.setClientes(new ArrayList<>());
         List<ClienteResponse> clientes = clientePai.getClientes();
@@ -66,8 +67,9 @@ public class ClienteService {
         return new PageImpl<>(clientes.subList(start, end), pageable, clientes.size());
     }
 
-    public ClienteResponse salvarCliente(String token, UUID clienteId, ClienteRequest request) {
+    public ClienteResponse salvarCliente(String token, ClienteRequest request) {
         var cliente = clienteMapper.toEntity(request);
+        var user = authService.recuperarUsuarioLogado(token);
 
         if (request.getId() == null) {
             if (authService.validaPermissao(token, Role.ROOT)) {
@@ -77,9 +79,11 @@ public class ClienteService {
                 if (!authService.validaPermissaoCriarCliente(token, Role.ROOT, Role.ADMIN))
                     throw new ExceptionResponse("Usuário sem premissão para criar clientes");
 
-                var clientePai = clienteRepository.findById(clienteId).orElseThrow(() -> {
-                    throw new ExceptionResponse("Cliente não encontrado");
-                });
+                if (authService.validaPermissao(token, Role.ROOT)) {
+                    cliente.setPrincipal(request.getPrincipal());
+                }
+
+                var clientePai = user.getCliente();
                 cliente.setId(UUID.randomUUID());
                 if (clientePai.getClientes() == null)
                     clientePai.setClientes(new ArrayList<>());
@@ -90,28 +94,39 @@ public class ClienteService {
                 clienteRepository.save(clientePai);
             }
         } else {
-            if (authService.validaPermissao(token, Role.ROOT)) {
+            if (authService.validaPermissao(user, Role.ROOT)) {
                 cliente = clienteRepository.findById(request.getId()).orElseThrow(() -> {
                     throw new ExceptionResponse("Cliente não relacionado");
                 });
-            } else {
-                cliente = buscarClinterelacionado(clienteId, request.getId()).orElseThrow(() -> {
-                    throw new ExceptionResponse("Cliente não relacionado");
-                });
+            } else if(authService.validaPermissao(user, Role.ADMIN)) {
+                var clienteOptional = buscarClinterelacionado(user.getCliente().getId(), request.getId());
+                if(clienteOptional.isEmpty()){
+                  cliente = clienteRepository.findByClientePrincipal(request.getId()).orElseThrow(() -> {
+                        throw new ExceptionResponse("Cliente não relacionado");
+                    });
+                }else{
+                    cliente = clienteOptional.get();
+                }
+            }else{
+                throw new ExceptionResponse("Usuário sem pemissão");
             }
-            cliente.setAtivo(request.getAtivo());
-            cliente.setNome(request.getNome());
+            if (authService.validaPermissao(user, Role.ROOT)) {
+                cliente.setPrincipal(request.getPrincipal());
+            }else {
+                if (!cliente.isPrincipal()) {
+                    cliente.setNome(request.getNome());
+                    cliente.setAtivo(request.getAtivo());
+                }
+            }
             cliente.setEndereco(request.getEndereco());
             clienteRepository.save(cliente);
         }
         return clienteMapper.toResponse(cliente);
     }
 
-    public Optional<Cliente> buscarClinterelacionado(UUID clienteId, UUID id) {
-        var cliente = clienteRepository.findById(clienteId).orElseThrow(() -> {
-            throw new ExceptionResponse("Cliente não encontrado");
-        });
-        if (cliente.getClientes() == null || cliente.getClientes().isEmpty())
+    private Optional<Cliente> buscarClinterelacionado(UUID clienteId, UUID id) {
+        var cliente = clienteRepository.findById(clienteId).orElse(null);
+        if (cliente == null || cliente.getClientes() == null || cliente.getClientes().isEmpty())
             return Optional.empty();
         return cliente.getClientes().stream().filter(it -> it.getId().toString().equals(id.toString())).findFirst();
     }
@@ -129,19 +144,24 @@ public class ClienteService {
         }));
     }
 
-    public ClienteResponse buscarClinte(String token, UUID clienteId, UUID id) {
-        if (authService.validaPermissao(token, Role.ROOT))
+    public ClienteResponse buscarClinte(String token, UUID id) {
+        var user = authService.recuperarUsuarioLogado(token);
+        if (authService.validaPermissao(user, Role.ROOT))
             return clienteMapper.toResponse(clienteRepository.findById(id).orElseThrow(() -> {
                 throw new ExceptionResponse("Cliente não encontrado");
             }));
 
-        return clienteMapper.toResponse(clienteRepository.findByClienteAndId(clienteId, id).orElseThrow(() -> {
+        if (user.getCliente().getId().toString().equals(id.toString()))
+            return clienteMapper.toResponse(clienteRepository.findById(user.getCliente().getId()).orElseThrow(() -> {
+                throw new ExceptionResponse("Cliente não encontrado");
+            }));
+        return clienteMapper.toResponse(clienteRepository.findByClienteAndId(user.getCliente().getId(), id).orElseThrow(() -> {
             throw new ExceptionResponse("Cliente não encontrado");
         }));
     }
 
-    public void removerClinte(UUID id) {
-        buscarClinte(id);
+    public void removerClinte(String token, UUID id) {
+        buscarClinte(token, id);
         clienteRepository.deleteById(id);
     }
 

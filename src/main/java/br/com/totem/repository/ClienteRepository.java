@@ -16,6 +16,8 @@ public interface ClienteRepository extends MongoRepository<Cliente, UUID> {
 
     @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'id': ?1 }")
     Optional<Cliente> findByClienteAndId(UUID clienteId, UUID id);
+    @Query("{ 'id': ?0, 'principal': true }")
+    Optional<Cliente> findByClientePrincipal(UUID id);
     public Page<Cliente> findAllByAtivoAndPrincipal(boolean ativo, boolean principal, Pageable pageable);
     public Page<Cliente> findAllByAtivo(boolean ativo, Pageable pageable);
     @Query("{" +
