@@ -117,7 +117,7 @@ public class AgendaService {
                     .mensagem("Agenda foi atualizada")
                     .build());
             verificaSeAgendaHoje(agenda);
-            dashboardService.atualizarDashboardAgendas(user.getCliente().getId());
+            dashboardService.atualizarDashboardAgendas(user);
             comandoService.sincronizarTodos( false, user.getCliente().getId(), user.getEmail());
         } else {
             throw new ExceptionResponse("Agenda não existe");

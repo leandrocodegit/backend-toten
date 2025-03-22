@@ -28,4 +28,5 @@ public class Dashboard {
     private List<DispositivoPorCor> agendasExecucao;
     private List<DispositivoPorCor> cores;
     private List<LogConexao> logsConexao;
+    private LocalDateTime ultimaAtualizacao;
 }

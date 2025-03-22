@@ -43,8 +43,8 @@ public class DispositivoController {
 
     @PatchMapping("/configuracao")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT','ROLE_ADMIN')")
-    public ResponseEntity<TokenResponse> atualizarConfiguracao(@RequestHeader("Authorization") String token, @RequestHeader(required = false) UUID clienteId, @RequestBody ConfiguracaoRequest request) {
-        dispositivoService.atualizarConfiguracaoDispositivo(token, clienteId, request);
+    public ResponseEntity<TokenResponse> atualizarConfiguracao(@RequestHeader("Authorization") String token, @RequestBody ConfiguracaoRequest request) {
+        dispositivoService.atualizarConfiguracaoDispositivo(token, request);
         return ResponseEntity.ok().build();
     }
 

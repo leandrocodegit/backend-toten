@@ -39,6 +39,7 @@ public interface UserRepository  extends MongoRepository<User, UUID> {
     Optional<User> findByEmail(String email);
 
     long countByClienteAndStatus(Cliente clienteId, Boolean status);
+    long countByStatus(Boolean status);
 
     @Query("{" +
             "'cliente': { $ne: null }, 'cliente.id': ?0, " +

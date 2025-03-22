@@ -30,7 +30,6 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Long
     List<Dispositivo> findAllByIdInAndAtivo(List<Long> ids, boolean ativo);
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'ativo': ?1, 'cor': { $ne: null } }")
     List<Dispositivo> findAllByAtivo(UUID clienteId, boolean ativo);
-    @Query("{'ativo': ?0, 'cor': { $ne: null } }")
     List<Dispositivo> findAllByAtivo(boolean ativo);
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'ativo': ?1 }")
     Page<Dispositivo> findAllByAtivo(UUID clienteId, boolean ativo, Pageable pageable);

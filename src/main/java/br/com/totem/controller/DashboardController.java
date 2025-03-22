@@ -18,8 +18,8 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping()
-    public ResponseEntity<Dashboard> buscar(@RequestHeader UUID clienteId) {
-        return ResponseEntity.ok(dashboardService.buscarDashboard(clienteId));
+    public ResponseEntity<Dashboard> buscar(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(dashboardService.buscarDashboard(token));
     }
 
     @CrossOrigin(
@@ -31,20 +31,20 @@ public class DashboardController {
     public ResponseEntity<Dashboard> gerarDash(@RequestHeader(required = false) UUID clienteId) {
         if (clienteId == null)
             return ResponseEntity.ok().build();
-        return ResponseEntity.ok(dashboardService.gerarDash(clienteId));
+        return ResponseEntity.ok(dashboardService.gerarDash(clienteId, false));
     }
 
     @GetMapping("/atualizar/conexoes")
     public ResponseEntity<Dashboard> atualizarConexoes(@RequestHeader(required = false) UUID clienteId) {
         if (clienteId != null)
-            dashboardService.atualizarConexoes(clienteId);
+            dashboardService.atualizarConexoes(clienteId, false);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/atualizar/agendas")
     public ResponseEntity<Dashboard> atualizarAgendas(@RequestHeader(required = false) UUID clienteId) {
         if (clienteId != null)
-            dashboardService.atualizarConexoes(clienteId);
+            dashboardService.atualizarConexoes(clienteId, false);
         return ResponseEntity.ok().build();
     }
 

@@ -79,11 +79,12 @@ public class DispositivoService {
         }
     }
 
-    public void atualizarConfiguracaoDispositivo(String token, UUID clienteId, ConfiguracaoRequest request) {
+    public void atualizarConfiguracaoDispositivo(String token, ConfiguracaoRequest request) {
+        var userLogado = authService.recuperarUsuarioLogado(token);
         Optional<Dispositivo> dispositivoOptional = Optional.empty();
         if (authService.validaPermissao(token, Role.ROOT))
             dispositivoOptional = dispositivoRepository.findById(request.getId());
-        else dispositivoRepository.findByClienteAndId(clienteId, request.getId());
+        else dispositivoRepository.findByClienteAndId(userLogado.getCliente().getId(), request.getId());
         if (dispositivoOptional.isPresent()) {
             Dispositivo dispositivo = dispositivoOptional.get();
             dispositivo.setSensibilidadeVibracao(request.getSensibilidadeVibracao());

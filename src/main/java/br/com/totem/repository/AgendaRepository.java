@@ -90,6 +90,8 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
             "}")
     List<Agenda> findAllAgendasByDataDentroDoIntervalo(UUID clienteId, LocalDate data);
 
+
+
     @Query("{" +
             " $expr: {" +
             "   $and: [" +
@@ -122,6 +124,9 @@ public interface AgendaRepository extends MongoRepository<Agenda, UUID> {
 
     @Query("{'cliente': { $ne: null },  'cliente.id': ?0, 'ativo': ?1 }")
     List<Agenda> findAllByAtivo(UUID clienteId, boolean ativo);
+
+
+    List<Agenda> findAllByAtivo(boolean ativo);
 
     @Query("{" +
             "'cliente': { $ne: null },  'cliente.id': ?0," +
