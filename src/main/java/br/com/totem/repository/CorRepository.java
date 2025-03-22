@@ -23,6 +23,14 @@ public interface CorRepository extends MongoRepository<Cor, UUID> {
     Page<Cor> findAllByRapidaAndVibracaoAndExclusiva(boolean rapida, boolean vibracao, boolean exclusiva, Pageable pageable);
     @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'rapida': ?1, 'vibracao': ?2, 'exclusiva': ?3 }")
     Page<Cor> findAllByRapidaAndVibracaoAndExclusiva(UUID clienteId, boolean rapida, boolean vibracao, boolean exclusiva, Pageable pageable);
+    @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'rapida': ?1}")
+    Page<Cor> findAllByRapida(UUID clienteId, boolean rapida, Pageable pageable);
+    @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'vibracao': ?1}")
+    Page<Cor> findAllByVibracao(UUID clienteId, boolean vibracao, Pageable pageable);
+    @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0}")
+    Page<Cor> findAll(UUID clienteId, Pageable pageable);
+    @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'exclusiva': ?1}")
+    Page<Cor> findAllByExclusiva(UUID clienteId, boolean exclusiva, Pageable pageable);
     Page<Cor> findAllByVibracaoAndExclusiva(boolean vibracao, boolean exclusiva, Pageable pageable);
     @Query("{ 'cliente': { $ne: null }, 'cliente.id': ?0, 'vibracao': ?1, 'exclusiva': ?2 }")
     Page<Cor> findAllByVibracaoAndExclusiva(UUID clienteId, boolean vibracao, boolean exclusiva, Pageable pageable);

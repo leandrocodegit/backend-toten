@@ -44,11 +44,18 @@ public class CorService {
             if (isRoot)
                 return corRepository.findAllByVibracaoAndExclusiva(vibracao, exclusiva, pageable).map(corMapper::toResponse);
             else
-                return corRepository.findAllByVibracaoAndExclusiva(clienteId, vibracao, exclusiva, pageable).map(corMapper::toResponse);
+                return corRepository.findAll(clienteId, pageable).map(corMapper::toResponse);
         } else if (isRoot)
             return corRepository.findAllByRapidaAndVibracaoAndExclusiva(rapida, vibracao, exclusiva, pageable).map(corMapper::toResponse);
-        else
-            return corRepository.findAllByRapidaAndVibracaoAndExclusiva(clienteId, rapida, vibracao, exclusiva, pageable).map(corMapper::toResponse);
+        else {
+            if (rapida)
+                return corRepository.findAllByRapida(clienteId, rapida, pageable).map(corMapper::toResponse);
+            if (vibracao)
+                return corRepository.findAllByVibracao(clienteId, vibracao, pageable).map(corMapper::toResponse);
+            if (exclusiva)
+                return corRepository.findAllByExclusiva(clienteId, exclusiva, pageable).map(corMapper::toResponse);
+        }
+        return corRepository.findAll(clienteId, pageable).map(corMapper::toResponse);
     }
 
     public void removerConfiguracao(String token, UUID clienteId, UUID id) {
