@@ -31,6 +31,8 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Long
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'ativo': ?1, 'cor': { $ne: null } }")
     List<Dispositivo> findAllByAtivo(UUID clienteId, boolean ativo);
     List<Dispositivo> findAllByAtivo(boolean ativo);
+
+    Page<Dispositivo> findAllByAtivo(boolean ativo, Pageable pageable);
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'ativo': ?1 }")
     Page<Dispositivo> findAllByAtivo(UUID clienteId, boolean ativo, Pageable pageable);
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0}")
@@ -39,6 +41,9 @@ public interface DispositivoRepository extends MongoRepository<Dispositivo, Long
     Page<Dispositivo> findAllByInativo(boolean ativo, Pageable pageable);
     @Query("{'cliente': { $ne: null },  'cliente.id': ?0, 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?1 }, 'cor': { $ne: null } }")
     List<Dispositivo> findAllAtivosComUltimaAtualizacaoAntes(UUID clienteId, Date dataLimite);
+    @Query("{ 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?0 }, 'cor': { $ne: null } }")
+    Page<Dispositivo> findAllAtivosComUltimaAtualizacaoAntes(Date dataLimite, Pageable pageable);
+
     @Query("{'cliente': { $ne: null }, 'cliente.id': ?0, 'ativo' : true, 'ultimaAtualizacao' : { $lt: ?1 }, 'cor': { $ne: null } }")
     Page<Dispositivo> findAllAtivosComUltimaAtualizacaoAntes(UUID clienteId, Date dataLimite, Pageable pageable);
 

@@ -199,24 +199,26 @@ public class DispositivoService {
 
     public Page<Dispositivo> listaTodosEntidadeDispositivosPorFiltro(UUID clienteId, String token, Filtro filtro, Pageable pageable) {
 
-        if (authService.validaPermissao(token, Role.ROOT))
-            filtro = Filtro.TODOS;
+       var isRoot = (authService.validaPermissao(token, Role.ROOT));
 
         switch (filtro) {
             case TODOS -> {
                 return dispositivoRepository.findAll(pageable);
             }
             case ATIVO -> {
+                if(isRoot)
+                    return dispositivoRepository.findAllByAtivo(true, pageable);
                 return dispositivoRepository.findAllByAtivo(clienteId, true, pageable);
             }
             case INATIVO -> {
+                if(isRoot)
+                    return dispositivoRepository.findAllByAtivo(false, pageable);
                 return dispositivoRepository.findAllByAtivo(clienteId, false, pageable);
             }
             case OFFLINE -> {
+                if(isRoot)
+                    return buscarDispositivosAtivosTempo( 5, pageable);
                 return buscarDispositivosAtivosTempo(clienteId, 5, pageable);
-            }
-            case NAO_CONFIGURADO -> {
-                return dispositivoRepository.findDispositivosSemConfiguracao(clienteId, pageable);
             }
 
         }
@@ -255,6 +257,11 @@ public class DispositivoService {
         return dispositivoRepository.findAllAtivosComUltimaAtualizacaoAntes(clienteId, dataLimite);
     }
 
+    private Page<Dispositivo> buscarDispositivosAtivosTempo(long minutos, Pageable pageable) {
+        LocalDateTime cincoMinutosAtras = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(minutos);
+        Date dataLimite = Date.from(cincoMinutosAtras.atZone(ZoneOffset.UTC).toInstant());
+        return dispositivoRepository.findAllAtivosComUltimaAtualizacaoAntes(dataLimite, pageable);
+    }
     public Page<Dispositivo> buscarDispositivosAtivosTempo(UUID clienteId, long minutos, Pageable pageable) {
         LocalDateTime cincoMinutosAtras = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(minutos);
         Date dataLimite = Date.from(cincoMinutosAtras.atZone(ZoneOffset.UTC).toInstant());
