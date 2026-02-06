@@ -29,9 +29,13 @@ public class AgendaController {
     private final AgendaMapper agendaMapper;
     private final JWTTokenProvider jwtTokenProvider;
 
+    @GetMapping("/teste")
+    public ResponseEntity<String> teste() {
+        return ResponseEntity.ok("Teste ok");
+    }
 
     @GetMapping
-    public ResponseEntity<Page<AgendaResponse>> listaTodasAgenda(@RequestHeader("Authorization") String token, Pageable pageable) {
+    public ResponseEntity<Page<AgendaResponse>> listaTodasAgenda(@RequestHeader(value = "Authorization", required = false) String token, Pageable pageable) {
         return ResponseEntity.ok(agendaDeviceService.listaTodosAgendas(token, pageable));
     }
 

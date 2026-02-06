@@ -20,7 +20,8 @@ WORKDIR /app
 COPY --from=builder /app/target/totem-0.0.1-SNAPSHOT.jar /app/totem-0.0.1-SNAPSHOT.jar
 
 # Porta em que a aplicação irá rodar
-EXPOSE 8081
+ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+EXPOSE 8081 5081
 
 # Comando para executar a aplicação
 CMD ["java", "-Xms1g", "-Xmx2g", "-jar", "/app/totem-0.0.1-SNAPSHOT.jar"]

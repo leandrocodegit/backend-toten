@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum Efeito {
 
+    SEM_EFEITO(0),
     CILONIO(1),
     GIROFLEX(2),
     CONTADOR(3),
@@ -20,7 +21,11 @@ public enum Efeito {
     CONSTELACAO(14),
     GAME(15),
     FAIXA_3(16),
-    UPDATE(20);
+    NIVEL(17),
+    BATIMENTOS(18),
+    ALERTA(19),
+    SCANNER(20),
+    UPDATE(100);
 
     public int codigo;
 

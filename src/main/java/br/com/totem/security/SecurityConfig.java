@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/totem/send",
             "/totem/auth/secret",
             "/totem/dispositivo/firmware",
-            "/totem/email"
+            "/totem/email",
+            "/agenda/teste"
 
     };
 
@@ -59,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/dashboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/secret").permitAll()
                         .requestMatchers(HttpMethod.GET, "/dispositivo/firmware").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/agenda/teste").permitAll()
                         .requestMatchers(HttpMethod.POST, "/email").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
